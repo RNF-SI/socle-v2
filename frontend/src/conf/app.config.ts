@@ -2,9 +2,9 @@ export const AppConfig = {
     "ID_APPLICATION_GEONATURE": 5,
     "API_ENDPOINT": "http://127.0.0.1:5088",
     "appName": "Socle2",
-    "appTitle": " ",
-    "appSubTitle": " ",
-    "creditHeaderImage": "Etang du Moulin Neuf, Plounérin - © C. Le Gac",
+    "appTitle": " SOCLE",
+    "appSubTitle": " Base de donnée de la géodiversité des réserves",
+    "creditHeaderImage": "Bouches de Bonifacio - © Olivier Bonnenfant, OEC",
     "menu": [
         {
             "nom":"accueil", 
