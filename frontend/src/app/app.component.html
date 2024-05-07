@@ -1,3 +1,219 @@
- 
+<!-- <!DOCTYPE html>
+<html lang="fr">
 
-<router-outlet> </router-outlet>
+<head>
+    <meta charset="UTF-8">
+    <title>Titre de la Page</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        .caption {
+            position: absolute;
+            top: 5%;
+            left: 10%;
+            color: white;
+            font-size: 24px;
+            text-shadow: 2px 2px 4px #000000;
+        }
+
+        .full-height {
+            position: relative;
+            width: 100%;
+            height: 40vh;
+            /* Hauteur de la section à 50% de la hauteur de la vue */
+            overflow: hidden;
+        }
+
+        .full-height img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Couvre entièrement l'espace sans perdre les proportions */
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .toolbar1 {
+            background-color: green;
+            /* Arrière-plan vert */
+            color: white;
+            display: flex;
+            /* Utilisation de Flexbox */
+            justify-content: space-between;
+            /* Répartition égale de l'espace entre les éléments */
+            align-items: center;
+            /* Centrage vertical des éléments */
+            padding: 10px 20px;
+            /* Padding horizontal et vertical */
+        }
+
+        .toolbar1 a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+            /* Espacement autour des liens */
+            font-weight: bold;
+        }
+
+        .toolbar1 a:hover {
+            text-decoration: underline;
+        }
+
+        .left-links,
+        .right-links {
+            display: flex;
+            /* Utilisation de Flexbox pour les liens à gauche et à droite */
+            align-items: center;
+            /* Centrage vertical des liens */
+        }
+
+        footer {
+            background-color: green;
+            color: white;
+            padding: 10px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            /* Prend toute la largeur */
+        }
+
+        .social-icon {
+            margin-right: 20px;
+            /* Espacement entre les icônes */
+            color: inherit;
+            /* Les icônes héritent la couleur du texte parent */
+            text-decoration: none;
+            /* Pas de soulignement sur les liens */
+        }
+
+        .social-icon:hover,
+        .social-icon:focus {
+            text-decoration: none;
+            /* Pas de soulignement lors du survol */
+            color: #cccccc;
+            /* Changement de couleur lors du survol */
+
+
+        }
+
+
+        .logo-container {
+            position: absolute;
+            top: -2%;
+            left: -2%;
+            z-index: 1;
+            /* Pour que le logo soit au-dessus de l'image */
+        }
+
+        .logo-container img {
+            width: 200px;
+            /* Ajustez la taille selon vos besoins */
+
+            filter: invert(100%);
+            /* Inversion de la couleur pour la rendre blanche */
+        }
+
+        /* CSS for the containing div */
+        div[ngcontent-lkt-c33] {
+            background-color: #f4f4f4;
+            /* Light grey background */
+            padding: 10px;
+            /* Padding around the content */
+            border-radius: 15px;
+            /* Rounded corners */
+            max-width: 500px;
+            /* Maximum width of the div */
+            margin: auto;
+            /* Centering the div */
+            text-align: center;
+            /* Center text */
+            position: absolute;
+            top:60%;
+            left: 40%;
+        }
+
+        /* CSS for the span with the class 'subtitle' */
+        span.subtitle {
+            color:rgb(88, 61, 19);
+            /* Teal text color */
+            font-size: 1.2rem;
+            /* Larger text size */
+            font-weight: bold;
+            /* Bold font weight */
+            letter-spacing: 0.5px;
+            /* Spacing between characters */
+            
+        }
+    </style>
+</head>
+
+<body>
+    <div class="full-height">
+        <img src="assets/images/socle1.png" alt="Description de l'image">
+        <div class="caption">
+            <h1>SOCLE2</h1>
+            <p>Regards sur la géodiversité des espaces naturels</p>
+        </div>
+        <div ngcontent-lkt-c33>
+            <span ngcontent-lkt-c33 class="subtitle">Bienvenue sur la base de données géologiques de Réserves Naturelles de
+                France!</span>
+        </div>
+    
+    </div>
+  
+
+    <div class="logo-container">
+        <img src="https://socle.reserves-naturelles.org/resources/images/embeme_quart_haut_gauche.svg"
+            class="comor-svg">
+    </div>
+
+    <div class="toolbar1">
+        <div class="left-links">
+            <a href="#home">Accueil</a>
+            <a href="#Explorer">Explorer</a>
+            <a href="#Aide">Aide</a>
+            <a href="#Liens">Liens</a>
+        </div>
+        <div class="right-links">
+            <a href="#Inscription">Inscription</a>
+            <i class="fa-sharp fa-regular fa-address-card"></i>
+
+            <a href="#Deconnexion">Deconnexion</a>
+            <i class="fa-solid fa-right-from-bracket"></i>
+        </div>
+    </div> -->
+
+    <router-outlet></router-outlet>
+<!-- 
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <footer>
+        <div>
+            <h6>RÉSERVES NATURELLES DE FRANCE</h6>
+            <p>2 allée Pierre Lacroute<br>CS 67524<br>21075 Dijon cedex<br>03 80 48 91 00</p>
+        </div>
+        <div>
+            <h6>RÉSEAUX SOCIAUX</h6>
+            <a href="https://www.facebook.com/nom.de.la.page" target="_blank" class="social-icon"><i
+                    class="fa-brands fa-facebook"></i></a>
+            <a href="https://www.instagram.com/reserves_naturelles_de_france" target="_blank" class="social-icon"><i
+                    class="fa-brands fa-instagram"></i></a>
+            <a href="https://www.linkedin.com/company/50041403" target="_blank" class="social-icon"><i
+                    class="fa-brands fa-linkedin"></i></a>
+            <a href="https://github.com/RNF-SI" target="_blank" class="social-icon"><i
+                    class="fa-brands fa-github"></i></a>
+            <p>Contactez-nous</p>
+        </div>
+    </footer>
+
+
+</body>
+
+</html> -->
