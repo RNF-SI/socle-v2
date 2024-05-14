@@ -16,7 +16,21 @@ export const AppConfig = {
             "classFa":"fas" as const,
             "nomFa":"magnifying-glass" as const,
             "lien":"explorer"
-        }],
+        },
+        {
+            "nom":"aide", 
+            "classFa":"fas" as const,
+            "nomFa":"magnifying-glass" as const,
+            "lien":"aide"
+        },
+        {
+            "nom":"liens", 
+            "classFa":"fas" as const,
+            "nomFa":"magnifying-glass" as const,
+            "lien":"liens"
+        },
+       
+    ],
 
     "menucompte": [
             {
@@ -24,8 +38,8 @@ export const AppConfig = {
                  "classFa":"fas" as const,
                  "nomFa":"right-from-bracket" as const,
                  "lien":"logout"
-             }
-         ]
- 
-     
+             },
+          
+        ],
+         
 }
