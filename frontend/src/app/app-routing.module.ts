@@ -5,6 +5,9 @@ import { LogoutComponent } from './home-rnf/components/logout/logout.component';
 import { LogoutLinkService } from './home-rnf/services/logout-link.service';
 import { LoginComponent } from './home-rnf/components/login/login.component';
 import { LazyDialogLoader } from './home-rnf/services/lazy-dialog-loader.service';
+import { AccueilComponent } from './components/accueil/accueil.component';
+import { AideComponent } from './components/aide/aide.component';
+import { ExplorerComponent } from './components/explorer/explorer.component';
 
 const routes: Routes = [ 
   { 
@@ -22,6 +25,19 @@ const routes: Routes = [
         component: LoginComponent, 
         canActivate: [ LazyDialogLoader ] 
       },
+      {
+        path: '',
+        component: AccueilComponent,
+      },
+      {
+        path: 'aide',
+        component: AideComponent,
+      },
+      {
+        path: 'explorer',
+        component: ExplorerComponent,
+      }
+     
      ]
     },
 

@@ -4,11 +4,15 @@ import { AppComponent } from './app.component';
 import { HomeRnfModule } from './home-rnf/home-rnf.module';
 import { RouterModule } from '@angular/router';
 import { AppRoutingModule } from './app-routing.module';
+import { AccueilComponent } from './components/accueil/accueil.component';
+import { ExplorerComponent } from './components/explorer/explorer.component';
 
   
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    AccueilComponent,
+    ExplorerComponent
   ],
   imports: [
     BrowserModule,
