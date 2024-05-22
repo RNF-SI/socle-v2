@@ -1,0 +1,253 @@
+<div class="container">
+    <h1>MINI-QUESTIONNAIRE</h1>
+    <form [formGroup]="miniQuestForm" (ngSubmit)="onSubmit()">
+        <!-- Question 1 -->
+        <div class="form-group">
+            <label>
+                <h6> Q-1 Est-ce que la réserve a été créée sur le fondement d’un patrimoine géologique ?</h6>
+            </label>
+            <div>
+                <input type="radio" formControlName="reserveCreatedOnGeologicalBasis" value="yes"> Oui
+                <input type="radio" formControlName="reserveCreatedOnGeologicalBasis" value="no"> Non
+            </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="form-group" formGroupName="reserveContainsGeologicalHeritage">
+            <label>
+                <h6>Q-2 Est-ce que la réserve abrite du patrimoine géologique ?</h6>
+            </label>
+            <div>
+                <input type="checkbox" formControlName="inpg"> Oui (données INPG)
+                <div *ngIf="miniQuestForm.get('reserveContainsGeologicalHeritage')?.get('inpg')?.value">
+                    <label>Liste des sites INPG associés à la RN</label>
+                    <input type="text" formControlName="inpgDetails"
+                        placeholder="Remplissage automatisé à partir des données INPG">
+                </div>
+                <input type="checkbox" formControlName="other"> Oui (autre donnée à préciser)
+                <div *ngIf="miniQuestForm.get('reserveContainsGeologicalHeritage')?.get('other')?.value">
+                    <label>Préciser la source de la donnée et préciser les sites concernés</label>
+                    <input type="text" formControlName="otherDetails">
+                </div>
+                <input type="checkbox" formControlName="none"> Non
+            </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="form-group" formGroupName="protectionPerimeterContainsGeologicalHeritage">
+            <label>
+                <h6>Q-3 Est-ce que le périmètre de protection de la réserve (hors secteurs classés) abrite du patrimoine
+                    géologique ?</h6>
+            </label>
+            <div>
+                <input type="checkbox" formControlName="inpg"> Oui (données INPG)
+                <div *ngIf="miniQuestForm.get('protectionPerimeterContainsGeologicalHeritage')?.get('inpg')?.value">
+                    <label>Liste des sites INPG associés à la RN</label>
+                    <input type="text" formControlName="inpgDetails">
+                </div>
+                <input type="checkbox" formControlName="other"> Oui (autre donnée à préciser)
+                <div *ngIf="miniQuestForm.get('protectionPerimeterContainsGeologicalHeritage')?.get('other')?.value">
+                    <label>Préciser la source de la donnée et préciser les sites concernés</label>
+                    <input type="text" formControlName="otherDetails">
+                </div>
+                <input type="checkbox" formControlName="none"> Non
+            </div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="form-group" formGroupName="mainGeologicalInterests">
+            <label>
+                <h6>Q-4 Quels sont les intérêts géologiques principaux de la réserve ?</h6>
+            </label>
+            <div>
+                <input type="checkbox" formControlName="stratigraphic"> Stratigraphique
+                <input type="checkbox" formControlName="paleontological"> Paléontologique
+                <input type="checkbox" formControlName="sedimentological"> Sédimentologique
+                <input type="checkbox" formControlName="geomorphological"> Géomorphologique
+                <input type="checkbox" formControlName="mineralResource"> Ressource minérale
+                <input type="checkbox" formControlName="mineralogical"> Minéralogique
+                <input type="checkbox" formControlName="metamorphism"> Métamorphisme
+                <input type="checkbox" formControlName="volcanism"> Volcanisme
+                <input type="checkbox" formControlName="plutonism"> Plutonisme
+                <input type="checkbox" formControlName="hydrogeology"> Hydrogéologie
+                <input type="checkbox" formControlName="tectonics"> Tectonique
+            </div>
+        </div>
+
+        <!-- Question 5 -->
+        <div class="form-group" formGroupName="containsPaleontologicalHeritage">
+            <label>
+                <h6>Q-5 Est-ce que les terrains de la réserve renferment du patrimoine paléontologique ?</h6>
+            </label>
+            <div>
+                <input type="radio" formControlName="answer" value="yes"> Oui
+                <div *ngIf="miniQuestForm.get('containsPaleontologicalHeritage')?.get('answer')?.value === 'yes'">
+                    <input type="checkbox" formControlName="vertebrates"> Vertébrés
+                    <input type="checkbox" formControlName="invertebrates"> Invertébrés
+                    <input type="checkbox" formControlName="plants"> Végétaux
+                    <input type="checkbox" formControlName="traceFossils"> Traces fossiles
+                    <input type="checkbox" formControlName="other"> Autres
+                    <div *ngIf="miniQuestForm.get('containsPaleontologicalHeritage')?.get('other')?.value">
+                        <label>Préciser</label>
+                        <input type="text" formControlName="otherDetails">
+                    </div>
+                </div>
+                <input type="radio" formControlName="answer" value="no"> Non
+            </div>
+        </div>
+        <!-- Question 6 -->
+        <div class="form-group">
+            <label>
+                <h6>Q-6 Est-ce que la réserve dispose de collections géologiques propres ?</h6>
+            </label>
+            <div>
+                <input type="radio" formControlName="collectionsGeologiquesPropres" value="yes"> Oui
+                <input type="radio" formControlName="collectionsGeologiquesPropres" value="no"> Non
+            </div>
+        </div>
+        <!-- Question 7 -->
+        <div class="form-group">
+            <label>
+                <h6>Q-7 Est-ce que la réserve dispose d’un lieu d’exposition de collections géologiques ?</h6>
+            </label>
+            <div>
+                <input type="radio" formControlName="expositionGeologiques" value="yes"> Oui
+                <input type="radio" formControlName="expositionGeologiques" value="no"> Non
+            </div>
+        </div>
+
+        <!-- Question 8 -->
+        <div class="form-group">
+            <label>
+                <h6> Q-8 Âge des terrains à l’affleurement dans la réserve</h6>
+            </label>
+            <div>
+                <select formControlName="ageTerrains" multiple>
+                    <option *ngFor="let age of ages">{{ age }}</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Question 9 -->
+        <div class="form-group">
+            <label>
+                <h6> Q-9 Est-ce que la réserve (périmètre de protection inclus) abrite un stratotype ?</h6>
+            </label>
+            <div>
+                <input type="radio" formControlName="stratotype" value="yes"> Oui
+                <div *ngIf="miniQuestForm.get('stratotype')?.value === 'yes'">
+                    <input type="checkbox" formControlName="stratotypeLimite"> Stratotype de limite
+                    <div *ngIf="miniQuestForm.get('stratotypeLimite')?.value">
+                        <label>Préciser le ou les stratotypes concernés</label>
+                        <input type="text" formControlName="stratotypeLimiteDetails">
+                    </div>
+                    <input type="checkbox" formControlName="stratotypeEtage"> Stratotype d’étage
+                    <div *ngIf="miniQuestForm.get('stratotypeEtage')?.value">
+                        <label>Préciser le ou les stratotypes concernés</label>
+                        <input type="text" formControlName="stratotypeEtageDetails">
+                    </div>
+                </div>
+                <input type="radio" formControlName="stratotype" value="no"> Non
+            </div>
+        </div>
+        <!-- Question 10 -->
+        <div class="form-group">
+            <label>
+                <h6>Q-10 Est-ce que la réserve présente des milieux souterrains abritant un patrimoine naturel
+                    identifié, biologique ou géologique (périmètre de protection inclus) ?</h6>
+            </label>
+            <div>
+                <input type="radio" formControlName="milieuxSouterrains" value="yes"> Oui
+                <div *ngIf="miniQuestForm.get('milieuxSouterrains')?.value === 'yes'">
+                    <input type="checkbox" formControlName="cavitesNaturelles"> Cavités naturelles
+                    <input type="checkbox" formControlName="cavitesAnthropiques"> Cavités anthropiques
+                </div>
+                <input type="radio" formControlName="milieuxSouterrains" value="no"> Non
+            </div>
+        </div>
+
+        <!-- Question 11 -->
+        <div class="form-group">
+            <label>
+                <h6>Q-11 Est-ce que la réserve est associée à une exploitation de ressources minérales ?</h6>
+            </label>
+            <div>
+                <input type="radio" formControlName="exploitationMinerale" value="yes"> Oui
+                <div *ngIf="miniQuestForm.get('exploitationMinerale')?.value === 'yes'">
+                    <input type="checkbox" formControlName="ancienneCarriere"> Ancienne carrière
+                    <div *ngIf="miniQuestForm.get('exploitationMinerale')?.get('ancienneCarriere')?.value">
+                        <label>Préciser la substance exploitée</label>
+                        <input type="text" formControlName="ancienneCarriereSubstance">
+                        <label>Préciser si le matériau est fossilifère</label>
+                        <div>
+                            <input type="radio" formControlName="ancienneCarriereFossilifere" value="yes"> Oui
+                            <input type="radio" formControlName="ancienneCarriereFossilifere" value="no"> Non
+                        </div>
+                    </div>
+                    <input type="checkbox" formControlName="carriereActive"> Carrière en activité
+                    <div *ngIf="miniQuestForm.get('exploitationMinerale')?.get('carriereActive')?.value">
+                        <label>Préciser la substance exploitée</label>
+                        <input type="text" formControlName="carriereActiveSubstance">
+                        <label>Préciser si le matériau est fossilifère</label>
+                        <div>
+                            <input type="radio" formControlName="carriereActiveFossilifere" value="yes"> Oui
+                            <input type="radio" formControlName="carriereActiveFossilifere" value="no"> Non
+                        </div>
+                    </div>
+                    <input type="checkbox" formControlName="ancienneMine"> Ancienne mine
+                    <div *ngIf="miniQuestForm.get('exploitationMinerale')?.get('ancienneMine')?.value">
+                        <label>Préciser la substance exploitée</label>
+                        <input type="text" formControlName="ancienneMineSubstance">
+                        <label>Préciser si le matériau est fossilifère</label>
+                        <div>
+                            <input type="radio" formControlName="ancienneMineFossilifere" value="yes"> Oui
+                            <input type="radio" formControlName="ancienneMineFossilifere" value="no"> Non
+                        </div>
+                    </div>
+                    <input type="checkbox" formControlName="mineActive"> Mine en activité
+                    <div *ngIf="miniQuestForm.get('exploitationMinerale')?.get('mineActive')?.value">
+                        <label>Préciser la substance exploitée</label>
+                        <input type="text" formControlName="mineActiveSubstance">
+                        <label>Préciser si le matériau est fossilifère</label>
+                        <div>
+                            <input type="radio" formControlName="mineActiveFossilifere" value="yes"> Oui
+                            <input type="radio" formControlName="mineActiveFossilifere" value="no"> Non
+                        </div>
+                    </div>
+                </div>
+                <input type="radio" formControlName="exploitationMinerale" value="no"> Non
+            </div>
+        </div>
+
+        <!-- Question 12 -->
+        <div class="form-group">
+            <label>
+                <h6>Q-12 Est-ce que la réserve dispose d’un site géologique aménagé pour les visiteurs ?</h6>
+            </label>
+            <div>
+                <input type="radio" formControlName="siteGeologiqueAmenege" value="yes"> Oui
+                <input type="radio" formControlName="siteGeologiqueAmenege" value="no"> Non
+            </div>
+        </div>
+
+        <!-- Question 13 -->
+        <div class="form-group">
+            <label>
+                <h6>Q-13 Est-ce que la réserve propose des animations sur la thématique géodiversité / patrimoine
+                    géologique ?</h6>
+            </label>
+            <div>
+                <input type="radio" formControlName="animationsGeodiversite" value="yes"> Oui
+                <input type="radio" formControlName="animationsGeodiversite" value="no"> Non
+            </div>
+        </div>
+
+
+
+
+
+        <!-- Add remaining questions similarly -->
+
+        <button type="submit" [disabled]="miniQuestForm.invalid">Soumettre</button>
+    </form>
+</div>

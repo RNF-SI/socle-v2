@@ -1,0 +1,43 @@
+ body {
+     font-family: Arial, sans-serif;
+     line-height: 1.6;
+ }
+
+ .container {
+     width: 80%;
+     margin: 0 auto;
+     padding: 20px;
+ }
+
+ h1 {
+     color: #0066cc;
+     text-align: center;
+ }
+
+ h2 {
+     color: #333;
+     border-bottom: 2px solid #0066cc;
+     padding-bottom: 5px;
+ }
+
+ p {
+     margin-bottom: 15px;
+ }
+
+ ul {
+     list-style-type: none;
+     padding: 0;
+ }
+
+ li {
+     margin-bottom: 10px;
+ }
+
+ .faq-section {
+     margin-bottom: 20px;
+ }
+
+ .faq-section h3 {
+     margin-top: 0;
+     color: #0066cc;
+ }

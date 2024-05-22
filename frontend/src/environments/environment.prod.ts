@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    apiUrl: 'https://plateformes.reserves-naturelles.org/api'
+    apiUrl: 'https://socle.reserves-naturelles.org/api'
   };

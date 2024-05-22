@@ -2,6 +2,27 @@ from app import db
 
 from geoalchemy2 import Geometry
 
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
+# ajouter classe MiniQuest
+class MiniQuest(db.Model):
+    __tablename__= 'mini_quest'
+    id_mini = db.Column(db.Integer, primary_key=True)
+    reserve_created_on_geological_basis = db.Column(db.Boolean)  # Indique si la réserve a été créée sur une base géologique
+    reserve_contains_geological_heritage = db.Column(db.String(200))  # Indique si la réserve contient un patrimoine géologique
+    protection_perimeter_contains_geological_heritage = db.Column(db.String(200))  # Indique si le périmètre de protection contient un patrimoine géologique
+    main_geological_interests = db.Column(db.String(200))  # Principaux intérêts géologiques de la réserve
+    contains_paleontological_heritage = db.Column(db.String(200))  # Indique si la réserve contient un patrimoine paléontologique
+    reserve_has_geological_collections = db.Column(db.Boolean)  # Indique si la réserve possède des collections géologiques
+    reserve_has_exhibition = db.Column(db.Boolean)  # Indique si la réserve a des expositions géologiques
+    geological_age = db.Column(db.String(200))  # Âge géologique de la réserve
+    reserve_contains_stratotype = db.Column(db.String(200))  # Indique si la réserve contient un stratotype
+    contains_subterranean_habitats = db.Column(db.String(200))  # Indique si la réserve contient des habitats souterrains
+    associated_with_mineral_resources = db.Column(db.String(200))  # Indique si la réserve est associée à des ressources minérales
+    has_geological_site_for_visitors = db.Column(db.Boolean)  # Indique si la réserve a un site géologique pour les visiteurs
+    offers_geodiversity_activities = db.Column(db.Boolean)  # Indique si la réserve propose des activités de géodiversité
+
 class Site(db.Model):
     __tablename__ = 'site'
 
@@ -18,8 +39,8 @@ class Site(db.Model):
     geom = db.Column(Geometry('MULTIPOLYGON', srid=4326), nullable=True)
     date_ajout = db.Column(db.DateTime, default=db.func.now(), nullable=False)
     date_maj = db.Column(db.DateTime, nullable=False)
-    # utilisateur_ajout = db.Column(db.Integer, nullable=True)
-    # utilisateur_maj = db.Column(db.Integer, nullable=True)
+    utilisateur_ajout = db.Column(db.Integer, nullable=True)
+    utilisateur_maj = db.Column(db.Integer, nullable=True)
 
 class EntiteGeol(db.Model):
     __tablename__ = 'entite_geol'
@@ -45,3 +66,5 @@ class EntiteGeol(db.Model):
 
     # echelle_geol = db.relationship('EchelleGeol', backref='entite_geol')
     site = db.relationship('Site', backref='entites_geol')
+
+   
