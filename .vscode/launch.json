@@ -1,0 +1,74 @@
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+            "name": "Python: Flask",
+            "type": "python",
+            "request": "launch",
+            "module": "flask",
+            "env": {
+                "FLASK_APP": "wsgi.py",
+                "FLASK_ENV": "development",
+                "FLASK_DEBUG": "1"  // Set to "1" to enable Flask debugger
+            },
+            "args": [
+                "run",
+                "--no-debugger",
+                "--no-reload",
+				"--port", "5080"
+            ],
+            "jinja": true,
+            "cwd": "${workspaceFolder}/backend"
+        },
+		{
+			"name": "Python : Flask (Debug)",
+			"type": "python",
+			"request": "launch",
+			"module": "${workspaceFolder}/backend/flask",
+
+		},
+
+		{
+			"type": "chrome",
+			"request": "launch",
+			"name": "Launch Chrome against localhost",
+			"url":"http://127.0.0.1:4200",
+			"webRoot": "${workspaceFolder}/frontend"
+        },
+		{
+			"type": "chrome",
+			"request": "attach",
+			"name": "Attach to Chrome",
+			"port": 4200,
+			"webRoot": "${workspaceFolder}/frontend",
+
+        },
+		{
+			"type":"firefox",
+			"request":"launch",
+			"name":"Launch Firefox against localhost",
+			"url":"http://127.0.0.1:4200",
+			"webRoot":"${workspaceFolder}/frontend"
+		},
+		{
+			"type": "chrome",
+			"request": "launch",
+			"name": "Launch my cool app",
+			"url": "http://localhost:4200"
+		  },
+		  {
+			"name": "ng serve",
+			"type": "chrome",
+			"request": "launch",
+			"preLaunchTask": "",
+			"url": "http://localhost:4200",
+			"webRoot": "${workspaceFolder}/frontend",
+			"userDataDir": "${workspaceFolder}/.vscode/chrome",
+
+		  },
+		
+	]
+}

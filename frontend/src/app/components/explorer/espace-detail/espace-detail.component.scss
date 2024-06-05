@@ -1,0 +1,31 @@
+.container-fluid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .container-fluid div {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+  
+  .container-fluid div h3 {
+    margin: 0 10px; /* Ajoute une marge de 10px entre les liens */
+  }
+  .links-container h3 {
+    margin: 0 10px; /* Ajoute une marge de 10px entre les liens */
+  }
+  
+  .links-container h3 a {
+    display: inline-block; /* Permet de définir une largeur et une hauteur à l'élément <a> */
+    padding: 5px 10px; /* Ajoute un espacement à l'intérieur de l'élément <a> */
+    border-radius: 5px; /* Ajoute des coins arrondis à l'élément <a> */
+    transition: background-color 0.3s; /* Ajoute une transition pour une animation fluide */
+  }
+  
+  .links-container h3 a:active {
+    background-color: rgb(193, 206, 7); /* Change la couleur de fond en vert lorsque le lien est cliqué */
+    color: white; /* Change la couleur du texte en blanc lorsque le lien est cliqué */
+  }
+  

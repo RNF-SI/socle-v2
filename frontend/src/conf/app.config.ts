@@ -1,6 +1,6 @@
 export const AppConfig = {
     "ID_APPLICATION_GEONATURE": 5,
-    "API_ENDPOINT": "http://127.0.0.1:5088",
+    "API_ENDPOINT": "http://127.0.0.1:5068",
     "appName": "Socle2",
     "appTitle": " SOCLE",
     "appSubTitle": " Base de donnée de la géodiversité des réserves",

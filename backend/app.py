@@ -34,6 +34,7 @@ app.register_blueprint(routes_register.bp, url_prefix='/pypn/register')
 
 from pypnusershub.routes import routes
 app.register_blueprint(routes, url_prefix='/auth')
+ 
 
 import routes
 app.register_blueprint(routes.bp)

@@ -44,26 +44,22 @@ const routes: Routes = [
         path: 'explorer',
         component: ExplorerComponent,
       },
-        
       {
         path: 'espace/:id',
         component: EspaceDetailComponent
-          
-        
       },
       {
-        path: 'fiche-terrain/:id',
-        component: FicheTerrainComponent
-      },
-      {
-        path: 'mini-quest/:id',
+        path: 'mini-quest/:slug',
         component: MiniQuestComponent
+      },
+      {
+        path: 'fiche-terrain/:slug',
+        component: FicheTerrainComponent 
       }
     ]
   },
   { path: '', redirectTo: '/explorer', pathMatch: 'full' },
-  { path: 'espace/:id', component: EspaceDetailComponent },
-  { path: 'fiche-terrain/:id', component: FicheTerrainComponent }
+  { path: 'fiche-terrain/:slug', component: FicheTerrainComponent }
 ];
 
 @NgModule({

@@ -1,0 +1,29 @@
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .mat-radio-group, .mat-checkbox-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .mat-radio-button, .mat-checkbox {
+    margin-bottom: 10px;
+  }
+  
+  .mat-form-field {
+    width: 100%;
+  }
+  
+  button {
+    margin-top: 20px;
+  }
+  

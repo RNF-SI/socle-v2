@@ -1,13 +1,12 @@
 <div *ngIf="espace">
-    <h1>{{ espace.nom }}</h1>
-    <div class="container-fluid">
-      <div id="map"></div>
-      <!-- Ajouter d'autres détails ici -->
-      <div>
-        <h3><a [routerLink]="['/fiche-terrain', espace.id]">Fiche de terrain</a></h3>
-        <h3><a [routerLink]="['/mini-quest', espace.id]">Mini-questionnaire</a></h3>
-        <h3><a href="#">Synthèse</a></h3>
-      </div>
+  <h1>{{ espace.nom }}</h1>
+  <div class="container-fluid">
+    <div id="map"></div>
+    <!-- Ajouter d'autres détails ici -->
+    <div class="links-container">
+      <h3><a mat-button [routerLink]="['/fiche-terrain', espace.slug]">Fiche de terrain</a></h3>
+      <h3><a mat-button [routerLink]="['/mini-quest', espace.slug]">Mini-questionnaire</a></h3>
+      <h3><a mat-button href="#">Synthèse</a></h3>
     </div>
   </div>
-  
+</div>

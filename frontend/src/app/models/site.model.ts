@@ -5,10 +5,13 @@ export interface Photo {
   export interface Site {
     id: number;
     nom: string;
-    photos: Photo[];
-    last_modified?: string;
-    modified_by_userid?: number;
-    statut_validation?: string;
-    monosite?: string;
+    slug: string;
+    photos: { url: string }[];
+    last_modified: string;
+    modified_by_userid: number;
+    statut_validation: string;
+    monosite: string;
+    // Ajoutez d'autres propriétés si nécessaire
   }
+  
   

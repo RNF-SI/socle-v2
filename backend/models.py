@@ -4,10 +4,12 @@ from geoalchemy2 import Geometry
 
 from flask_sqlalchemy import SQLAlchemy
 
-db = SQLAlchemy()
+# db = SQLAlchemy()
 # ajouter classe MiniQuest
 class MiniQuest(db.Model):
     __tablename__= 'mini_quest'
+    __table_args__ = {'schema': 'public'}
+
     id_mini = db.Column(db.Integer, primary_key=True)
     reserve_created_on_geological_basis = db.Column(db.Boolean)  # Indique si la réserve a été créée sur une base géologique
     reserve_contains_geological_heritage = db.Column(db.String(200))  # Indique si la réserve contient un patrimoine géologique
@@ -22,7 +24,8 @@ class MiniQuest(db.Model):
     associated_with_mineral_resources = db.Column(db.String(200))  # Indique si la réserve est associée à des ressources minérales
     has_geological_site_for_visitors = db.Column(db.Boolean)  # Indique si la réserve a un site géologique pour les visiteurs
     offers_geodiversity_activities = db.Column(db.Boolean)  # Indique si la réserve propose des activités de géodiversité
-
+    slug = db.Column(db.String(255), unique=True)# ajouter slug  
+    
 class Site(db.Model):
     __tablename__ = 'site'
 
@@ -41,6 +44,8 @@ class Site(db.Model):
     date_maj = db.Column(db.DateTime, nullable=False)
     utilisateur_ajout = db.Column(db.Integer, nullable=True)
     utilisateur_maj = db.Column(db.Integer, nullable=True)
+
+    slug = db.Column(db.String(255), unique=True)# ajouter slug  
 
 class EntiteGeol(db.Model):
     __tablename__ = 'entite_geol'

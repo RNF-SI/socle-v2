@@ -4,7 +4,7 @@ from geoalchemy2.shape import to_shape
 
 from app import ma
 
-from models import Site, EntiteGeol
+from models import Site, EntiteGeol, MiniQuest
 
 class SiteSchema(ma.SQLAlchemyAutoSchema) :
 
@@ -35,3 +35,18 @@ class EntiteGeolSchema(ma.SQLAlchemyAutoSchema) :
 
     class Meta :
         model = EntiteGeol
+
+class MiniQuestSchema(ma.SQLAlchemyAutoSchema) :
+
+    geom = fields.fields.Method('wkt_to_geojson')
+
+    def wkt_to_geojson(self, obj):
+        if obj.geom :
+            return shapely.geometry.mapping(to_shape(obj.geom))
+        else :
+            return None
+
+    #fonction permettant de serialiser les données géographiques, à voir si on ne peut pas factoriser cette fonction
+
+    class Meta :
+        model = MiniQuest

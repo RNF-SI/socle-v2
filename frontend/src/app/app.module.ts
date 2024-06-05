@@ -14,7 +14,16 @@ import { MiniQuestComponent } from './components/explorer/mini-quest/mini-quest.
 import { MiniQuestService } from './services/mini-quest.service';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
- 
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButtonModule } from '@angular/material/button';
+import {MatRadioModule } from '@angular/material/radio';
+import { MatListModule } from '@angular/material/list';
+import { MatCardModule } from '@angular/material/card';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { CommonModule } from '@angular/common';
+import { MatExpansionModule } from '@angular/material/expansion';
 
   
 @NgModule({
@@ -35,7 +44,21 @@ import { ReactiveFormsModule } from '@angular/forms';
     RouterModule,
     HomeRnfModule,
     HttpClientModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatInputModule,
+    MatCheckboxModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatRadioModule,
+    MatInputModule,
+    MatListModule,
+    MatCardModule,
+    MatSidenavModule,
+    CommonModule,
+    MatExpansionModule
+
+  
+
   ],
   providers: [MiniQuestService],
   bootstrap: [AppComponent]

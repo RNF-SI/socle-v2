@@ -1,19 +1,15 @@
-<div class="container">
-    <div class="search-bar">
-      <button>
-        <svg width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-          <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.85-3.85zm-5.442-.344a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
-        </svg>
-      </button>
-      <input type="text" id="search-input" (input)="handleSearch($event)" placeholder="Rechercher...">
-    </div>
-    <h1>Liste des espaces naturels enregistrés</h1>
-    <h6>
-      <ul>
-        <li *ngFor="let ep of filteredEspaces">
-          <a (click)="goToEspaceDetail(ep.id)">{{ ep.nom }}</a>
-        </li>
-      </ul>
-    </h6>
-  </div>
-  
+<div class="search-container">
+  <mat-form-field appearance="outline">
+    <mat-label>Rechercher un espace</mat-label>
+    <input matInput (input)="handleSearch($event)" placeholder="Ex: Aiguilles Rouges">
+  </mat-form-field>
+</div>
+<mat-list>
+  <mat-list-item *ngFor="let espace of filteredEspaces" (click)="goToEspaceDetail(espace.id)">
+    <mat-card class="espace-card">
+      <mat-card-content>
+        {{ espace.nom }}
+      </mat-card-content>
+    </mat-card>
+  </mat-list-item>
+</mat-list>

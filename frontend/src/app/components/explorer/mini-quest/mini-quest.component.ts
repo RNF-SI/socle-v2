@@ -1,18 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MiniQuestService } from 'src/app/services/mini-quest.service';
+
 
 @Component({
   selector: 'app-mini-quest',
   templateUrl: './mini-quest.component.html',
-  styleUrls: ['./mini-quest.component.css']
+  styleUrls: ['./mini-quest.component.scss']
 })
 export class MiniQuestComponent implements OnInit {
   miniQuestForm: FormGroup;
   ages: string[] = ['Étage 1', 'Étage 2', 'Étage 3']; // Exemples d'âges, remplacez par des valeurs appropriées
 
-  constructor(private fb: FormBuilder) {
-    this.miniQuestForm = this.fb.group({
-      reserveCreatedOnGeologicalBasis: [''],
+  constructor(private fb: FormBuilder, private miniQuestService: MiniQuestService) {
+     this.miniQuestForm = this.fb.group({
+      reserveCreatedOnGeologicalBasis: ['', Validators.required],
       reserveContainsGeologicalHeritage: this.fb.group({
         inpg: [false],
         inpgDetails: [''],
@@ -71,12 +73,26 @@ export class MiniQuestComponent implements OnInit {
       materiauFossilifereMine: [''],
       siteGeologiqueAmenage: [''],
       animationsGeodiversite: ['']
+
+
     });
   }
 
   ngOnInit(): void {}
 
   onSubmit(): void {
-    console.log(this.miniQuestForm.value);
+    if (this.miniQuestForm.valid) {
+      const formData = this.miniQuestForm.value;
+      this.miniQuestService.submitData(formData).subscribe(
+        response => {
+          console.log('Form submission successful', response);
+        },
+        error => {
+          console.error('Error submitting form', error);
+        }
+      );
+    } else {
+      console.error('Form is invalid');
+    }
   }
 }
