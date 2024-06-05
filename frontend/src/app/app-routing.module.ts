@@ -45,7 +45,7 @@ const routes: Routes = [
         component: ExplorerComponent,
       },
       {
-        path: 'espace/:id',
+        path: 'espace/:slug',
         component: EspaceDetailComponent
       },
       {

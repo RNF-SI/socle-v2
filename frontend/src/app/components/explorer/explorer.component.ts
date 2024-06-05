@@ -45,8 +45,8 @@ public sites = [];
      
   }
 
-  goToEspaceDetail(id: number): void {
-    this.router.navigate(['/espace', id]);
+  goToEspaceDetail(slug: string): void {
+    this.router.navigate(['/espace', slug]);
   }
 
   handleSearch(event: Event): void {

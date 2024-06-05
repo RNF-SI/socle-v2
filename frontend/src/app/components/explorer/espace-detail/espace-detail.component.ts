@@ -36,14 +36,7 @@ export class EspaceDetailComponent implements OnInit {
   constructor(private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    const id = +this.route.snapshot.paramMap.get('id')!;
-    this.espace = this.espaces.find(ep => ep.id === id);
-  }
-  goToFicheTerrain(id: number): void {
-    this.router.navigate(['fiche-terrain/',id]);
-  }
-  
-  goToMiniQuest(slug: string): void {
-    this.router.navigate(['/mini-quest',slug]);
+    const slug = this.route.snapshot.paramMap.get('slug');
+    this.espace = this.espaces.find(ep => ep.slug === slug);
   }
 }
