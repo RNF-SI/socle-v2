@@ -27,7 +27,7 @@ def get_site_by_slug(slug):
         abort(404)
     return site_schema.jsonify(site)
 
-@bp.route('/sites', methods=['POST'])
+@bp.route('/site', methods=['POST'])
 def add_site():
     data = request.get_json()
     name = data['name']
@@ -119,11 +119,13 @@ def update_mini_quest(slug):
             mini_quest = MiniQuest.query.filter_by(slug=slug).first()
             if mini_quest:
                 # Met à jour les champs de la mini-quest avec les données fournies
-                mini_quest.titre = data.get('titre', mini_quest.titre)
-                mini_quest.description = data.get('description', mini_quest.description)
-                mini_quest.contenu = data.get('contenu', mini_quest.contenu)
-                mini_quest.date = data.get('date', mini_quest.date)
-                mini_quest.utilisateur_id = data.get('utilisateur_id', mini_quest.utilisateur_id)
+                mini_quest.reserveCreatedOnGeologicalBasis = data.get('reserveCreatedOnGeologicalBasis', mini_quest.reserveCreatedOnGeologicalBasis)
+                mini_quest.reserveContainsGeologicalHeritage.inpg = data.get('reserveContainsGeologicalHeritage.inpg', mini_quest.reserveContainsGeologicalHeritage.inpg)
+                mini_quest.reserveContainsGeologicalHeritage.inpgDetails = data.get('reserveContainsGeologicalHeritage.inpgDetails', mini_quest.reserveContainsGeologicalHeritage.inpgDetails)
+                mini_quest.reserveContainsGeologicalHeritage.other = data.get('reserveContainsGeologicalHeritage.other', mini_quest.reserveContainsGeologicalHeritage.other)
+                mini_quest.reserveContainsGeologicalHeritage.otherDetails= data.get('reserveContainsGeologicalHeritage.otherDetails', mini_quest.reserveContainsGeologicalHeritage.otherDetails)
+                mini_quest.reserveContainsGeologicalHeritage.none= data.get('reserveContainsGeologicalHeritage.none', mini_quest.reserveContainsGeologicalHeritage.none)
+
                 # Commit les modifications dans la base de données
                 db.session.commit()
                 return jsonify({'type': 'success', 'msg': 'Mini-quest mise à jour avec succès !'})
