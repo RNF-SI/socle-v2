@@ -24,6 +24,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { CommonModule } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { SyntheseComponent } from './components/explorer/synthese/synthese.component';
+import { MatDividerModule } from '@angular/material/divider';
 
   
 @NgModule({
@@ -35,7 +37,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
     ExplorerComponent,
     EspaceDetailComponent,
     FicheTerrainComponent,
-    MiniQuestComponent
+    MiniQuestComponent,
+    SyntheseComponent
      
   ],
   imports: [
@@ -55,7 +58,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
     MatCardModule,
     MatSidenavModule,
     CommonModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatDividerModule
 
   
 

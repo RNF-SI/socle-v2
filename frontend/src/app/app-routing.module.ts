@@ -12,6 +12,7 @@ import { ExplorerComponent } from './components/explorer/explorer.component';
 import { EspaceDetailComponent } from './components/explorer/espace-detail/espace-detail.component';
 import { FicheTerrainComponent } from './components/explorer/fiche-terrain/fiche-terrain.component';
 import { MiniQuestComponent } from './components/explorer/mini-quest/mini-quest.component';
+import { SyntheseComponent } from './components/explorer/synthese/synthese.component';
 
 const routes: Routes = [
   {
@@ -45,9 +46,10 @@ const routes: Routes = [
         component: ExplorerComponent,
       },
       {
-        path: 'espace/:slug',
+        path: 'site/:slug',
         component: EspaceDetailComponent
       },
+     
       {
         path: 'mini-quest/:slug',
         component: MiniQuestComponent
@@ -55,7 +57,15 @@ const routes: Routes = [
       {
         path: 'fiche-terrain/:slug',
         component: FicheTerrainComponent 
-      }
+      },
+      {
+        path: 'synthese/:slug',
+        component: SyntheseComponent
+      },
+      
+      { path: 'edit-mini-quest/:slug', 
+      component: MiniQuestComponent },
+  
     ]
   },
   { path: '', redirectTo: '/explorer', pathMatch: 'full' },
