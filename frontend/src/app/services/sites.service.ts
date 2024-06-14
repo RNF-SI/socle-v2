@@ -3,15 +3,13 @@ import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Site } from '../models/site.model';
 import { Observable } from 'rxjs';
+import { Espace } from '../models/espace.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SitesService {
-  getSites() {
-    throw new Error('Method not implemented.');
-  }
-
+  
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
   };
@@ -33,4 +31,12 @@ export class SitesService {
   updateSite(site: Site): Observable<Site> {
     return this._http.put<Site>(`${environment.apiUrl}/${site.id}`, site);
   }
+
+  getSites(): Observable<Site[]> {
+    return this._http.get<Site[]>(`${environment.apiUrl}/sites`);
+  }
+  getEspaces(): Observable<Espace[]> {
+    return this._http.get<Espace[]>(this.apiUrl);
+  }
+  
 }

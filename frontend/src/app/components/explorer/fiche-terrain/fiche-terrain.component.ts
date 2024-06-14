@@ -17,27 +17,7 @@ export class FicheTerrainComponent implements OnInit {
   editable = true;  // Vous pouvez définir cela en fonction de votre logique d'authentification
 
   sites: Site[] = [
-    {
-      id: 2,
-      nom: 'Anciennes carrières dOrival',
-      slug: 'anciennes-carrieres-dorival',
-      photos: [{ url: 'https://example.com/photo.jpg' }],
-      last_modified: '2023-05-16',
-      modified_by_userid: 2,
-      statut_validation: 'attente',
-      monosite: 't'
-    },
-    {
-      id: 1,
-      nom: 'Aiguilles Rouges',
-      slug: 'aiguilles-rouges',
-      photos: [{ url: 'https://example.com/photo.jpg' }],
-      last_modified: '2023-05-16',
-      modified_by_userid: 1,
-      statut_validation: 'attente',
-      monosite: 't'
-    },
-    // Ajoutez d'autres sites ici
+     
   ];
 
   constructor(private route: ActivatedRoute, private renderer: Renderer2) { }

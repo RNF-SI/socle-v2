@@ -63,8 +63,7 @@ const routes: Routes = [
         component: SyntheseComponent
       },
       
-      { path: 'edit-mini-quest/:slug', 
-      component: MiniQuestComponent },
+     
   
     ]
   },

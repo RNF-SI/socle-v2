@@ -11,7 +11,6 @@ from pypnusershub import routes as fnauth
 
 @bp.route('/sites', methods=['GET'])
 def getSites():
-
     sites = Site.query.all()
 
     schema = SiteSchema(many=True)
@@ -19,13 +18,14 @@ def getSites():
 
     return jsonify(siteObj)
 
-
 @bp.route('/sites/<slug>', methods=['GET'])
 def get_site_by_slug(slug):
+    print(f"Fetching details for slug: {slug}")  # Ajoutez ce log
     site = Site.query.filter_by(slug=slug).first()
     if site is None:
         abort(404)
     return site_schema.jsonify(site)
+
 
 @bp.route('/site', methods=['POST'])
 def add_site():
@@ -67,39 +67,48 @@ def getSite(slug):
 
 # Ajout de miniquest
 @bp.route('/mini_quest', methods=['POST'])
-def mini_quest():
+def add_or_update_mini_quest():
+    data = request.get_json()
 
-    if request.method == "POST":
+    if 'slug' not in data:
+        return jsonify({'message': 'Slug is required'}), 400
 
-        try :
-            data = request.get_json()
-
-            print(data)
-
-        except Exception as e:
-            response = jsonify(
-                    type= 'bug',
-                    msg= 'Erreur lors de l\'ajout des infos du mini formulaire en BDD',
-                    flask_message= str(e)
-            )
-            response.status_code = 500
-            return{response}
-        
-        return { 'type': 'success', 'msg': 'Données ajoutées !'}
-        
-    return {  'type': 'bug', 'msg': 'Erreur lors de l\'ajout des infos du mini formulaire en BDD', 'flask_message':str(e)}
-
-
-# Récupération d'une mini-quest par son slug
-@bp.route('/mini_quest/<slug>', methods=['GET'])
-def get_mini_quest(slug):
+    slug = data['slug']
     mini_quest = MiniQuest.query.filter_by(slug=slug).first()
+
     if mini_quest:
-        schema = MiniQuestSchema()
-        mini_quest_data = schema.dump(mini_quest)
-        return jsonify(mini_quest_data)
+        # Met à jour les champs de la mini-quest avec les données fournies
+        mini_quest.reserveCreatedOnGeologicalBasis = data.get('reserveCreatedOnGeologicalBasis', mini_quest.reserveCreatedOnGeologicalBasis)
+        mini_quest.reserveContainsGeologicalHeritage.inpg = data.get('reserveContainsGeologicalHeritage.inpg', mini_quest.reserveContainsGeologicalHeritage.inpg)
+        mini_quest.reserveContainsGeologicalHeritage.inpgDetails = data.get('reserveContainsGeologicalHeritage.inpgDetails', mini_quest.reserveContainsGeologicalHeritage.inpgDetails)
+        mini_quest.reserveContainsGeologicalHeritage.other = data.get('reserveContainsGeologicalHeritage.other', mini_quest.reserveContainsGeologicalHeritage.other)
+        mini_quest.reserveContainsGeologicalHeritage.otherDetails = data.get('reserveContainsGeologicalHeritage.otherDetails', mini_quest.reserveContainsGeologicalHeritage.otherDetails)
+        mini_quest.reserveContainsGeologicalHeritage.none = data.get('reserveContainsGeologicalHeritage.none', mini_quest.reserveContainsGeologicalHeritage.none)
     else:
-        return jsonify({'message': 'Mini-quest non trouvée'}), 404
+        # Crée une nouvelle mini-quest avec les données fournies
+        mini_quest = MiniQuest(
+            slug=slug,
+            reserveCreatedOnGeologicalBasis=data.get('reserveCreatedOnGeologicalBasis'),
+            reserveContainsGeologicalHeritage_inpg=data.get('reserveContainsGeologicalHeritage.inpg'),
+            reserveContainsGeologicalHeritage_inpgDetails=data.get('reserveContainsGeologicalHeritage.inpgDetails'),
+            reserveContainsGeologicalHeritage_other=data.get('reserveContainsGeologicalHeritage.other'),
+            reserveContainsGeologicalHeritage_otherDetails=data.get('reserveContainsGeologicalHeritage.otherDetails'),
+            reserveContainsGeologicalHeritage_none=data.get('reserveContainsGeologicalHeritage.none')
+        )
+        db.session.add(mini_quest)
+
+    try:
+        db.session.commit()
+        return jsonify({'type': 'success', 'msg': 'Mini-quest mise à jour ou ajoutée avec succès !'})
+    except Exception as e:
+        db.session.rollback()
+        response = jsonify(
+            type='bug',
+            msg="Erreur lors de l'ajout ou mise à jour de la mini-quest en BDD",
+            flask_message=str(e)
+        )
+        response.status_code = 500
+        return response
 
 # Récupération de toutes les mini-quests
 @bp.route('/mini_quests', methods=['GET'])

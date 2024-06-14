@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MiniQuestService } from 'src/app/services/mini-quest.service';
-
 
 @Component({
   selector: 'app-mini-quest',
@@ -9,10 +9,16 @@ import { MiniQuestService } from 'src/app/services/mini-quest.service';
   styleUrls: ['./mini-quest.component.scss']
 })
 export class MiniQuestComponent implements OnInit {
+  @Input() siteSlug: string | undefined;
   miniQuestForm: FormGroup;
   ages: string[] = ['Étage 1', 'Étage 2', 'Étage 3']; // Exemples d'âges, remplacez par des valeurs appropriées
 
-  constructor(private fb: FormBuilder, private miniQuestService: MiniQuestService) {
+  constructor(
+    private fb: FormBuilder, 
+    private miniQuestService: MiniQuestService, 
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
      this.miniQuestForm = this.fb.group({
       reserveCreatedOnGeologicalBasis: ['', Validators.required],
       reserveContainsGeologicalHeritage: this.fb.group({
@@ -59,10 +65,10 @@ export class MiniQuestComponent implements OnInit {
       stratotypeLimiteDetails: [''],
       stratotypeEtage: [false],
       stratotypeEtageDetails: [''],
-      milieuxSouterrains: [''],
+      milieuxSouterrains: [''], 
       cavitesNaturelles: [false],
       cavitesAnthropiques: [false],
-      exploitationRessourcesMinerales: [''],
+      exploitationMinerale: [''],  
       ancienneCarriere: [false],
       carriereEnActivite: [false],
       substanceExploiteeCarriere: [''],
@@ -71,14 +77,17 @@ export class MiniQuestComponent implements OnInit {
       mineEnActivite: [false],
       substanceExploiteeMine: [''],
       materiauFossilifereMine: [''],
-      siteGeologiqueAmenage: [''],
+      siteGeologiqueAmenege: [''],  
       animationsGeodiversite: ['']
 
 
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.siteSlug = this.route.snapshot.paramMap.get('slug')!
+    console.log('Slug of current site:', this.siteSlug);
+  }
 
   onSubmit(): void {
     if (this.miniQuestForm.valid) {
@@ -86,6 +95,9 @@ export class MiniQuestComponent implements OnInit {
       this.miniQuestService.submitData(formData).subscribe(
         response => {
           console.log('Form submission successful', response);
+          this.miniQuestService.setResponses('current', formData); // Store the current form data
+          this.router.navigate([`/synthese/${this.siteSlug}`]); // Navigate to the synthese component with slug
+
         },
         error => {
           console.error('Error submitting form', error);

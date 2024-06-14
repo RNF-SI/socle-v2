@@ -16,8 +16,6 @@ export class SyntheseComponent implements OnInit {
     this.responses = this.miniQuestService.getResponses('current');
     console.log(this.responses);
   }
-  editMiniQuest() {
-    this.router.navigate(['/edit-mini-quest', 'slug']);
-  }
+ 
   
 }

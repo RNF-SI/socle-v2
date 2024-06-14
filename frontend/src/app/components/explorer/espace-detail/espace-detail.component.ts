@@ -1,11 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-
-interface Espace {
-  id: number;
-  nom: string;
-  slug: string;
-}
+ 
+import { Site } from 'src/app/models/site.model';
+import { SitesService } from 'src/app/services/sites.service';
 
 @Component({
   selector: 'app-espace-detail',
@@ -13,30 +10,19 @@ interface Espace {
   styleUrls: ['./espace-detail.component.scss']
 })
 export class EspaceDetailComponent implements OnInit {
-  espace: Espace | undefined;
-  espaces: Espace[] = [
-    { id: 1, nom: 'Aiguilles Rouges', slug: 'aiguilles-rouges' },
-    { id: 2, nom: 'Anciennes carrières d\'Orival', slug: 'anciennes-carrieres-dorival' },
-    { id: 3, nom: 'Anciennes carrières de Cléty', slug: 'anciennes-carrieres-de-clety' },
-    { id: 4, nom: 'Arjuzanx', slug: 'arjuzanx' },
-    { id: 5, nom: 'Astroblème de Rochechouart-Chassenon', slug: 'astrobleme-de-rochechouart-chassenon' },
-    { id: 6, nom: 'Baie de l\'Aiguillon (Charente-Maritime)', slug: 'baie-de-laiguillon-charente-maritime' },
-    { id: 7, nom: 'Bois du Parc', slug: 'bois-du-parc' },
-    { id: 8, nom: 'Carlaveyron', slug: 'carlaveyron' },
-    { id: 9, nom: 'Casse de la Belle Henriette', slug: 'casse-de-la-belle-henriette' },
-    { id: 10, nom: 'Chérine', slug: 'cherine' },
-    { id: 11, nom: 'Contamines-Montjoie', slug: 'contamines-montjoie' },
-    { id: 12, nom: 'Coteaux de la Seine', slug: 'coteaux-de-la-seine' },
-    { id: 13, nom: 'Coteaux du Pont-Barré', slug: 'coteaux-du-pont-barre' },
-    // Add more spaces here
-  ];
-  
-    router: any;
+  site: Site | undefined;
+  sites: Site[] = [];
 
-  constructor(private route: ActivatedRoute) { }
+  constructor(
+    private route: ActivatedRoute,
+    private siteService: SitesService
+  ) {}
 
   ngOnInit(): void {
-    const slug = this.route.snapshot.paramMap.get('slug');
-    this.espace = this.espaces.find(ep => ep.slug === slug);
+    this.siteService.getSites().subscribe((data: Site[]) => {
+      this.sites = data;
+      const slug = this.route.snapshot.paramMap.get('slug');
+      this.site = this.sites.find(site => site.slug === slug);
+    });
   }
 }

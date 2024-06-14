@@ -1,3 +1,4 @@
+<!-- explorer.component.html -->
 <div class="search-container">
   <mat-form-field appearance="outline">
     <mat-label>Rechercher un espace</mat-label>
@@ -5,10 +6,10 @@
   </mat-form-field>
 </div>
 <mat-list>
-  <mat-list-item *ngFor="let espace of filteredEspaces" (click)="goToEspaceDetail(espace.slug)">
+  <mat-list-item *ngFor="let site of filteredEspaces" (click)="goToEspaceDetail(site.slug)">
     <mat-card class="espace-card">
       <mat-card-content>
-        {{ espace.nom }}
+        {{ site.nom }}
       </mat-card-content>
     </mat-card>
   </mat-list-item>
