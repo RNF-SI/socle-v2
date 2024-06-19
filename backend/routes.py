@@ -1,21 +1,18 @@
-from flask import Flask, request, Response, render_template, redirect, Blueprint, jsonify, g
+from flask import Flask, request, Response, render_template, redirect, Blueprint, jsonify, g, abort
 import requests
 import json
 from app import app, db
-
-bp = Blueprint('routes', __name__)
-
-from models import Site, EntiteGeol,MiniQuest #importation classe miniquest
+from models import Site, EntiteGeol, MiniQuest
 from schemas import MiniQuestSchema, SiteSchema
 from pypnusershub import routes as fnauth
+
+bp = Blueprint('routes', __name__)
 
 @bp.route('/sites', methods=['GET'])
 def getSites():
     sites = Site.query.all()
-
     schema = SiteSchema(many=True)
     siteObj = schema.dump(sites)
-
     return jsonify(siteObj)
 
 @bp.route('/sites/<slug>', methods=['GET'])
@@ -24,8 +21,8 @@ def get_site_by_slug(slug):
     site = Site.query.filter_by(slug=slug).first()
     if site is None:
         abort(404)
-    return site_schema.jsonify(site)
-
+    schema = SiteSchema()
+    return schema.jsonify(site)
 
 @bp.route('/site', methods=['POST'])
 def add_site():
@@ -36,8 +33,10 @@ def add_site():
     db.session.add(site)
     try:
         db.session.commit()
-        return site_schema.jsonify(site), 201
-    except exc.IntegrityError:
+        schema = SiteSchema()
+        return schema.jsonify(site), 201
+    except Exception as e:
+        db.session.rollback()
         return jsonify({'message': 'Site name already exists'}), 400
 
 @bp.route('/sites/<int:id>', methods=['PUT'])
@@ -54,50 +53,41 @@ def update_site(id):
     db.session.commit()
     return jsonify(site.to_dict())
 
-
 @bp.route('/site/<slug>', methods=['GET'])
 def getSite(slug):
+    site = Site.query.filter_by(slug=slug).first()
+    if site is None:
+        abort(404)
+    schema = SiteSchema()
+    return schema.jsonify(site)
 
-    site = Sites.query.filter(slug=slug).first()
-
-    schema = SiteSchema(many=False)
-    siteObj = schema.dump(site)
-
-    return jsonify(siteObj)
-
-# Ajout de miniquest
 @bp.route('/mini_quest', methods=['POST'])
-def add_or_update_mini_quest():
+def submitData():
     data = request.get_json()
+    if not data:
+        return jsonify({'type': 'error', 'msg': 'No data provided'}), 400
 
-    if 'slug' not in data:
-        return jsonify({'message': 'Slug is required'}), 400
-
-    slug = data['slug']
-    mini_quest = MiniQuest.query.filter_by(slug=slug).first()
-
-    if mini_quest:
-        # Met à jour les champs de la mini-quest avec les données fournies
-        mini_quest.reserveCreatedOnGeologicalBasis = data.get('reserveCreatedOnGeologicalBasis', mini_quest.reserveCreatedOnGeologicalBasis)
-        mini_quest.reserveContainsGeologicalHeritage.inpg = data.get('reserveContainsGeologicalHeritage.inpg', mini_quest.reserveContainsGeologicalHeritage.inpg)
-        mini_quest.reserveContainsGeologicalHeritage.inpgDetails = data.get('reserveContainsGeologicalHeritage.inpgDetails', mini_quest.reserveContainsGeologicalHeritage.inpgDetails)
-        mini_quest.reserveContainsGeologicalHeritage.other = data.get('reserveContainsGeologicalHeritage.other', mini_quest.reserveContainsGeologicalHeritage.other)
-        mini_quest.reserveContainsGeologicalHeritage.otherDetails = data.get('reserveContainsGeologicalHeritage.otherDetails', mini_quest.reserveContainsGeologicalHeritage.otherDetails)
-        mini_quest.reserveContainsGeologicalHeritage.none = data.get('reserveContainsGeologicalHeritage.none', mini_quest.reserveContainsGeologicalHeritage.none)
-    else:
-        # Crée une nouvelle mini-quest avec les données fournies
-        mini_quest = MiniQuest(
-            slug=slug,
-            reserveCreatedOnGeologicalBasis=data.get('reserveCreatedOnGeologicalBasis'),
-            reserveContainsGeologicalHeritage_inpg=data.get('reserveContainsGeologicalHeritage.inpg'),
-            reserveContainsGeologicalHeritage_inpgDetails=data.get('reserveContainsGeologicalHeritage.inpgDetails'),
-            reserveContainsGeologicalHeritage_other=data.get('reserveContainsGeologicalHeritage.other'),
-            reserveContainsGeologicalHeritage_otherDetails=data.get('reserveContainsGeologicalHeritage.otherDetails'),
-            reserveContainsGeologicalHeritage_none=data.get('reserveContainsGeologicalHeritage.none')
-        )
-        db.session.add(mini_quest)
+    # Debugging line to check received data
+    print("Received data:", data)
 
     try:
+        mini_quest = MiniQuest(
+            slug=data.get('slug'),
+            reserve_created_on_geological_basis=data.get('reserve_created_on_geological_basis'),
+            reserve_contains_geological_heritage=data.get('reserveContainsGeologicalHeritage'),
+            protection_perimeter_contains_geological_heritage=data.get('protectionPerimeterContainsGeologicalHeritage'),
+            main_geological_interests=data.get('mainGeologicalInterests'),
+            contains_paleontological_heritage=data.get('containsPaleontologicalHeritage'),
+            reserve_has_geological_collections=data.get('collectionsGeologiquesPropres'),
+            reserve_has_exhibition=data.get('expositionGeologiques'),
+            geological_age=data.get('ageTerrains'),
+            reserve_contains_stratotype=data.get('stratotype'),
+            contains_subterranean_habitats=data.get('milieuxSouterrains'),
+            associated_with_mineral_resources=data.get('exploitationMinerale'),
+            has_geological_site_for_visitors=data.get('siteGeologiqueAmenege'),
+            offers_geodiversity_activities=data.get('animationsGeodiversite')
+        )
+        db.session.add(mini_quest)
         db.session.commit()
         return jsonify({'type': 'success', 'msg': 'Mini-quest mise à jour ou ajoutée avec succès !'})
     except Exception as e:
@@ -110,44 +100,45 @@ def add_or_update_mini_quest():
         response.status_code = 500
         return response
 
-# Récupération de toutes les mini-quests
+    
 @bp.route('/mini_quests', methods=['GET'])
-def get_all_mini_quests():
+def getAllMiniQuests():
     mini_quests = MiniQuest.query.all()
     schema = MiniQuestSchema(many=True)
     mini_quests_data = schema.dump(mini_quests)
     return jsonify(mini_quests_data)
 
-# Modification d'une mini-quest
+@bp.route('/mini_quest/<slug>', methods=['GET'])
+def get_mini_quest(slug):
+    print('coucou')
+    miniquest = MiniQuest.query.filter_by(slug=slug).first()
+    schema = MiniQuestSchema(many=False)
+    mini_quest_data = schema.dump(miniquest)
+    return jsonify(mini_quest_data)
+
 @bp.route('/mini_quest/<slug>', methods=['PUT'])
 def update_mini_quest(slug):
-    if request.method == "PUT":
-        try:
-            data = request.get_json()
-            # Récupère la mini-quest à mettre à jour
-            mini_quest = MiniQuest.query.filter_by(slug=slug).first()
-            if mini_quest:
-                # Met à jour les champs de la mini-quest avec les données fournies
-                mini_quest.reserveCreatedOnGeologicalBasis = data.get('reserveCreatedOnGeologicalBasis', mini_quest.reserveCreatedOnGeologicalBasis)
-                mini_quest.reserveContainsGeologicalHeritage.inpg = data.get('reserveContainsGeologicalHeritage.inpg', mini_quest.reserveContainsGeologicalHeritage.inpg)
-                mini_quest.reserveContainsGeologicalHeritage.inpgDetails = data.get('reserveContainsGeologicalHeritage.inpgDetails', mini_quest.reserveContainsGeologicalHeritage.inpgDetails)
-                mini_quest.reserveContainsGeologicalHeritage.other = data.get('reserveContainsGeologicalHeritage.other', mini_quest.reserveContainsGeologicalHeritage.other)
-                mini_quest.reserveContainsGeologicalHeritage.otherDetails= data.get('reserveContainsGeologicalHeritage.otherDetails', mini_quest.reserveContainsGeologicalHeritage.otherDetails)
-                mini_quest.reserveContainsGeologicalHeritage.none= data.get('reserveContainsGeologicalHeritage.none', mini_quest.reserveContainsGeologicalHeritage.none)
+    try:
+        data = request.get_json()
+        mini_quest = MiniQuest.query.filter_by(slug=slug).first()
+        if mini_quest:
+            mini_quest.reserveCreatedOnGeologicalBasis = data.get('reserveCreatedOnGeologicalBasis', mini_quest.reserveCreatedOnGeologicalBasis)
+            mini_quest.reserveContainsGeologicalHeritage_inpg = data.get('reserveContainsGeologicalHeritage_inpg', mini_quest.reserveContainsGeologicalHeritage_inpg)
+            mini_quest.reserveContainsGeologicalHeritage_inpgDetails = data.get('reserveContainsGeologicalHeritage_inpgDetails', mini_quest.reserveContainsGeologicalHeritage_inpgDetails)
+            mini_quest.reserveContainsGeologicalHeritage_other = data.get('reserveContainsGeologicalHeritage_other', mini_quest.reserveContainsGeologicalHeritage_other)
+            mini_quest.reserveContainsGeologicalHeritage_otherDetails= data.get('reserveContainsGeologicalHeritage_otherDetails', mini_quest.reserveContainsGeologicalHeritage.otherDetails)
+            mini_quest.reserveContainsGeologicalHeritage_none= data.get('reserveContainsGeologicalHeritage.none', mini_quest.reserveContainsGeologicalHeritage.none)
 
-                # Commit les modifications dans la base de données
-                db.session.commit()
-                return jsonify({'type': 'success', 'msg': 'Mini-quest mise à jour avec succès !'})
-            else:
-                return jsonify({'message': 'Mini-quest non trouvée'}), 404
-        except Exception as e:
-            response = jsonify(
-                type='bug',
-                msg='Erreur lors de la mise à jour de la mini-quest en BDD',
-                flask_message=str(e)
-            )
-            response.status_code = 500
-            return response
+            db.session.commit()
+            return jsonify({'type': 'success', 'msg': 'Mini-quest mise à jour avec succès !'})
+        else:
+            return jsonify({'message': 'Mini-quest non trouvée'}), 404
+    except Exception as e:
+        response = jsonify(
+            type='bug',
+            msg='Erreur lors de la mise à jour de la mini-quest en BDD',
+            flask_message=str(e)
+        )
+        response.status_code = 500
+        return response
 
-
-    

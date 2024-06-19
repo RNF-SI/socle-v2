@@ -1,52 +1,44 @@
 import shapely
-from flask_marshmallow import fields
+from marshmallow import fields
 from geoalchemy2.shape import to_shape
 
 from app import ma
-
 from models import Site, EntiteGeol, MiniQuest
 
-class SiteSchema(ma.SQLAlchemyAutoSchema) :
-
-    geom = fields.fields.Method('wkt_to_geojson')
-
+class SiteSchema(ma.SQLAlchemyAutoSchema):
+    geom = fields.Method('wkt_to_geojson')
 
     def wkt_to_geojson(self, obj):
-        if obj.geom :
+        if obj.geom:
             return shapely.geometry.mapping(to_shape(obj.geom))
-        else :
+        else:
             return None
-    class Meta :
+
+    class Meta:
         model = Site
 
-    entites_geol = ma.Nested(lambda: EntiteGeolSchema, many = True)
+    entites_geol = ma.Nested(lambda: EntiteGeolSchema, many=True)
 
-class EntiteGeolSchema(ma.SQLAlchemyAutoSchema) :
-
-    geom = fields.fields.Method('wkt_to_geojson')
+class EntiteGeolSchema(ma.SQLAlchemyAutoSchema):
+    geom = fields.Method('wkt_to_geojson')
 
     def wkt_to_geojson(self, obj):
-        if obj.geom :
+        if obj.geom:
             return shapely.geometry.mapping(to_shape(obj.geom))
-        else :
+        else:
             return None
 
-    #fonction permettant de serialiser les données géographiques, à voir si on ne peut pas factoriser cette fonction
-
-    class Meta :
+    class Meta:
         model = EntiteGeol
 
-class MiniQuestSchema(ma.SQLAlchemyAutoSchema) :
+class MiniQuestSchema(ma.SQLAlchemyAutoSchema):
+    # geom = fields.Method('wkt_to_geojson')
 
-    geom = fields.fields.Method('wkt_to_geojson')
+    # def wkt_to_geojson(self, obj):
+    #     if obj.geom:
+    #         return shapely.geometry.mapping(to_shape(obj.geom))
+    #     else:
+    #         return None
 
-    def wkt_to_geojson(self, obj):
-        if obj.geom :
-            return shapely.geometry.mapping(to_shape(obj.geom))
-        else :
-            return None
-
-    #fonction permettant de serialiser les données géographiques, à voir si on ne peut pas factoriser cette fonction
-
-    class Meta :
+    class Meta:
         model = MiniQuest
