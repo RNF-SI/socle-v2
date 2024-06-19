@@ -26,6 +26,7 @@ import { CommonModule } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { SyntheseComponent } from './components/explorer/synthese/synthese.component';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
   
 @NgModule({
@@ -59,7 +60,8 @@ import { MatDividerModule } from '@angular/material/divider';
     MatSidenavModule,
     CommonModule,
     MatExpansionModule,
-    MatDividerModule
+    MatDividerModule,
+    MatSlideToggleModule
 
   
 
