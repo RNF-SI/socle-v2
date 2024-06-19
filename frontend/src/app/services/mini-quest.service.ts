@@ -7,10 +7,11 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class MiniQuestService {
-  getData(siteSlug: string) {
-    throw new Error('Method not implemented.');
-  }
-  private responses: any = {};
+
+  httpOptions = {
+    headers: { 'Content-Type': 'application/json' },
+  };
+  
   constructor(private http: HttpClient) { }
 
   // Méthode pour soumettre les données
@@ -19,27 +20,13 @@ export class MiniQuestService {
   }
 
   // Méthode pour récupérer une mini-quest par slug
-  getMiniQuest(slug: string): Observable<any> {
+  getMiniQuest(slug: string) {    
     return this.http.get(`${environment.apiUrl}/mini_quest/${slug}`);
   }
-
   
-
   // Méthode pour mettre à jour une mini-quest par slug
   updateMiniQuest(slug: string, data: any): Observable<any> {
     return this.http.put(`${environment.apiUrl}/mini_quest/${slug}`, data);
   }
-  setResponses(slug: string, responses: any) {
-    this.responses[slug] = responses;
-  }
 
-  getResponses(slug: string) {
-    return this.responses[slug] || {};
-  }
-
-  getAllMiniQuests(): Observable<any[]> {
-    return this.http.get<any[]>(`${environment.apiUrl}/mini_quest`);
-  }
- 
-  
 }
