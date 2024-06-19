@@ -20,22 +20,22 @@ export class MiniQuestComponent implements OnInit {
     private route: ActivatedRoute
   ) {
      this.miniQuestForm = this.fb.group({
-      reserveCreatedOnGeologicalBasis: ['', Validators.required],
-      reserveContainsGeologicalHeritage: this.fb.group({
+      reserve_created_on_geological_basis: [false, Validators.required],
+      reserve_contains_geological_heritage: this.fb.group({
         inpg: [false],
         inpgDetails: [''],
         other: [false],
         otherDetails: [''],
         none: [false]
       }),
-      protectionPerimeterContainsGeologicalHeritage: this.fb.group({
+      protection_perimeter_contains_geological_heritage: this.fb.group({
         inpg: [false],
         inpgDetails: [''],
         other: [false],
         otherDetails: [''],
         none: [false]
       }),
-      mainGeologicalInterests: this.fb.group({
+      main_geological_interests: this.fb.group({
         stratigraphic: [false],
         paleontological: [false],
         sedimentological: [false],
@@ -48,8 +48,8 @@ export class MiniQuestComponent implements OnInit {
         hydrogeology: [false],
         tectonics: [false]
       }),
-      containsPaleontologicalHeritage: this.fb.group({
-        answer: [''],
+      contains_paleontological_heritage: this.fb.group({
+        answer: [false],
         vertebrates: [false],
         invertebrates: [false],
         plants: [false],
@@ -57,18 +57,18 @@ export class MiniQuestComponent implements OnInit {
         other: [false],
         otherDetails: ['']
       }),
-      collectionsGeologiquesPropres: [''],
-      expositionGeologiques: [''],
+      collectionsGeologiquesPropres: [],
+      expositionGeologiques: [false],
       ageTerrains: [[]],
-      stratotype: [''],
+      stratotype: [false],
       stratotypeLimite: [false],
       stratotypeLimiteDetails: [''],
       stratotypeEtage: [false],
       stratotypeEtageDetails: [''],
-      milieuxSouterrains: [''], 
+      milieuxSouterrains: [false], 
       cavitesNaturelles: [false],
       cavitesAnthropiques: [false],
-      exploitationMinerale: [''],  
+      exploitationMinerale: [false],  
       ancienneCarriere: [false],
       carriereEnActivite: [false],
       substanceExploiteeCarriere: [''],
@@ -77,8 +77,8 @@ export class MiniQuestComponent implements OnInit {
       mineEnActivite: [false],
       substanceExploiteeMine: [''],
       materiauFossilifereMine: [''],
-      siteGeologiqueAmenege: [''],  
-      animationsGeodiversite: ['']
+      siteGeologiqueAmenege: [false],  
+      animationsGeodiversite: [false]
 
 
     });
@@ -92,12 +92,11 @@ export class MiniQuestComponent implements OnInit {
   onSubmit(): void {
     if (this.miniQuestForm.valid) {
       const formData = this.miniQuestForm.value;
+      console.log('Form Data:', formData); // Log the form data to inspect it
       this.miniQuestService.submitData(formData).subscribe(
         response => {
           console.log('Form submission successful', response);
-          this.miniQuestService.setResponses('current', formData); // Store the current form data
           this.router.navigate([`/synthese/${this.siteSlug}`]); // Navigate to the synthese component with slug
-
         },
         error => {
           console.error('Error submitting form', error);
@@ -107,4 +106,4 @@ export class MiniQuestComponent implements OnInit {
       console.error('Form is invalid');
     }
   }
-}
+}  
