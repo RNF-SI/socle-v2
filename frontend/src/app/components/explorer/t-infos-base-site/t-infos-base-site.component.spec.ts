@@ -1,20 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TInfosBaseSiteComponent } from './t-infos-base-site.component';
 
-import { MiniQuestComponent} from './mini-quest.component';
+ 
 
-describe('MiniQuestComponent', () => {
-  let component: MiniQuestComponent;
-  let fixture: ComponentFixture<MiniQuestComponent>;
+describe('TInfosBaseSiteComponent', () => {
+  let component: TInfosBaseSiteComponent;
+  let fixture: ComponentFixture<TInfosBaseSiteComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MiniQuestComponent]
+      declarations: [ TInfosBaseSiteComponent]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MiniQuestComponent);
+    fixture = TestBed.createComponent(TInfosBaseSiteComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

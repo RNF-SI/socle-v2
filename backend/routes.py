@@ -1,9 +1,11 @@
+import site
+from venv import logger
 from flask import Flask, request, Response, render_template, redirect, Blueprint, jsonify, g, abort
 import requests
 import json
 from app import app, db
-from models import Site, EntiteGeol, MiniQuest
-from schemas import MiniQuestSchema, SiteSchema
+from models import Site, EntiteGeol, TInfosBaseSite
+from schemas import TInfosBaseSiteSchema, SiteSchema
 from pypnusershub import routes as fnauth
 
 bp = Blueprint('routes', __name__)
@@ -61,60 +63,84 @@ def getSite(slug):
     schema = SiteSchema()
     return schema.jsonify(site)
 
-@bp.route('/mini_quest', methods=['POST'])
+@bp.route('/t_infos_base_site', methods=['POST'])
 def submitData():
     data = request.get_json()
-    if not data:
-        return jsonify({'type': 'error', 'msg': 'No data provided'}), 400
-
-    # Debugging line to check received data
-    print("Received data:", data)
-
+    if not data or 'id_site' not in data:
+        return jsonify({'type': 'error', 'msg': 'No data provided or id_site is missing'}), 400
     try:
-        mini_quest = MiniQuest(
-            slug=data.get('slug'),
+        t_infos_base_site = TInfosBaseSite(
+            id_site=data.get('id_site'),
             reserve_created_on_geological_basis=data.get('reserve_created_on_geological_basis'),
-            reserve_contains_geological_heritage=data.get('reserveContainsGeologicalHeritage'),
-            protection_perimeter_contains_geological_heritage=data.get('protectionPerimeterContainsGeologicalHeritage'),
-            main_geological_interests=data.get('mainGeologicalInterests'),
-            contains_paleontological_heritage=data.get('containsPaleontologicalHeritage'),
-            reserve_has_geological_collections=data.get('collectionsGeologiquesPropres'),
-            reserve_has_exhibition=data.get('expositionGeologiques'),
-            geological_age=data.get('ageTerrains'),
-            reserve_contains_stratotype=data.get('stratotype'),
-            contains_subterranean_habitats=data.get('milieuxSouterrains'),
-            associated_with_mineral_resources=data.get('exploitationMinerale'),
-            has_geological_site_for_visitors=data.get('siteGeologiqueAmenege'),
-            offers_geodiversity_activities=data.get('animationsGeodiversite')
+            reserve_contains_geological_heritage_inpg=data.get('reserve_contains_geological_heritage_inpg'),
+            reserve_contains_geological_heritage_other=data.get('reserve_contains_geological_heritage_other'),
+            protection_perimeter_contains_geological_heritage_inpg=data.get('protection_perimeter_contains_geological_heritage_inpg'),
+            protection_perimeter_contains_geological_heritage_other=data.get('protection_perimeter_contains_geological_heritage_other'),
+            main_geological_interests_stratigraphic=data.get('main_geological_interests_stratigraphic'),
+            main_geological_interests_paleontological=data.get('main_geological_interests_paleontological'),
+            main_geological_interests_sedimentological=data.get('main_geological_interests_sedimentological'),
+            main_geological_interests_geomorphological=data.get('main_geological_interests_geomorphological'),
+            main_geological_interests_mineral_resource=data.get('main_geological_interests_mineral_resource'),
+            main_geological_interests_mineralogical=data.get('main_geological_interests_mineralogical'),
+            main_geological_interests_metamorphism=data.get('main_geological_interests_metamorphism'),
+            main_geological_interests_volcanism=data.get('main_geological_interests_volcanism'),
+            main_geological_interests_plutonism=data.get('main_geological_interests_plutonism'),
+            main_geological_interests_hydrogeology=data.get('main_geological_interests_hydrogeology'),
+            main_geological_interests_tectonics=data.get('main_geological_interests_tectonics'),
+            contains_paleontological_heritage=data.get('contains_paleontological_heritage'),
+            contains_paleontological_heritage_vertebrates=data.get('contains_paleontological_heritage_vertebrates'),
+            contains_paleontological_heritage_invertebrates=data.get('contains_paleontological_heritage_invertebrates'),
+            contains_paleontological_heritage_plants=data.get('contains_paleontological_heritage_plants'),
+            contains_paleontological_heritage_trace_fossils=data.get('contains_paleontological_heritage_trace_fossils'),
+            contains_paleontological_heritage_other=data.get('contains_paleontological_heritage_other'),
+            reserve_has_geological_collections=data.get('reserve_has_geological_collections'),
+            reserve_has_exhibition=data.get('reserve_has_exhibition'),
+            geological_age=data.get('geological_age'),
+            reserve_contains_stratotype=data.get('reserve_contains_stratotype'),
+            stratotype_details=data.get('stratotype_details'),
+            contains_subterranean_habitats=data.get('contains_subterranean_habitats'),
+            subterranean_habitats_natural_cavities=data.get('subterranean_habitats_natural_cavities'),
+            subterranean_habitats_anthropogenic_cavities=data.get('subterranean_habitats_anthropogenic_cavities'),
+            associated_with_mineral_resources=data.get('associated_with_mineral_resources'),
+            mineral_resources_old_quarry=data.get('mineral_resources_old_quarry'),
+            mineral_resources_active_quarry=data.get('mineral_resources_active_quarry'),
+            quarry_extracted_material=data.get('quarry_extracted_material'),
+            quarry_fossiliferous_material=data.get('quarry_fossiliferous_material'),
+            mineral_resources_old_mine=data.get('mineral_resources_old_mine'),
+            mineral_resources_active_mine=data.get('mineral_resources_active_mine'),
+            mine_extracted_material=data.get('mine_extracted_material'),
+            mine_fossiliferous_material=data.get('mine_fossiliferous_material'),
+            reserve_has_geological_site_for_visitors=data.get('reserve_has_geological_site_for_visitors'),
+            offers_geodiversity_activities=data.get('offers_geodiversity_activities')
         )
-        db.session.add(mini_quest)
+        db.session.add(t_infos_base_site)
         db.session.commit()
-        return jsonify({'type': 'success', 'msg': 'Mini-quest mise à jour ou ajoutée avec succès !'})
+
+        return jsonify({'type': 'success', 'msg': 'TInfosBaseSite mise à jour ou ajoutée avec succès !'})
+
     except Exception as e:
         db.session.rollback()
         response = jsonify(
             type='bug',
-            msg="Erreur lors de l'ajout ou mise à jour de la mini-quest en BDD",
+            msg="Erreur lors de l'ajout ou mise à jour de TInfosBaseSite en BDD",
             flask_message=str(e)
         )
         response.status_code = 500
         return response
-
     
-@bp.route('/mini_quests', methods=['GET'])
-def getAllMiniQuests():
-    mini_quests = MiniQuest.query.all()
-    schema = MiniQuestSchema(many=True)
-    mini_quests_data = schema.dump(mini_quests)
-    return jsonify(mini_quests_data)
+@app.route('/t_infos_base_sites', methods=['GET'])
+def get_all_t_infos_base_sites():
+    t_infos_base_sites = TInfosBaseSite.query.all()
+    return TInfosBaseSiteSchema().jsonify(t_infos_base_sites)
 
-@bp.route('/mini_quest/<slug>', methods=['GET'])
-def get_mini_quest(slug):
-    print('coucou')
-    miniquest = MiniQuest.query.filter_by(slug=slug).first()
-    schema = MiniQuestSchema(many=False)
-    mini_quest_data = schema.dump(miniquest)
-    return jsonify(mini_quest_data)
+@app.route('/t_infos_base_site/<string:slug>', methods=['GET'])
+def get_t_infos_base_site_by_slug(slug):
+    t_infos_base_site = TInfosBaseSite.query.filter_by(slug=slug).first()
+    if t_infos_base_site:
+        return TInfosBaseSiteSchema().jsonify(t_infos_base_site)
+    else:
+        return jsonify({'error': 'Site not found'}), 404
+
 
 @bp.route('/mini_quest/<slug>', methods=['PUT'])
 def update_mini_quest(slug):

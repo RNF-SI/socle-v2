@@ -5,31 +5,59 @@ from geoalchemy2 import Geometry
 from flask_sqlalchemy import SQLAlchemy
 
 # db = SQLAlchemy()
-# ajouter classe MiniQuest
-class MiniQuest(db.Model):
-    __tablename__= 'mini_quest'
-    __table_args__ = {'schema': 'public'}
+ 
+class TInfosBaseSite(db.Model):
+    __tablename__ = 't_infos_base_site'
+    
+    id_site = db.Column(db.Integer, db.ForeignKey('site.id_site'), primary_key=True)
+    reserve_created_on_geological_basis = db.Column(db.Boolean, nullable=False)
+    reserve_contains_geological_heritage_inpg = db.Column(db.Boolean)
+    reserve_contains_geological_heritage_other = db.Column(db.String)
+    protection_perimeter_contains_geological_heritage_inpg = db.Column(db.Boolean)
+    protection_perimeter_contains_geological_heritage_other = db.Column(db.String)
+    main_geological_interests_stratigraphic = db.Column(db.Boolean)
+    main_geological_interests_paleontological = db.Column(db.Boolean)
+    main_geological_interests_sedimentological = db.Column(db.Boolean)
+    main_geological_interests_geomorphological = db.Column(db.Boolean)
+    main_geological_interests_mineral_resource = db.Column(db.Boolean)
+    main_geological_interests_mineralogical = db.Column(db.Boolean)
+    main_geological_interests_metamorphism = db.Column(db.Boolean)
+    main_geological_interests_volcanism = db.Column(db.Boolean)
+    main_geological_interests_plutonism = db.Column(db.Boolean)
+    main_geological_interests_hydrogeology = db.Column(db.Boolean)
+    main_geological_interests_tectonics = db.Column(db.Boolean)
+    contains_paleontological_heritage = db.Column(db.Boolean)
+    contains_paleontological_heritage_vertebrates = db.Column(db.Boolean)
+    contains_paleontological_heritage_invertebrates = db.Column(db.Boolean)
+    contains_paleontological_heritage_plants = db.Column(db.Boolean)
+    contains_paleontological_heritage_trace_fossils = db.Column(db.Boolean)
+    contains_paleontological_heritage_other = db.Column(db.String)
+    reserve_has_geological_collections = db.Column(db.Boolean, nullable=False)
+    reserve_has_exhibition = db.Column(db.Boolean, nullable=False)
+    geological_age = db.Column(db.String)
+    reserve_contains_stratotype = db.Column(db.Boolean)
+    stratotype_details = db.Column(db.String)
+    contains_subterranean_habitats = db.Column(db.Boolean)
+    subterranean_habitats_natural_cavities = db.Column(db.Boolean)
+    subterranean_habitats_anthropogenic_cavities = db.Column(db.Boolean)
+    associated_with_mineral_resources = db.Column(db.Boolean)
+    mineral_resources_old_quarry = db.Column(db.Boolean)
+    mineral_resources_active_quarry = db.Column(db.Boolean)
+    quarry_extracted_material = db.Column(db.String)
+    quarry_fossiliferous_material = db.Column(db.Boolean)
+    mineral_resources_old_mine = db.Column(db.Boolean)
+    mineral_resources_active_mine = db.Column(db.Boolean)
+    mine_extracted_material = db.Column(db.String)
+    mine_fossiliferous_material = db.Column(db.Boolean)
+    reserve_has_geological_site_for_visitors = db.Column(db.Boolean)
+    offers_geodiversity_activities = db.Column(db.Boolean)
 
-    id_mini = db.Column(db.Integer, primary_key=True)
-    reserve_created_on_geological_basis = db.Column(db.Boolean)  # Indique si la réserve a été créée sur une base géologique
-    reserve_contains_geological_heritage = db.Column(db.String(200))  # Indique si la réserve contient un patrimoine géologique
-    protection_perimeter_contains_geological_heritage = db.Column(db.String(200))  # Indique si le périmètre de protection contient un patrimoine géologique
-    main_geological_interests = db.Column(db.String(200))  # Principaux intérêts géologiques de la réserve
-    contains_paleontological_heritage = db.Column(db.String(200))  # Indique si la réserve contient un patrimoine paléontologique
-    reserve_has_geological_collections = db.Column(db.Boolean)  # Indique si la réserve possède des collections géologiques
-    reserve_has_exhibition = db.Column(db.Boolean)  # Indique si la réserve a des expositions géologiques
-    geological_age = db.Column(db.String(200))  # Âge géologique de la réserve
-    reserve_contains_stratotype = db.Column(db.String(200))  # Indique si la réserve contient un stratotype
-    contains_subterranean_habitats = db.Column(db.String(200))  # Indique si la réserve contient des habitats souterrains
-    associated_with_mineral_resources = db.Column(db.String(200))  # Indique si la réserve est associée à des ressources minérales
-    has_geological_site_for_visitors = db.Column(db.Boolean)  # Indique si la réserve a un site géologique pour les visiteurs
-    offers_geodiversity_activities = db.Column(db.Boolean)  # Indique si la réserve propose des activités de géodiversité
     slug = db.Column(db.String(255), unique=True)# ajouter slug  
     
 class Site(db.Model):
     __tablename__ = 'site'
 
-    id_site = db.Column(db.Integer, primary_key=True, nullable=False)
+    id_site = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
     nom = db.Column(db.String(255), nullable=False)
     altitude_max = db.Column(db.Float, nullable=True)
     altitude_min = db.Column(db.Float, nullable=True)

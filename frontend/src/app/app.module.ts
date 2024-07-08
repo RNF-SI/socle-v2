@@ -10,8 +10,7 @@ import { AccueilComponent } from './components/accueil/accueil.component';
 import { ExplorerComponent } from './components/explorer/explorer.component';
 import { EspaceDetailComponent } from './components/explorer/espace-detail/espace-detail.component';
 import { FicheTerrainComponent } from './components/explorer/fiche-terrain/fiche-terrain.component';
-import { MiniQuestComponent } from './components/explorer/mini-quest/mini-quest.component';
-import { MiniQuestService } from './services/mini-quest.service';
+ import {TInfosBaseSiteService } from './services/t-infos-base-site.service';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
@@ -24,9 +23,10 @@ import { MatCardModule } from '@angular/material/card';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { CommonModule } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { SyntheseComponent } from './components/explorer/synthese/synthese.component';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { TInfosBaseSiteComponent } from './components/explorer/t-infos-base-site/t-infos-base-site.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
   
 @NgModule({
@@ -38,8 +38,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     ExplorerComponent,
     EspaceDetailComponent,
     FicheTerrainComponent,
-    MiniQuestComponent,
-    SyntheseComponent
+    TInfosBaseSiteComponent
+     
      
   ],
   imports: [
@@ -61,12 +61,13 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     CommonModule,
     MatExpansionModule,
     MatDividerModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatFormFieldModule,
 
   
 
   ],
-  providers: [MiniQuestService],
+  providers: [TInfosBaseSiteService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

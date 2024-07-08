@@ -11,8 +11,7 @@ import { AccueilComponent } from './components/accueil/accueil.component';
 import { ExplorerComponent } from './components/explorer/explorer.component';
 import { EspaceDetailComponent } from './components/explorer/espace-detail/espace-detail.component';
 import { FicheTerrainComponent } from './components/explorer/fiche-terrain/fiche-terrain.component';
-import { MiniQuestComponent } from './components/explorer/mini-quest/mini-quest.component';
-import { SyntheseComponent } from './components/explorer/synthese/synthese.component';
+import { TInfosBaseSiteComponent } from './components/explorer/t-infos-base-site/t-infos-base-site.component';
 
 const routes: Routes = [
   {
@@ -51,18 +50,14 @@ const routes: Routes = [
       },
      
       {
-        path: 'mini-quest/:slug',
-        component: MiniQuestComponent
+        path: 't_infos_base_site/:slug',
+        component: TInfosBaseSiteComponent
       },
       {
         path: 'fiche-terrain/:slug',
         component: FicheTerrainComponent 
       },
-      {
-        path: 'synthese/:slug',
-        component: SyntheseComponent
-      },
-      
+       
      
   
     ]

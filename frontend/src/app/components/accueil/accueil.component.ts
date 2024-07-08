@@ -8,7 +8,7 @@ import { Component, OnInit } from "@angular/core";
 
 export class AccueilComponent implements OnInit {
     ngOnInit(): void {
-        throw new Error("Method not implemented.");
+      // Initialization logic here, if needed
+      console.log('AccueilComponent initialized');
     }
-    
-}
+  }

@@ -3,7 +3,7 @@ from marshmallow import fields
 from geoalchemy2.shape import to_shape
 
 from app import ma
-from models import Site, EntiteGeol, MiniQuest
+from models import Site, EntiteGeol, TInfosBaseSite
 
 class SiteSchema(ma.SQLAlchemyAutoSchema):
     geom = fields.Method('wkt_to_geojson')
@@ -31,7 +31,7 @@ class EntiteGeolSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = EntiteGeol
 
-class MiniQuestSchema(ma.SQLAlchemyAutoSchema):
+class TInfosBaseSiteSchema(ma.SQLAlchemyAutoSchema):
     # geom = fields.Method('wkt_to_geojson')
 
     # def wkt_to_geojson(self, obj):
@@ -41,4 +41,6 @@ class MiniQuestSchema(ma.SQLAlchemyAutoSchema):
     #         return None
 
     class Meta:
-        model = MiniQuest
+        model = TInfosBaseSite
+
+ 
