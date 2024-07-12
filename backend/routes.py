@@ -66,11 +66,12 @@ def getSite(slug):
 @bp.route('/t_infos_base_site', methods=['POST'])
 def submitData():
     data = request.get_json()
+    print(data)
     if not data or 'id_site' not in data:
         return jsonify({'type': 'error', 'msg': 'No data provided or id_site is missing'}), 400
     try:
         t_infos_base_site = TInfosBaseSite(
-            id_site=data.get('id_site'),
+            # id_site=data.get('id_site'),
             reserve_created_on_geological_basis=data.get('reserve_created_on_geological_basis'),
             reserve_contains_geological_heritage_inpg=data.get('reserve_contains_geological_heritage_inpg'),
             reserve_contains_geological_heritage_other=data.get('reserve_contains_geological_heritage_other'),
@@ -93,6 +94,7 @@ def submitData():
             contains_paleontological_heritage_plants=data.get('contains_paleontological_heritage_plants'),
             contains_paleontological_heritage_trace_fossils=data.get('contains_paleontological_heritage_trace_fossils'),
             contains_paleontological_heritage_other=data.get('contains_paleontological_heritage_other'),
+            #contains_paleontological_heritage_other_details=data.get('contains_paleontological_heritage_other_details'),
             reserve_has_geological_collections=data.get('reserve_has_geological_collections'),
             reserve_has_exhibition=data.get('reserve_has_exhibition'),
             geological_age=data.get('geological_age'),
@@ -113,6 +115,7 @@ def submitData():
             reserve_has_geological_site_for_visitors=data.get('reserve_has_geological_site_for_visitors'),
             offers_geodiversity_activities=data.get('offers_geodiversity_activities')
         )
+
         db.session.add(t_infos_base_site)
         db.session.commit()
 
@@ -142,29 +145,80 @@ def get_t_infos_base_site_by_slug(slug):
         return jsonify({'error': 'Site not found'}), 404
 
 
-@bp.route('/mini_quest/<slug>', methods=['PUT'])
-def update_mini_quest(slug):
+@bp.route('/t_infos_base_site/<slug>', methods=['PUT'])
+def update_t_infos_base_site(slug):
     try:
         data = request.get_json()
-        mini_quest = MiniQuest.query.filter_by(slug=slug).first()
-        if mini_quest:
-            mini_quest.reserveCreatedOnGeologicalBasis = data.get('reserveCreatedOnGeologicalBasis', mini_quest.reserveCreatedOnGeologicalBasis)
-            mini_quest.reserveContainsGeologicalHeritage_inpg = data.get('reserveContainsGeologicalHeritage_inpg', mini_quest.reserveContainsGeologicalHeritage_inpg)
-            mini_quest.reserveContainsGeologicalHeritage_inpgDetails = data.get('reserveContainsGeologicalHeritage_inpgDetails', mini_quest.reserveContainsGeologicalHeritage_inpgDetails)
-            mini_quest.reserveContainsGeologicalHeritage_other = data.get('reserveContainsGeologicalHeritage_other', mini_quest.reserveContainsGeologicalHeritage_other)
-            mini_quest.reserveContainsGeologicalHeritage_otherDetails= data.get('reserveContainsGeologicalHeritage_otherDetails', mini_quest.reserveContainsGeologicalHeritage.otherDetails)
-            mini_quest.reserveContainsGeologicalHeritage_none= data.get('reserveContainsGeologicalHeritage.none', mini_quest.reserveContainsGeologicalHeritage.none)
+        t_infos_base_site = TInfosBaseSite.query.filter_by(slug=slug).first()
+        
+        if not t_infos_base_site:
+            return jsonify({'message': 'TInfosBaseSite non trouvée'}), 404
+        
+        # Logging the incoming data for debugging
+        
+        # Mise à jour des champs
+        t_infos_base_site.reserve_created_on_geological_basis = data.get('reserve_created_on_geological_basis', t_infos_base_site.reserve_created_on_geological_basis)
+        t_infos_base_site.reserve_contains_geological_heritage_inpg = data.get('reserve_contains_geological_heritage_inpg', t_infos_base_site.reserve_contains_geological_heritage_inpg)
+        t_infos_base_site.reserve_contains_geological_heritage_other = data.get('reserve_contains_geological_heritage_other', t_infos_base_site.reserve_contains_geological_heritage_other)
+        t_infos_base_site.protection_perimeter_contains_geological_heritage_inpg = data.get('protection_perimeter_contains_geological_heritage_inpg', t_infos_base_site.protection_perimeter_contains_geological_heritage_inpg)
+        t_infos_base_site.protection_perimeter_contains_geological_heritage_other = data.get('protection_perimeter_contains_geological_heritage_other', t_infos_base_site.protection_perimeter_contains_geological_heritage_other)
+        
+        # Handle nested data for main_geological_interests
+        main_geological_interests = data.get('main_geological_interests', {})
+        t_infos_base_site.main_geological_interests_stratigraphic = main_geological_interests.get('stratigraphic', t_infos_base_site.main_geological_interests_stratigraphic)
+        t_infos_base_site.main_geological_interests_paleontological = main_geological_interests.get('paleontological', t_infos_base_site.main_geological_interests_paleontological)
+        t_infos_base_site.main_geological_interests_sedimentological = main_geological_interests.get('sedimentological', t_infos_base_site.main_geological_interests_sedimentological)
+        t_infos_base_site.main_geological_interests_geomorphological = main_geological_interests.get('geomorphological', t_infos_base_site.main_geological_interests_geomorphological)
+        t_infos_base_site.main_geological_interests_mineral_resource = main_geological_interests.get('mineral_resource', t_infos_base_site.main_geological_interests_mineral_resource)
+        t_infos_base_site.main_geological_interests_mineralogical = main_geological_interests.get('mineralogical', t_infos_base_site.main_geological_interests_mineralogical)
+        t_infos_base_site.main_geological_interests_metamorphism = main_geological_interests.get('metamorphism', t_infos_base_site.main_geological_interests_metamorphism)
+        t_infos_base_site.main_geological_interests_volcanism = main_geological_interests.get('volcanism', t_infos_base_site.main_geological_interests_volcanism)
+        t_infos_base_site.main_geological_interests_plutonism = main_geological_interests.get('plutonism', t_infos_base_site.main_geological_interests_plutonism)
+        t_infos_base_site.main_geological_interests_hydrogeology = main_geological_interests.get('hydrogeology', t_infos_base_site.main_geological_interests_hydrogeology)
+        t_infos_base_site.main_geological_interests_tectonics = main_geological_interests.get('tectonics', t_infos_base_site.main_geological_interests_tectonics)
+        
+        # Handle nested data for contains_paleontological_heritage
+        contains_paleontological_heritage = data.get('contains_paleontological_heritage', {})
+        t_infos_base_site.contains_paleontological_heritage = contains_paleontological_heritage.get('answer', t_infos_base_site.contains_paleontological_heritage)
+        t_infos_base_site.contains_paleontological_heritage_vertebrates = contains_paleontological_heritage.get('vertebrates', t_infos_base_site.contains_paleontological_heritage_vertebrates)
+        t_infos_base_site.contains_paleontological_heritage_invertebrates = contains_paleontological_heritage.get('invertebrates', t_infos_base_site.contains_paleontological_heritage_invertebrates)
+        t_infos_base_site.contains_paleontological_heritage_plants = contains_paleontological_heritage.get('plants', t_infos_base_site.contains_paleontological_heritage_plants)
+        t_infos_base_site.contains_paleontological_heritage_trace_fossils = contains_paleontological_heritage.get('traceFossils', t_infos_base_site.contains_paleontological_heritage_trace_fossils)
+        t_infos_base_site.contains_paleontological_heritage_other = contains_paleontological_heritage.get('other', t_infos_base_site.contains_paleontological_heritage_other)
+        #t_infos_base_site.contains_paleontological_heritage_other_details = contains_paleontological_heritage.get('otherDetails', t_infos_base_site.contains_paleontological_heritage_other_details)
+        
+        # Continue updating other fields as done previously
+        t_infos_base_site.reserve_has_geological_collections = data.get('reserve_has_geological_collections', t_infos_base_site.reserve_has_geological_collections)
+        t_infos_base_site.reserve_has_exhibition = data.get('reserve_has_exhibition', t_infos_base_site.reserve_has_exhibition)
+        t_infos_base_site.geological_age = data.get('geological_age', t_infos_base_site.geological_age)
+        t_infos_base_site.etage = data.get('etage', t_infos_base_site.etage)
+        t_infos_base_site.ere_periode_epoque = data.get('ere_periode_epoque', t_infos_base_site.ere_periode_epoque)
+        t_infos_base_site.reserve_contains_stratotype = data.get('reserve_contains_stratotype', t_infos_base_site.reserve_contains_stratotype)
+        t_infos_base_site.stratotype_details = data.get('stratotype_details', t_infos_base_site.stratotype_details)
+        t_infos_base_site.contains_subterranean_habitats = data.get('contains_subterranean_habitats', t_infos_base_site.contains_subterranean_habitats)
+        t_infos_base_site.subterranean_habitats_natural_cavities = data.get('subterranean_habitats_natural_cavities', t_infos_base_site.subterranean_habitats_natural_cavities)
+        t_infos_base_site.subterranean_habitats_anthropogenic_cavities = data.get('subterranean_habitats_anthropogenic_cavities', t_infos_base_site.subterranean_habitats_anthropogenic_cavities)
+        t_infos_base_site.associated_with_mineral_resources = data.get('associated_with_mineral_resources', t_infos_base_site.associated_with_mineral_resources)
+        t_infos_base_site.mineral_resources_old_quarry = data.get('mineral_resources_old_quarry', t_infos_base_site.mineral_resources_old_quarry)
+        t_infos_base_site.mineral_resources_active_quarry = data.get('mineral_resources_active_quarry', t_infos_base_site.mineral_resources_active_quarry)
+        t_infos_base_site.quarry_extracted_material = data.get('quarry_extracted_material', t_infos_base_site.quarry_extracted_material)
+        t_infos_base_site.quarry_fossiliferous_material = data.get('quarry_fossiliferous_material', t_infos_base_site.quarry_fossiliferous_material)
+        t_infos_base_site.mineral_resources_old_mine = data.get('mineral_resources_old_mine', t_infos_base_site.mineral_resources_old_mine)
+        t_infos_base_site.mineral_resources_active_mine = data.get('mineral_resources_active_mine', t_infos_base_site.mineral_resources_active_mine)
+        t_infos_base_site.mine_extracted_material = data.get('mine_extracted_material', t_infos_base_site.mine_extracted_material)
+        t_infos_base_site.mine_fossiliferous_material = data.get('mine_fossiliferous_material', t_infos_base_site.mine_fossiliferous_material)
+        t_infos_base_site.reserve_has_geological_site_for_visitors = data.get('reserve_has_geological_site_for_visitors', t_infos_base_site.reserve_has_geological_site_for_visitors)
+        t_infos_base_site.offers_geodiversity_activities = data.get('offers_geodiversity_activities', t_infos_base_site.offers_geodiversity_activities)
 
-            db.session.commit()
-            return jsonify({'type': 'success', 'msg': 'Mini-quest mise à jour avec succès !'})
-        else:
-            return jsonify({'message': 'Mini-quest non trouvée'}), 404
+        db.session.commit()
+        return jsonify({'type': 'success', 'msg': 'TInfosBaseSite mise à jour avec succès !'})
+
     except Exception as e:
+        print(f"Error: {str(e)}")  # Debugging log
         response = jsonify(
             type='bug',
-            msg='Erreur lors de la mise à jour de la mini-quest en BDD',
+            msg='Erreur lors de la mise à jour de TInfosBaseSite en BDD',
             flask_message=str(e)
         )
         response.status_code = 500
         return response
-

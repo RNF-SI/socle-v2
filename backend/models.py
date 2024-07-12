@@ -9,7 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 class TInfosBaseSite(db.Model):
     __tablename__ = 't_infos_base_site'
     
-    id_site = db.Column(db.Integer, db.ForeignKey('site.id_site'), primary_key=True)
+    id_site = db.Column(db.Integer, db.ForeignKey('site.id_site'), primary_key=True, nullable=False)
     reserve_created_on_geological_basis = db.Column(db.Boolean, nullable=False)
     reserve_contains_geological_heritage_inpg = db.Column(db.Boolean)
     reserve_contains_geological_heritage_other = db.Column(db.String)
@@ -35,6 +35,8 @@ class TInfosBaseSite(db.Model):
     reserve_has_geological_collections = db.Column(db.Boolean, nullable=False)
     reserve_has_exhibition = db.Column(db.Boolean, nullable=False)
     geological_age = db.Column(db.String)
+    etage = db.Column(db.String)  # Ajout du champ etage
+    ere_periode_epoque = db.Column(db.String)  # Ajout du champ ere_periode_epoque
     reserve_contains_stratotype = db.Column(db.Boolean)
     stratotype_details = db.Column(db.String)
     contains_subterranean_habitats = db.Column(db.Boolean)
@@ -51,9 +53,8 @@ class TInfosBaseSite(db.Model):
     mine_fossiliferous_material = db.Column(db.Boolean)
     reserve_has_geological_site_for_visitors = db.Column(db.Boolean)
     offers_geodiversity_activities = db.Column(db.Boolean)
+    slug = db.Column(db.String(255), unique=True)
 
-    slug = db.Column(db.String(255), unique=True)# ajouter slug  
-    
 class Site(db.Model):
     __tablename__ = 'site'
 
@@ -74,6 +75,8 @@ class Site(db.Model):
     utilisateur_maj = db.Column(db.Integer, nullable=True)
 
     slug = db.Column(db.String(255), unique=True)# ajouter slug  
+
+    infos_base = db.relationship("TInfosBaseSite", backref="site", foreign_keys=TInfosBaseSite.id_site)
 
 class EntiteGeol(db.Model):
     __tablename__ = 'entite_geol'

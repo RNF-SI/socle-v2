@@ -7,10 +7,6 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class TInfosBaseSiteService {
-  httpOptions = {
-    headers: { 'Content-Type': 'application/json' },
-  };
-
   constructor(private http: HttpClient) { }
 
   submitData(data: any): Observable<any> {
@@ -21,7 +17,11 @@ export class TInfosBaseSiteService {
     return this.http.get(`${environment.apiUrl}/t_infos_base_site/${slug}`);
   }
 
-  getAllTInfosBaseSites(): Observable<any[]> {
+  getTInfosBaseSites(): Observable<any[]> {
     return this.http.get<any[]>(`${environment.apiUrl}/t_infos_base_sites`);
+  }
+
+  updateSite(slug: string, data: any): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/t_infos_base_site/${slug}`, data);
   }
 }
