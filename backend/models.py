@@ -31,14 +31,18 @@ class TInfosBaseSite(db.Model):
     contains_paleontological_heritage_invertebrates = db.Column(db.Boolean)
     contains_paleontological_heritage_plants = db.Column(db.Boolean)
     contains_paleontological_heritage_trace_fossils = db.Column(db.Boolean)
-    contains_paleontological_heritage_other = db.Column(db.String)
+    contains_paleontological_heritage_other = db.Column(db.Boolean)
+    contains_paleontological_heritage_other_details = db.Column(db.String)  # Nouveau champ
     reserve_has_geological_collections = db.Column(db.Boolean, nullable=False)
     reserve_has_exhibition = db.Column(db.Boolean, nullable=False)
     geological_age = db.Column(db.String)
-    etage = db.Column(db.String)  # Ajout du champ etage
-    ere_periode_epoque = db.Column(db.String)  # Ajout du champ ere_periode_epoque
+    etage = db.Column(db.String)
+    ere_periode_epoque = db.Column(db.String)
     reserve_contains_stratotype = db.Column(db.Boolean)
-    stratotype_details = db.Column(db.String)
+    stratotype_limit = db.Column(db.Boolean)  # Nouveau champ
+    stratotype_limit_input = db.Column(db.String)  # Nouveau champ
+    stratotype_stage = db.Column(db.Boolean)  # Nouveau champ
+    stratotype_stage_input = db.Column(db.String)  # Nouveau champ
     contains_subterranean_habitats = db.Column(db.Boolean)
     subterranean_habitats_natural_cavities = db.Column(db.Boolean)
     subterranean_habitats_anthropogenic_cavities = db.Column(db.Boolean)
@@ -54,6 +58,7 @@ class TInfosBaseSite(db.Model):
     reserve_has_geological_site_for_visitors = db.Column(db.Boolean)
     offers_geodiversity_activities = db.Column(db.Boolean)
     slug = db.Column(db.String(255), unique=True)
+
 
 class Site(db.Model):
     __tablename__ = 'site'
