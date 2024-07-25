@@ -41,6 +41,7 @@ export class TInfosBaseSiteComponent implements OnInit {
       }),
       contains_paleontological_heritage: this.fb.group({
         answer: [false],
+        no_answer: [false], // Ajout de la case à cocher "Non"
         vertebrates: [false],
         invertebrates: [false],
         plants: [false],
@@ -50,14 +51,19 @@ export class TInfosBaseSiteComponent implements OnInit {
       }),
       reserve_has_geological_collections: [false, Validators.required],
       reserve_has_exhibition: [false, Validators.required],
-      geological_age: [''],  // Champ texte libre
-      etage: [''],  // Champ texte libre
-      ere_periode_epoque: [''],  // Champ texte libre
+      geological_age: [''],
+      etage: [''],
+      ere_periode_epoque: [''],
       reserve_contains_stratotype: [false],
-      stratotype_details: [''],
+      stratotype_limit: [false],
+      stratotype_limit_input: [''],
+      stratotype_stage: [false],
+      stratotype_stage_input: [''],
+      reserve_does_not_contain_stratotype: [false],
       contains_subterranean_habitats: [false],
       subterranean_habitats_natural_cavities: [false],
       subterranean_habitats_anthropogenic_cavities: [false],
+      does_not_contain_subterranean_habitats: [false],
       associated_with_mineral_resources: [false],
       mineral_resources_old_quarry: [false],
       mineral_resources_active_quarry: [false],
@@ -96,10 +102,15 @@ export class TInfosBaseSiteComponent implements OnInit {
           etage: site.etage,
           ere_periode_epoque: site.ere_periode_epoque,
           reserve_contains_stratotype: site.reserve_contains_stratotype,
-          stratotype_details: site.stratotype_details,
+          stratotype_limit: site.stratotype_limit,
+          stratotype_limit_input: site.stratotype_limit_input,
+          stratotype_stage: site.stratotype_stage,
+          stratotype_stage_input: site.stratotype_stage_input,
+          reserve_does_not_contain_stratotype: site.reserve_does_not_contain_stratotype,
           contains_subterranean_habitats: site.contains_subterranean_habitats,
           subterranean_habitats_natural_cavities: site.subterranean_habitats_natural_cavities,
           subterranean_habitats_anthropogenic_cavities: site.subterranean_habitats_anthropogenic_cavities,
+          does_not_contain_subterranean_habitats: site.does_not_contain_subterranean_habitats,
           associated_with_mineral_resources: site.associated_with_mineral_resources,
           mineral_resources_old_quarry: site.mineral_resources_old_quarry,
           mineral_resources_active_quarry: site.mineral_resources_active_quarry,
@@ -131,12 +142,13 @@ export class TInfosBaseSiteComponent implements OnInit {
         // Patch the contains_paleontological_heritage form group
         this.tInfosBaseSiteForm.get('contains_paleontological_heritage')?.patchValue({
           answer: site.contains_paleontological_heritage,
+          no_answer: !site.contains_paleontological_heritage, // Initialiser "Non" à l'inverse de "Oui"
           vertebrates: site.contains_paleontological_heritage_vertebrates,
           invertebrates: site.contains_paleontological_heritage_invertebrates,
           plants: site.contains_paleontological_heritage_plants,
           traceFossils: site.contains_paleontological_heritage_trace_fossils,
           other: site.contains_paleontological_heritage_other,
-          //otherDetails: site.contains_paleontological_heritage_other_details
+          otherDetails: site.contains_paleontological_heritage_other_details
         });
       },
       error => {

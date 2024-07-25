@@ -28,4 +28,20 @@
     background-color: rgb(193, 206, 7); /* Change la couleur de fond en vert lorsque le lien est cliqué */
     color: white; /* Change la couleur du texte en blanc lorsque le lien est cliqué */
   }
+
+  .image-placeholder {
+    width: 100%;
+    height: 200px; /* Ajustez la hauteur selon vos besoins */
+    background-color: #f0f0f0; /* Couleur grise claire pour représenter l'espace de l'image */
+    border: 1px solid #ddd; /* Bordure légère pour l'espace de l'image */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px; /* Espace sous l'image */
+  }
+  
+  .spacing {
+    height: 20px; /* Ajustez cette valeur pour créer plus ou moins d'espace */
+  }
+  
   

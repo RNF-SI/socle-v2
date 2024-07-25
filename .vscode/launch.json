@@ -30,7 +30,8 @@
 			"module": "${workspaceFolder}/backend/flask",
 
 		},
-
+		// Lancé le front avec ng serve sur le terminal
+		// Launch à lancer une fois ng serve en route
 		{
 			"type": "chrome",
 			"request": "launch",
@@ -38,37 +39,6 @@
 			"url":"http://127.0.0.1:4200",
 			"webRoot": "${workspaceFolder}/frontend"
         },
-		{
-			"type": "chrome",
-			"request": "attach",
-			"name": "Attach to Chrome",
-			"port": 4200,
-			"webRoot": "${workspaceFolder}/frontend",
-
-        },
-		{
-			"type":"firefox",
-			"request":"launch",
-			"name":"Launch Firefox against localhost",
-			"url":"http://127.0.0.1:4200",
-			"webRoot":"${workspaceFolder}/frontend"
-		},
-		{
-			"type": "chrome",
-			"request": "launch",
-			"name": "Launch my cool app",
-			"url": "http://localhost:4200"
-		  },
-		  {
-			"name": "ng serve",
-			"type": "chrome",
-			"request": "launch",
-			"preLaunchTask": "",
-			"url": "http://localhost:4200",
-			"webRoot": "${workspaceFolder}/frontend",
-			"userDataDir": "${workspaceFolder}/.vscode/chrome",
-
-		  },
 		
 	]
 }

@@ -69,35 +69,31 @@
 
 
 
-    <!-- Question 5 -->
-    <div class="form-group" formGroupName="contains_paleontological_heritage">
-      <label>
-        <h6>Est-ce que les terrains de la réserve renferment du patrimoine paléontologique ?</h6>
-      </label>
-      <div>
-        <mat-radio-group formControlName="answer">
-          <mat-radio-button value="true">Oui</mat-radio-button>
-          <div *ngIf="tInfosBaseSiteForm.get('contains_paleontological_heritage')?.get('answer')?.value === 'true'">
-            <mat-checkbox formControlName="vertebrates">Vertébrés</mat-checkbox>
-            <mat-checkbox formControlName="invertebrates">Invertébrés</mat-checkbox>
-            <mat-checkbox formControlName="plants">Végétaux</mat-checkbox>
-            <mat-checkbox formControlName="traceFossils">Traces fossiles</mat-checkbox>
-            <mat-checkbox formControlName="other">Autres</mat-checkbox>
-            <div *ngIf="tInfosBaseSiteForm.get('contains_paleontological_heritage')?.get('other')?.value">
-              <mat-form-field>
-                <mat-label>Préciser</mat-label>
-                <input matInput formControlName="otherDetails">
-              </mat-form-field>
-
-            </div>
-          </div>
-          <mat-radio-button value="false">Non</mat-radio-button>
-        </mat-radio-group>
+   <!-- Question 5 -->
+<div class="form-group" formGroupName="contains_paleontological_heritage">
+  <label>
+    <h6>Est-ce que les terrains de la réserve renferment du patrimoine paléontologique ?</h6>
+  </label>
+  <div>
+    <mat-radio-group formControlName="answer">
+      <mat-radio-button [value]="true">Oui</mat-radio-button>
+      <mat-radio-button [value]="false">Non</mat-radio-button>
+    </mat-radio-group>
+    <div *ngIf="tInfosBaseSiteForm.get('contains_paleontological_heritage')?.get('answer')?.value">
+      <mat-checkbox formControlName="vertebrates">Vertébrés</mat-checkbox>
+      <mat-checkbox formControlName="invertebrates">Invertébrés</mat-checkbox>
+      <mat-checkbox formControlName="plants">Végétaux</mat-checkbox>
+      <mat-checkbox formControlName="traceFossils">Traces fossiles</mat-checkbox>
+      <mat-checkbox formControlName="other">Autres</mat-checkbox>
+      <div *ngIf="tInfosBaseSiteForm.get('contains_paleontological_heritage')?.get('other')?.value">
+        <mat-form-field>
+          <mat-label>Préciser</mat-label>
+          <input matInput formControlName="otherDetails">
+        </mat-form-field>
       </div>
     </div>
-
-
-
+  </div>
+</div>
 
 
 
@@ -159,46 +155,57 @@
     </div>
 
 
-    <!-- Question 9 -->
-    <div class="form-group">
-      <label>
-        <h6> Est-ce que la réserve (périmètre de protection inclus) abrite un stratotype </h6>
-      </label>
-      <div>
-        <mat-radio-group formControlName="reserve_contains_stratotype">
-          <mat-radio-button value="true">Oui</mat-radio-button>
-          <div *ngIf="tInfosBaseSiteForm.get('reserve_contains_stratotype')?.value === 'true'">
-            <mat-checkbox formControlName="stratotype_details">Stratotype de limite</mat-checkbox>
-            <div *ngIf="tInfosBaseSiteForm.get('stratotype_details')?.value">
-              <mat-form-field>
-                <mat-label>Préciser le ou les stratotypes concernés</mat-label>
-                <input matInput formControlName="stratotype_details">
-              </mat-form-field>
-            </div>
-          </div>
-          <mat-radio-button value="false">Non</mat-radio-button>
-        </mat-radio-group>
+<!-- Question 9 -->
+<div class="form-group">
+  <label>
+    <h6> Est-ce que la réserve (périmètre de protection inclus) abrite un stratotype ? </h6>
+  </label>
+  <div>
+    <mat-radio-group formControlName="reserve_contains_stratotype">
+      <mat-radio-button [value]="true">Oui</mat-radio-button>
+      <mat-radio-button [value]="false">Non</mat-radio-button>
+    </mat-radio-group>
+    <div *ngIf="tInfosBaseSiteForm.get('reserve_contains_stratotype')?.value">
+      <mat-checkbox formControlName="stratotype_limit">Stratotype de limite</mat-checkbox>
+      <div *ngIf="tInfosBaseSiteForm.get('stratotype_limit')?.value">
+        <mat-form-field>
+          <mat-label>Préciser le ou les stratotypes concernés</mat-label>
+          <input matInput formControlName="stratotype_limit_input">
+        </mat-form-field>
+      </div>
+      <mat-checkbox formControlName="stratotype_stage">Stratotype d’étage</mat-checkbox>
+      <div *ngIf="tInfosBaseSiteForm.get('stratotype_stage')?.value">
+        <mat-form-field>
+          <mat-label>Préciser le ou les stratotypes concernés</mat-label>
+          <input matInput formControlName="stratotype_stage_input">
+        </mat-form-field>
       </div>
     </div>
+  </div>
+</div>
 
-    <!--  Question 10 -->
-    <div class="form-group">
-      <label>
-        <h6> Est-ce que la réserve présente des milieux souterrains abritant un patrimoine naturel identifié,
-          biologique ou géologique (périmètre de protection inclus) </h6>
-      </label>
-      <div>
-        <mat-radio-group formControlName="contains_subterranean_habitats">
-          <mat-radio-button value="true">Oui</mat-radio-button>
-          <div *ngIf="tInfosBaseSiteForm.get('contains_subterranean_habitats')?.value === 'true'">
-            <mat-checkbox formControlName="subterranean_habitats_natural_cavities">Cavités naturelles</mat-checkbox>
-            <mat-checkbox formControlName="subterranean_habitats_anthropogenic_cavities">Cavités
-              anthropiques</mat-checkbox>
-          </div>
-          <mat-radio-button value="false">Non</mat-radio-button>
-        </mat-radio-group>
-      </div>
+
+<!-- Question 10 -->
+<div class="form-group">
+  <label>
+    <h6> Est-ce que la réserve présente des milieux souterrains abritant un patrimoine naturel identifié,
+      biologique ou géologique (périmètre de protection inclus) </h6>
+  </label>
+  <div>
+    <mat-radio-group formControlName="contains_subterranean_habitats">
+      <mat-radio-button [value]="true">Oui</mat-radio-button>
+      <mat-radio-button [value]="false">Non</mat-radio-button>
+    </mat-radio-group>
+    <div *ngIf="tInfosBaseSiteForm.get('contains_subterranean_habitats')?.value">
+      <mat-checkbox formControlName="subterranean_habitats_natural_cavities">Cavités naturelles</mat-checkbox>
+      <mat-checkbox formControlName="subterranean_habitats_anthropogenic_cavities">Cavités anthropiques</mat-checkbox>
     </div>
+  </div>
+</div>
+
+
+
+
 
     <!-- Question 11 -->
     <div class="form-group">

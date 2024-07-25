@@ -154,8 +154,6 @@ def update_t_infos_base_site(slug):
         if not t_infos_base_site:
             return jsonify({'message': 'TInfosBaseSite non trouvée'}), 404
         
-        # Logging the incoming data for debugging
-        
         # Mise à jour des champs
         t_infos_base_site.reserve_created_on_geological_basis = data.get('reserve_created_on_geological_basis', t_infos_base_site.reserve_created_on_geological_basis)
         t_infos_base_site.reserve_contains_geological_heritage_inpg = data.get('reserve_contains_geological_heritage_inpg', t_infos_base_site.reserve_contains_geological_heritage_inpg)
@@ -185,7 +183,7 @@ def update_t_infos_base_site(slug):
         t_infos_base_site.contains_paleontological_heritage_plants = contains_paleontological_heritage.get('plants', t_infos_base_site.contains_paleontological_heritage_plants)
         t_infos_base_site.contains_paleontological_heritage_trace_fossils = contains_paleontological_heritage.get('traceFossils', t_infos_base_site.contains_paleontological_heritage_trace_fossils)
         t_infos_base_site.contains_paleontological_heritage_other = contains_paleontological_heritage.get('other', t_infos_base_site.contains_paleontological_heritage_other)
-        #t_infos_base_site.contains_paleontological_heritage_other_details = contains_paleontological_heritage.get('otherDetails', t_infos_base_site.contains_paleontological_heritage_other_details)
+        t_infos_base_site.contains_paleontological_heritage_other_details = contains_paleontological_heritage.get('otherDetails', t_infos_base_site.contains_paleontological_heritage_other_details)
         
         # Continue updating other fields as done previously
         t_infos_base_site.reserve_has_geological_collections = data.get('reserve_has_geological_collections', t_infos_base_site.reserve_has_geological_collections)
@@ -194,7 +192,10 @@ def update_t_infos_base_site(slug):
         t_infos_base_site.etage = data.get('etage', t_infos_base_site.etage)
         t_infos_base_site.ere_periode_epoque = data.get('ere_periode_epoque', t_infos_base_site.ere_periode_epoque)
         t_infos_base_site.reserve_contains_stratotype = data.get('reserve_contains_stratotype', t_infos_base_site.reserve_contains_stratotype)
-        t_infos_base_site.stratotype_details = data.get('stratotype_details', t_infos_base_site.stratotype_details)
+        t_infos_base_site.stratotype_limit = data.get('stratotype_limit', t_infos_base_site.stratotype_limit)  # Nouveau champ
+        t_infos_base_site.stratotype_limit_input = data.get('stratotype_limit_input', t_infos_base_site.stratotype_limit_input)  # Nouveau champ
+        t_infos_base_site.stratotype_stage = data.get('stratotype_stage', t_infos_base_site.stratotype_stage)
+        t_infos_base_site.stratotype_stage_input = data.get('stratotype_stage_input', t_infos_base_site.stratotype_stage_input)
         t_infos_base_site.contains_subterranean_habitats = data.get('contains_subterranean_habitats', t_infos_base_site.contains_subterranean_habitats)
         t_infos_base_site.subterranean_habitats_natural_cavities = data.get('subterranean_habitats_natural_cavities', t_infos_base_site.subterranean_habitats_natural_cavities)
         t_infos_base_site.subterranean_habitats_anthropogenic_cavities = data.get('subterranean_habitats_anthropogenic_cavities', t_infos_base_site.subterranean_habitats_anthropogenic_cavities)
