@@ -59,6 +59,10 @@ class TInfosBaseSite(db.Model):
     offers_geodiversity_activities = db.Column(db.Boolean)
     slug = db.Column(db.String(255), unique=True)
 
+cor_site_inpg = db.Table('cor_site_inpg',
+    db.Column('site_id', db.Integer, db.ForeignKey('site.id_site', ondelete="CASCADE")),
+    db.Column('inpg_id', db.Integer, db.ForeignKey('inpg.id_inpg', ondelete="CASCADE"))
+)
 
 class Site(db.Model):
     __tablename__ = 'site'
@@ -82,6 +86,12 @@ class Site(db.Model):
     slug = db.Column(db.String(255), unique=True)# ajouter slug  
 
     infos_base = db.relationship("TInfosBaseSite", backref="site", foreign_keys=TInfosBaseSite.id_site)
+
+    inpg = db.relationship(
+        'Inpg',
+        secondary=cor_site_inpg,
+        passive_deletes=True
+    )
 
 class EntiteGeol(db.Model):
     __tablename__ = 'entite_geol'
@@ -108,4 +118,17 @@ class EntiteGeol(db.Model):
     # echelle_geol = db.relationship('EchelleGeol', backref='entite_geol')
     site = db.relationship('Site', backref='entites_geol')
 
-   
+class Inpg(db.Model):
+    __tablename__ = 'inpg'
+
+    id_inpg = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    id_metier = db.Column(db.String(7), nullable=True)
+    lb_site = db.Column(db.String(254))
+    url = db.Column(db.String(254))
+    nombre_etoiles = db.Column(db.Integer)
+    phenomene_geologique = db.Column(db.String)
+    interet_geol_principal = db.Column(db.String)
+    age_des_terrains_le_plus_recent = db.Column(db.String)
+    age_des_terrains_le_plus_ancien = db.Column(db.String)
+    geom = db.Column(Geometry('MULTIPOLYGON', srid=4326), nullable=True)
+
