@@ -27,6 +27,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { TInfosBaseSiteComponent } from './components/explorer/t-infos-base-site/t-infos-base-site.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { ToastrModule } from 'ngx-toastr';
 
   
 @NgModule({
@@ -63,6 +64,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatDividerModule,
     MatSlideToggleModule,
     MatFormFieldModule,
+    ToastrModule.forRoot({
+      timeOut:15000
+    }),
 
   
 
