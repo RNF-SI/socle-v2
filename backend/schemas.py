@@ -3,7 +3,7 @@ from marshmallow import fields
 from geoalchemy2.shape import to_shape
 
 from app import ma
-from models import Site, EntiteGeol, TInfosBaseSite, Inpg
+from models import Site, EntiteGeol, TInfosBaseSite, Inpg, Nomenclature, BibNomenclatureType
 
 class SiteSchema(ma.SQLAlchemyAutoSchema):
     geom = fields.Method('wkt_to_geojson')
@@ -56,3 +56,15 @@ class InpgSchema(ma.SQLAlchemyAutoSchema):
 
     class Meta :
         model = Inpg
+
+class NomenclatureSchema(ma.SQLAlchemyAutoSchema):
+    class Meta :
+        model = Nomenclature
+        include_fk = True
+
+class NomenclatureTypeSchema(ma.SQLAlchemyAutoSchema):
+    class Meta :
+        model = BibNomenclatureType
+        include_fk = True
+    
+    nomenclatures = ma.Nested(lambda: NomenclatureSchema, many=True)

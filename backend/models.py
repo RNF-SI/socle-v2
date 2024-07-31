@@ -132,3 +132,27 @@ class Inpg(db.Model):
     age_des_terrains_le_plus_ancien = db.Column(db.String)
     geom = db.Column(Geometry('MULTIPOLYGON', srid=4326), nullable=True)
 
+class Nomenclature(db.Model):
+    __tablename__ = 't_nomenclatures'
+
+    id_nomenclature = db.Column(db.Integer, primary_key=True)
+    id_type = db.Column(db.Integer, db.ForeignKey('bib_nomenclatures_types.id_type'))
+    mnemonique = db.Column(db.String)
+    label = db.Column(db.String)
+    definition = db.Column(db.Text)
+    source = db.Column(db.String)
+    statut = db.Column(db.String)
+    hierarchy = db.Column(db.String)
+    id_parent = db.Column(db.Integer, db.ForeignKey('t_nomenclatures.id_nomenclature'))
+
+class BibNomenclatureType(db.Model):
+    __tablename__ = 'bib_nomenclatures_types'
+
+    id_type = db.Column(db.Integer, primary_key=True)
+    mnemonique = db.Column(db.String)
+    label = db.Column(db.String)
+    definition = db.Column(db.Text)
+    source = db.Column(db.String)
+    statut = db.Column(db.String)
+
+    nomenclatures = db.relationship("Nomenclature", foreign_keys=Nomenclature.id_type)

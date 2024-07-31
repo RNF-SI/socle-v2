@@ -1,7 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NomenclaturesService } from 'src/app/services/nomenclatures.service';
 import { TInfosBaseSiteService } from 'src/app/services/t-infos-base-site.service';
+import { Nomenclature, NomenclatureType } from 'src/app/models/nomenclature.model';
 
 @Component({
   selector: 'app-t-infos-base-site',
@@ -12,10 +14,21 @@ export class TInfosBaseSiteComponent implements OnInit {
   tInfosBaseSiteForm: FormGroup;
   @Input() siteSlug: string | undefined;
   id_site: any;
+  eres: NomenclatureType | undefined;
+  systemes: NomenclatureType | undefined;
+  filteredSystemes: Nomenclature[] | undefined;
+  series: NomenclatureType | undefined;
+  filteredSeries: Nomenclature[] | undefined;
+  etages: NomenclatureType | undefined;
+  filteredEtages: Nomenclature[] | undefined;
+  selectedEresIds: number[] = [];
+  selectedSystemesIds: number[] = [];
+  selectedSeriesIds: number[] = [];
 
   constructor(
     private fb: FormBuilder,
     private tInfosBaseSiteService: TInfosBaseSiteService,
+    private nomenclaturesService : NomenclaturesService,
     private router: Router,
     private route: ActivatedRoute
   ) {
@@ -68,13 +81,43 @@ export class TInfosBaseSiteComponent implements OnInit {
       mine_extracted_material: [''],
       mine_fossiliferous_material: [false],
       reserve_has_geological_site_for_visitors: [false],
-      offers_geodiversity_activities: [false]
+      offers_geodiversity_activities: [false],
+      eres: [],
+      systemes: [],
+      series: [],
+      etages: []
     });
   }
 
   ngOnInit(): void {
     this.siteSlug = this.route.snapshot.paramMap.get('slug')!;
     this.fetchSiteDetails(this.siteSlug);
+    this.loadNomenclature();
+  }
+
+  loadNomenclature(): void {
+    this.nomenclaturesService.getNomenclaturesByTypeId(2).subscribe(
+      (nomenclatures: any) => {
+        this.eres = nomenclatures
+        console.log(this.eres);
+        
+      }
+    );
+    this.nomenclaturesService.getNomenclaturesByTypeId(3).subscribe(
+      (nomenclatures: any) => {
+        this.systemes = nomenclatures
+      }
+    );
+    this.nomenclaturesService.getNomenclaturesByTypeId(4).subscribe(
+      (nomenclatures: any) => {
+        this.series = nomenclatures
+      }
+    );
+    this.nomenclaturesService.getNomenclaturesByTypeId(5).subscribe(
+      (nomenclatures: any) => {
+        this.etages = nomenclatures
+      }
+    );
   }
 
   fetchSiteDetails(slug: string): void {
@@ -142,6 +185,43 @@ export class TInfosBaseSiteComponent implements OnInit {
       error => {
         console.error('Error fetching site details', error);
       }
+    );
+  }
+
+  onEresSelectionChange(event: { value: any[] }): void {
+    this.selectedEresIds = event.value;
+    this.filteredSystemes = this.systemes!.nomenclatures.filter((systeme: Nomenclature) =>
+      this.selectedEresIds.includes(systeme.id_parent)
+    );
+    // Mise à jour des séries et étages
+    this.updateSeriesAndEtages();
+  }
+
+  onSystemesSelectionChange(event: { value: any[] }): void {
+    this.selectedSystemesIds = event.value;
+    this.filteredSeries = this.series!.nomenclatures.filter((serie: Nomenclature) =>
+      this.selectedSystemesIds.includes(serie.id_parent)
+    );
+    // Mise à jour des étages
+    this.updateEtages();
+  }
+
+  onSeriesSelectionChange(event: { value: any[] }): void {
+    this.selectedSeriesIds = event.value;
+    // Mise à jour des étages
+    this.updateEtages();
+  }
+
+  updateSeriesAndEtages(): void {
+    this.filteredSeries = this.series!.nomenclatures.filter((serie: Nomenclature) =>
+      this.selectedSystemesIds.includes(serie.id_parent)
+    );
+    this.updateEtages();
+  }
+
+  updateEtages(): void {
+    this.filteredEtages = this.etages!.nomenclatures.filter((etage: Nomenclature) =>
+      (this.selectedSystemesIds.includes(etage.id_parent) || this.selectedSeriesIds.includes(etage.id_parent))
     );
   }
 

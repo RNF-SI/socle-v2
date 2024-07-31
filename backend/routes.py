@@ -4,8 +4,8 @@ from flask import Flask, request, Response, render_template, redirect, Blueprint
 import requests
 import json
 from app import app, db
-from models import Site, EntiteGeol, TInfosBaseSite
-from schemas import TInfosBaseSiteSchema, SiteSchema
+from models import Site, EntiteGeol, TInfosBaseSite, Nomenclature, BibNomenclatureType
+from schemas import TInfosBaseSiteSchema, SiteSchema, NomenclatureSchema, NomenclatureTypeSchema
 from pypnusershub import routes as fnauth
 
 bp = Blueprint('routes', __name__)
@@ -222,3 +222,12 @@ def update_t_infos_base_site(slug):
         )
         response.status_code = 500
         return response
+
+
+@bp.route('/nomenclatures/<id_type>', methods=['GET'])
+def get_nomenclatures_by_type(id_type):
+    nomenclatures = BibNomenclatureType.query.filter_by(id_type=id_type).first()
+    schema = NomenclatureTypeSchema(many=False)
+    Obj = schema.dump(nomenclatures)
+
+    return jsonify(Obj)
