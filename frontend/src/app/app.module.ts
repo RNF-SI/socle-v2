@@ -27,10 +27,11 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { TInfosBaseSiteComponent } from './components/explorer/t-infos-base-site/t-infos-base-site.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { ToastrModule } from 'ngx-toastr';
+import { CapitalizePipe } from './pipes/capitalize.pipe';
 import { MatIconModule } from '@angular/material/icon';
 import { NgbRatingModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-
 
   
 @NgModule({
@@ -42,7 +43,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     ExplorerComponent,
     EspaceDetailComponent,
     FicheTerrainComponent,
-    TInfosBaseSiteComponent
+    TInfosBaseSiteComponent,
+    CapitalizePipe
      
      
   ],
@@ -67,10 +69,12 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     MatDividerModule,
     MatSlideToggleModule,
     MatFormFieldModule,
+    ToastrModule.forRoot({
+      timeOut:15000
+    }),
     MatIconModule,
     NgbRatingModule,
     NgbModule,
-    
 
   
 

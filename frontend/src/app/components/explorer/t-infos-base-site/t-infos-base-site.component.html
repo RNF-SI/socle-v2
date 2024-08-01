@@ -166,23 +166,35 @@
       <label>
         <h6>Âge des terrains à l’affleurement dans la réserve</h6>
       </label>
-      <div>
-        <mat-form-field>
-          <mat-label>Âge des terrains</mat-label>
-          <input matInput formControlName="geological_age" placeholder="Saisissez l'âge des terrains">
-        </mat-form-field>
-      </div>
-      <div>
-        <mat-form-field>
-          <mat-label>Étage</mat-label>
-          <input matInput formControlName="etage" placeholder="Saisissez l'étage">
-        </mat-form-field>
-      </div>
-      <div>
-        <mat-form-field>
-          <mat-label>Ère Période Époque</mat-label>
-          <input matInput formControlName="ere_periode_epoque" placeholder="Saisissez l'ère, période ou époque">
-        </mat-form-field>
+      <div class="stratigraphie">
+        <mat-form-field *ngIf="eres">
+          <mat-select placeholder={{eres.label|capitalize}} formControlName="eres" multiple (selectionChange)="onEresSelectionChange($event)">
+            <mat-option *ngFor="let nomenclature of eres.nomenclatures" [value]="nomenclature.id_nomenclature">
+              {{nomenclature.label|capitalize}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>   
+        <mat-form-field *ngIf="systemes && filteredSystemes && filteredSystemes.length > 0">
+          <mat-select placeholder={{systemes.label|capitalize}} formControlName="systemes" multiple (selectionChange)="onSystemesSelectionChange($event)">
+            <mat-option *ngFor="let nomenclature of filteredSystemes" [value]="nomenclature.id_nomenclature">
+              {{nomenclature.label|capitalize}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field> 
+        <mat-form-field *ngIf="series && filteredSeries && filteredSeries.length > 0">
+          <mat-select placeholder={{series.label|capitalize}} formControlName="series" multiple (selectionChange)="onSeriesSelectionChange($event)">
+            <mat-option *ngFor="let nomenclature of filteredSeries" [value]="nomenclature.id_nomenclature">
+              {{nomenclature.label|capitalize}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field> 
+        <mat-form-field *ngIf="etages && filteredEtages && filteredEtages.length > 0">
+          <mat-select placeholder={{etages.label|capitalize}} formControlName="etages" multiple>
+            <mat-option *ngFor="let nomenclature of filteredEtages" [value]="nomenclature.id_nomenclature">
+              {{nomenclature.label|capitalize}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>        
       </div>
     </div>
 

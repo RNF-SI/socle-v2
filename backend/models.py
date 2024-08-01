@@ -64,6 +64,11 @@ cor_site_inpg = db.Table('cor_site_inpg',
     db.Column('inpg_id', db.Integer, db.ForeignKey('inpg.id_inpg', ondelete="CASCADE"))
 )
 
+cor_site_ages = db.Table('cor_site_ages',
+    db.Column('site_id', db.Integer, db.ForeignKey('site.id_site', ondelete="CASCADE")),
+    db.Column('nomenclature_id', db.Integer, db.ForeignKey('t_nomenclatures.id_nomenclature', ondelete="CASCADE"))
+)
+
 class Site(db.Model):
     __tablename__ = 'site'
 
@@ -90,6 +95,12 @@ class Site(db.Model):
     inpg = db.relationship(
         'Inpg',
         secondary=cor_site_inpg,
+        passive_deletes=True
+    )
+
+    ages = db.relationship(
+        'Nomenclature',
+        secondary=cor_site_ages,
         passive_deletes=True
     )
 
@@ -131,8 +142,7 @@ class Inpg(db.Model):
     age_des_terrains_le_plus_recent = db.Column(db.String)
     age_des_terrains_le_plus_ancien = db.Column(db.String)
     geom = db.Column(Geometry('MULTIPOLYGON', srid=4326), nullable=True)
-
-
+    
 class PatrimoineGeologiqueGestionnaire(db.Model):
     __tablename__ = 'patrimoine_geologique_gestionnaire'
 
@@ -144,7 +154,28 @@ class PatrimoineGeologiqueGestionnaire(db.Model):
     age_des_terrains_le_plus_recent = db.Column(db.String)
     age_des_terrains_le_plus_ancien = db.Column(db.String)
     bibliographie = db.Column(db.Text)  # Nouveau champ
-
     
+class Nomenclature(db.Model):
+    __tablename__ = 't_nomenclatures'
 
-#     infos_base = db.relationship("TInfosBaseSite", foreign_keys=TInfosBaseSite.id_site)
+    id_nomenclature = db.Column(db.Integer, primary_key=True)
+    id_type = db.Column(db.Integer, db.ForeignKey('bib_nomenclatures_types.id_type'))
+    mnemonique = db.Column(db.String)
+    label = db.Column(db.String)
+    definition = db.Column(db.Text)
+    source = db.Column(db.String)
+    statut = db.Column(db.String)
+    hierarchy = db.Column(db.String)
+    id_parent = db.Column(db.Integer, db.ForeignKey('t_nomenclatures.id_nomenclature'))
+
+class BibNomenclatureType(db.Model):
+    __tablename__ = 'bib_nomenclatures_types'
+
+    id_type = db.Column(db.Integer, primary_key=True)
+    mnemonique = db.Column(db.String)
+    label = db.Column(db.String)
+    definition = db.Column(db.Text)
+    source = db.Column(db.String)
+    statut = db.Column(db.String)
+
+    nomenclatures = db.relationship("Nomenclature", foreign_keys=Nomenclature.id_type)

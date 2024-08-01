@@ -4,7 +4,9 @@
 
 export const environment = {
     production: false,
-    apiUrl: 'http://localhost:5068'
+    apiUrl: 'http://localhost:5068',
+    apiGeoNature: 'https://geonature.reserves-naturelles.org/api',
+    token: '5cc129c8ceb208e18b23f6713624a4da'
   };
   
   /*

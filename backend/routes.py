@@ -4,8 +4,10 @@ from flask import Flask, request, Response, render_template, redirect, Blueprint
 import requests
 import json
 from app import app, db
-from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite
-from schemas import TInfosBaseSiteSchema, SiteSchema
+from models import Site, EntiteGeol, TInfosBaseSite, 
+from schemas import TInfosBaseSiteSchema, SiteSchema, 
+from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Nomenclature, BibNomenclatureType
+from schemas import TInfosBaseSiteSchema, SiteSchema, NomenclatureSchema, NomenclatureTypeSchema
 from pypnusershub import routes as fnauth
 
 bp = Blueprint('routes', __name__)
@@ -143,7 +145,9 @@ def get_t_infos_base_site_by_slug(slug):
 def update_t_infos_base_site(slug):
     try:
         data = request.get_json()
+        print(data)
         t_infos_base_site = TInfosBaseSite.query.filter_by(slug=slug).first()
+        site = Site.query.filter_by(id_site=t_infos_base_site.id_site).first()
         
         if not t_infos_base_site:
             return jsonify({'message': 'TInfosBaseSite non trouvée'}), 404
@@ -205,6 +209,19 @@ def update_t_infos_base_site(slug):
         t_infos_base_site.reserve_has_geological_site_for_visitors = data.get('reserve_has_geological_site_for_visitors', t_infos_base_site.reserve_has_geological_site_for_visitors)
         t_infos_base_site.offers_geodiversity_activities = data.get('offers_geodiversity_activities', t_infos_base_site.offers_geodiversity_activities)
 
+        print(data.get('eres'))
+        nouveaux_ages_dict = []
+        for age in data.get('eres') :
+            nomenclature = Nomenclature.query.filter_by(id_nomenclature=age).first()
+            if nomenclature not in site.ages :
+                site.ages.append(nomenclature)
+            nouveaux_ages_dict.append(nomenclature)
+        for age in site.ages :
+            print(age)
+            if age not in nouveaux_ages_dict :
+                site.ages.remove(age)
+
+
         db.session.commit()
         return jsonify({'type': 'success', 'msg': 'TInfosBaseSite mise à jour avec succès !'})
         
@@ -223,9 +240,14 @@ def update_t_infos_base_site(slug):
         )
         response.status_code = 500
         return response
-    
+@bp.route('/nomenclatures/<id_type>', methods=['GET'])
+def get_nomenclatures_by_type(id_type):
+    nomenclatures = BibNomenclatureType.query.filter_by(id_type=id_type).first()
+    schema = NomenclatureTypeSchema(many=False)
+    Obj = schema.dump(nomenclatures)
 
-
+    return jsonify(Obj)
+  
 ### 
 @bp.route('/patrimoine_geologique/<int:id_site>', methods=['GET'])
 def get_patrimoine_geologique(id_site):
