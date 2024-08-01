@@ -4,7 +4,7 @@ from flask import Flask, request, Response, render_template, redirect, Blueprint
 import requests
 import json
 from app import app, db
-from models import Site, EntiteGeol, TInfosBaseSite
+from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite
 from schemas import TInfosBaseSiteSchema, SiteSchema
 from pypnusershub import routes as fnauth
 
@@ -17,8 +17,8 @@ def getSites():
     siteObj = schema.dump(sites)
     return jsonify(siteObj)
 
-@bp.route('/sites/<slug>', methods=['GET'])
-def get_site_by_slug(slug):
+@bp.route('/site/<slug>', methods=['GET'])
+def getSiteBySlug(slug):
     print(f"Fetching details for slug: {slug}")  # Ajoutez ce log
     site = Site.query.filter_by(slug=slug).first()
     if site is None:
@@ -55,13 +55,7 @@ def update_site(id):
     db.session.commit()
     return jsonify(site.to_dict())
 
-@bp.route('/site/<slug>', methods=['GET'])
-def getSite(slug):
-    site = Site.query.filter_by(slug=slug).first()
-    if site is None:
-        abort(404)
-    schema = SiteSchema()
-    return schema.jsonify(site)
+ 
 
 @bp.route('/t_infos_base_site', methods=['POST'])
 def submitData():
@@ -156,8 +150,8 @@ def update_t_infos_base_site(slug):
         
         # Mise à jour des champs
         t_infos_base_site.reserve_created_on_geological_basis = data.get('reserve_created_on_geological_basis', t_infos_base_site.reserve_created_on_geological_basis)
-        t_infos_base_site.reserve_contains_geological_heritage_inpg = data.get('reserve_contains_geological_heritage_inpg', t_infos_base_site.reserve_contains_geological_heritage_inpg)
-        t_infos_base_site.reserve_contains_geological_heritage_other = data.get('reserve_contains_geological_heritage_other', t_infos_base_site.reserve_contains_geological_heritage_other)
+        #t_infos_base_site.reserve_contains_geological_heritage_inpg = data.get('reserve_contains_geological_heritage_inpg', t_infos_base_site.reserve_contains_geological_heritage_inpg)
+        #t_infos_base_site.reserve_contains_geological_heritage_other = data.get('reserve_contains_geological_heritage_other', t_infos_base_site.reserve_contains_geological_heritage_other)
         t_infos_base_site.protection_perimeter_contains_geological_heritage_inpg = data.get('protection_perimeter_contains_geological_heritage_inpg', t_infos_base_site.protection_perimeter_contains_geological_heritage_inpg)
         t_infos_base_site.protection_perimeter_contains_geological_heritage_other = data.get('protection_perimeter_contains_geological_heritage_other', t_infos_base_site.protection_perimeter_contains_geological_heritage_other)
         
@@ -213,6 +207,12 @@ def update_t_infos_base_site(slug):
 
         db.session.commit()
         return jsonify({'type': 'success', 'msg': 'TInfosBaseSite mise à jour avec succès !'})
+        
+        
+
+    
+    
+    
 
     except Exception as e:
         print(f"Error: {str(e)}")  # Debugging log
@@ -223,3 +223,82 @@ def update_t_infos_base_site(slug):
         )
         response.status_code = 500
         return response
+    
+
+
+### 
+@bp.route('/patrimoine_geologique/<int:id_site>', methods=['GET'])
+def get_patrimoine_geologique(id_site):
+    try:
+        site = Site.query.get(id_site)
+        if not site:
+            return jsonify({'error': 'Site not found'}), 404
+
+        geological_heritages = PatrimoineGeologiqueGestionnaire.query.filter_by(id_site=id_site).all()
+        
+        heritage_list = []
+        for heritage in geological_heritages:
+            heritage_data = {
+                'id_patrimoine': heritage.id_patrimoine,
+                'lb': heritage.lb,
+                'nombre_etoiles': heritage.nombre_etoiles,
+                'interet_geol_principal': heritage.interet_geol_principal,
+                'age_des_terrains_le_plus_recent': heritage.age_des_terrains_le_plus_recent,
+                'age_des_terrains_le_plus_ancien': heritage.age_des_terrains_le_plus_ancien,
+                'bibliographie': heritage.bibliographie
+            }
+            heritage_list.append(heritage_data)
+        
+        return jsonify(heritage_list)  # Ensure this returns a list
+    except Exception as e:
+        app.logger.error(f"Error fetching geological heritage: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+
+    
+@bp.route('/patrimoine_geologique/<int:id_site>', methods=['PUT'])
+def update_patrimoine_geologique(id_site):
+    data = request.json
+    try:
+        site = Site.query.get(id_site)
+        if not site:
+            return jsonify({'error': 'Site not found'}), 404
+
+        existing_heritages = {heritage.id_patrimoine: heritage for heritage in PatrimoineGeologiqueGestionnaire.query.filter_by(id_site=id_site).all()}
+        
+        updated_heritages_ids = []
+        for heritage_data in data.get('geological_heritages', []):
+            heritage_id = heritage_data.get('id_patrimoine')
+            if heritage_id in existing_heritages:
+                heritage = existing_heritages[heritage_id]
+                heritage.lb = heritage_data.get('lb', heritage.lb)
+                heritage.nombre_etoiles = heritage_data.get('nombre_etoiles', heritage.nombre_etoiles)
+                heritage.interet_geol_principal = heritage_data.get('interet_geol_principal', heritage.interet_geol_principal)
+                heritage.age_des_terrains_le_plus_recent = heritage_data.get('age_des_terrains_le_plus_recent', heritage.age_des_terrains_le_plus_recent)
+                heritage.age_des_terrains_le_plus_ancien = heritage_data.get('age_des_terrains_le_plus_ancien', heritage.age_des_terrains_le_plus_ancien)
+                heritage.bibliographie = heritage_data.get('bibliographie', heritage.bibliographie)
+                updated_heritages_ids.append(heritage.id_patrimoine)
+            else:
+                new_heritage = PatrimoineGeologiqueGestionnaire(
+                    id_site=id_site,
+                    lb=heritage_data['lb'],
+                    nombre_etoiles=heritage_data['nombre_etoiles'],
+                    interet_geol_principal=heritage_data['interet_geol_principal'],
+                    age_des_terrains_le_plus_recent=heritage_data['age_des_terrains_le_plus_recent'],
+                    age_des_terrains_le_plus_ancien=heritage_data['age_des_terrains_le_plus_ancien'],
+                    bibliographie=heritage_data['bibliographie']
+                )
+                db.session.add(new_heritage)
+                db.session.flush()  # Pour obtenir l'ID du nouvel héritage
+                updated_heritages_ids.append(new_heritage.id_patrimoine)
+        
+        # Suppression des héritages non inclus dans la mise à jour
+        for heritage_id in existing_heritages:
+            if heritage_id not in updated_heritages_ids:
+                db.session.delete(existing_heritages[heritage_id])
+
+        db.session.commit()
+        return jsonify({'message': 'Geological heritage updated successfully'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500

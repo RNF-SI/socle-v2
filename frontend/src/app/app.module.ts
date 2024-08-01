@@ -27,6 +27,10 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { TInfosBaseSiteComponent } from './components/explorer/t-infos-base-site/t-infos-base-site.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { NgbRatingModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
 
   
 @NgModule({
@@ -63,6 +67,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatDividerModule,
     MatSlideToggleModule,
     MatFormFieldModule,
+    MatIconModule,
+    NgbRatingModule,
+    NgbModule,
     
 
   

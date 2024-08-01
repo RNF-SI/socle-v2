@@ -1,7 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { SitesService } from 'src/app/services/sites.service';
 import { TInfosBaseSiteService } from 'src/app/services/t-infos-base-site.service';
+import { PatrimoineGeologiqueService, PatrimoineGeologique } from 'src/app/services/patrimoine-geologique.service';
 
 @Component({
   selector: 'app-t-infos-base-site',
@@ -12,10 +14,31 @@ export class TInfosBaseSiteComponent implements OnInit {
   tInfosBaseSiteForm: FormGroup;
   @Input() siteSlug: string | undefined;
   id_site: any;
+  site: any;
+
+  geologicalInterestOptions: string[] = [
+    'Paléontologie',
+    'Ressources naturelles',
+    'Plutonisme',
+    'Métamorphisme',
+    'Hydrogéologie',
+    'Volcanisme',
+    'Pétrologie',
+    'Hydrothermalisme',
+    'Géochronologie',
+    'Sédimentologie',
+    'Stratigraphie',
+    'Tectonique',
+    'Géomorphologie',
+    'Minéralogie',
+    'Collection'
+  ];
 
   constructor(
     private fb: FormBuilder,
     private tInfosBaseSiteService: TInfosBaseSiteService,
+    private siteService: SitesService,
+    private patrimoineGeologiqueService: PatrimoineGeologiqueService,
     private router: Router,
     private route: ActivatedRoute
   ) {
@@ -23,7 +46,7 @@ export class TInfosBaseSiteComponent implements OnInit {
       id_site: [''],
       reserve_created_on_geological_basis: [false, Validators.required],
       reserve_contains_geological_heritage_inpg: [false],
-      reserve_contains_geological_heritage_other: [''],
+      geologicalHeritages: this.fb.array([]),
       protection_perimeter_contains_geological_heritage_inpg: [false],
       protection_perimeter_contains_geological_heritage_other: [''],
       main_geological_interests: this.fb.group({
@@ -41,7 +64,7 @@ export class TInfosBaseSiteComponent implements OnInit {
       }),
       contains_paleontological_heritage: this.fb.group({
         answer: [false],
-        no_answer: [false], // Ajout de la case à cocher "Non"
+        no_answer: [false],
         vertebrates: [false],
         invertebrates: [false],
         plants: [false],
@@ -84,72 +107,72 @@ export class TInfosBaseSiteComponent implements OnInit {
   }
 
   fetchSiteDetails(slug: string): void {
-    this.tInfosBaseSiteService.getSiteBySlug(slug).subscribe(
+    this.siteService.getSiteBySlug(slug).subscribe(
       (site: any) => {
+        this.site = site;
         this.id_site = site.id_site;
 
-        // Patch the form with the retrieved data
         this.tInfosBaseSiteForm.patchValue({
           id_site: site.id_site,
-          reserve_created_on_geological_basis: site.reserve_created_on_geological_basis,
-          reserve_contains_geological_heritage_inpg: site.reserve_contains_geological_heritage_inpg,
+          reserve_created_on_geological_basis: site.infos_base.reserve_created_on_geological_basis,
+          reserve_contains_geological_heritage_inpg: site.reserve_contains_geological_heritage_inpg || site.inpg.length > 0,
           reserve_contains_geological_heritage_other: site.reserve_contains_geological_heritage_other,
-          protection_perimeter_contains_geological_heritage_inpg: site.protection_perimeter_contains_geological_heritage_inpg,
-          protection_perimeter_contains_geological_heritage_other: site.protection_perimeter_contains_geological_heritage_other,
-          reserve_has_geological_collections: site.reserve_has_geological_collections,
-          reserve_has_exhibition: site.reserve_has_exhibition,
-          geological_age: site.geological_age,
-          etage: site.etage,
-          ere_periode_epoque: site.ere_periode_epoque,
-          reserve_contains_stratotype: site.reserve_contains_stratotype,
-          stratotype_limit: site.stratotype_limit,
-          stratotype_limit_input: site.stratotype_limit_input,
-          stratotype_stage: site.stratotype_stage,
-          stratotype_stage_input: site.stratotype_stage_input,
-          reserve_does_not_contain_stratotype: site.reserve_does_not_contain_stratotype,
-          contains_subterranean_habitats: site.contains_subterranean_habitats,
-          subterranean_habitats_natural_cavities: site.subterranean_habitats_natural_cavities,
-          subterranean_habitats_anthropogenic_cavities: site.subterranean_habitats_anthropogenic_cavities,
-          does_not_contain_subterranean_habitats: site.does_not_contain_subterranean_habitats,
-          associated_with_mineral_resources: site.associated_with_mineral_resources,
-          mineral_resources_old_quarry: site.mineral_resources_old_quarry,
-          mineral_resources_active_quarry: site.mineral_resources_active_quarry,
-          quarry_extracted_material: site.quarry_extracted_material,
-          quarry_fossiliferous_material: site.quarry_fossiliferous_material,
-          mineral_resources_old_mine: site.mineral_resources_old_mine,
-          mineral_resources_active_mine: site.mineral_resources_active_mine,
-          mine_extracted_material: site.mine_extracted_material,
-          mine_fossiliferous_material: site.mine_fossiliferous_material,
-          reserve_has_geological_site_for_visitors: site.reserve_has_geological_site_for_visitors,
-          offers_geodiversity_activities: site.offers_geodiversity_activities
+          protection_perimeter_contains_geological_heritage_inpg: site.protection_perimeter_contains_geological_heritage_inpg || site.inpg.length > 0,
+          protection_perimeter_contains_geological_heritage_other: site.infos_base.protection_perimeter_contains_geological_heritage_other,
+          reserve_has_geological_collections: site.infos_base.reserve_has_geological_collections,
+          reserve_has_exhibition: site.infos_base.reserve_has_exhibition,
+          geological_age: site.infos_base.geological_age,
+          etage: site.infos_base.etage,
+          ere_periode_epoque: site.infos_base.ere_periode_epoque,
+          reserve_contains_stratotype: site.infos_base.reserve_contains_stratotype,
+          stratotype_limit: site.infos_base.stratotype_limit,
+          stratotype_limit_input: site.infos_base.stratotype_limit_input,
+          stratotype_stage: site.infos_base.stratotype_stage,
+          stratotype_stage_input: site.infos_base.stratotype_stage_input,
+          reserve_does_not_contain_stratotype: site.infos_base.reserve_does_not_contain_stratotype,
+          contains_subterranean_habitats: site.infos_base.contains_subterranean_habitats,
+          subterranean_habitats_natural_cavities: site.infos_base.subterranean_habitats_natural_cavities,
+          subterranean_habitats_anthropogenic_cavities: site.infos_base.subterranean_habitats_anthropogenic_cavities,
+          does_not_contain_subterranean_habitats: site.infos_base.does_not_contain_subterranean_habitats,
+          associated_with_mineral_resources: site.infos_base.associated_with_mineral_resources,
+          mineral_resources_old_quarry: site.infos_base.mineral_resources_old_quarry,
+          mineral_resources_active_quarry: site.infos_base.mineral_resources_active_quarry,
+          quarry_extracted_material: site.infos_base.quarry_extracted_material,
+          quarry_fossiliferous_material: site.infos_base.quarry_fossiliferous_material,
+          mineral_resources_old_mine: site.infos_base.mineral_resources_old_mine,
+          mineral_resources_active_mine: site.infos_base.mineral_resources_active_mine,
+          mine_extracted_material: site.infos_base.mine_extracted_material,
+          mine_fossiliferous_material: site.infos_base.mine_fossiliferous_material,
+          reserve_has_geological_site_for_visitors: site.infos_base.reserve_has_geological_site_for_visitors,
+          offers_geodiversity_activities: site.infos_base.offers_geodiversity_activities
         });
 
-        // Patch the sub-group main_geological_interests
         this.tInfosBaseSiteForm.get('main_geological_interests')?.patchValue({
-          stratigraphic: site.main_geological_interests_stratigraphic,
-          paleontological: site.main_geological_interests_paleontological,
-          sedimentological: site.main_geological_interests_sedimentological,
-          geomorphological: site.main_geological_interests_geomorphological,
-          mineral_resource: site.main_geological_interests_mineral_resource,
-          mineralogical: site.main_geological_interests_mineralogical,
-          metamorphism: site.main_geological_interests_metamorphism,
-          volcanism: site.main_geological_interests_volcanism,
-          plutonism: site.main_geological_interests_plutonism,
-          hydrogeology: site.main_geological_interests_hydrogeology,
-          tectonics: site.main_geological_interests_tectonics
+          stratigraphic: site.infos_base.main_geological_interests_stratigraphic,
+          paleontological: site.infos_base.main_geological_interests_paleontological,
+          sedimentological: site.infos_base.main_geological_interests_sedimentological,
+          geomorphological: site.infos_base.main_geological_interests_geomorphological,
+          mineral_resource: site.infos_base.main_geological_interests_mineral_resource,
+          mineralogical: site.infos_base.main_geological_interests_mineralogical,
+          metamorphism: site.infos_base.main_geological_interests_metamorphism,
+          volcanism: site.infos_base.main_geological_interests_volcanism,
+          plutonism: site.infos_base.main_geological_interests_plutonism,
+          hydrogeology: site.infos_base.main_geological_interests_hydrogeology,
+          tectonics: site.infos_base.main_geological_interests_tectonics
         });
 
-        // Patch the contains_paleontological_heritage form group
         this.tInfosBaseSiteForm.get('contains_paleontological_heritage')?.patchValue({
-          answer: site.contains_paleontological_heritage,
-          no_answer: !site.contains_paleontological_heritage, // Initialiser "Non" à l'inverse de "Oui"
-          vertebrates: site.contains_paleontological_heritage_vertebrates,
-          invertebrates: site.contains_paleontological_heritage_invertebrates,
-          plants: site.contains_paleontological_heritage_plants,
-          traceFossils: site.contains_paleontological_heritage_trace_fossils,
-          other: site.contains_paleontological_heritage_other,
-          otherDetails: site.contains_paleontological_heritage_other_details
+          answer: site.infos_base.contains_paleontological_heritage,
+          no_answer: !site.infos_base.contains_paleontological_heritage,
+          vertebrates: site.infos_base.contains_paleontological_heritage_vertebrates,
+          invertebrates: site.infos_base.contains_paleontological_heritage_invertebrates,
+          plants: site.infos_base.contains_paleontological_heritage_plants,
+          traceFossils: site.infos_base.contains_paleontological_heritage_trace_fossils,
+          other: site.infos_base.contains_paleontological_heritage_other,
+          otherDetails: site.infos_base.contains_paleontological_heritage_other_details
         });
+
+        this.fetchPatrimoineGeologique();
       },
       error => {
         console.error('Error fetching site details', error);
@@ -157,13 +180,65 @@ export class TInfosBaseSiteComponent implements OnInit {
     );
   }
 
+  fetchPatrimoineGeologique(): void {
+    this.patrimoineGeologiqueService.getPatrimoineGeologique(this.id_site).subscribe(
+      (data: any) => {
+        if (Array.isArray(data)) {
+          this.populateGeologicalHeritages(data);
+        } else {
+          console.error("Expected an array but got:", data);
+        }
+      },
+      (error: any) => {
+        console.error('Error fetching geological heritage data', error);
+      }
+    );
+  }
+
+  get geologicalHeritages(): FormArray {
+    return this.tInfosBaseSiteForm.get('geologicalHeritages') as FormArray;
+  }
+
+  populateGeologicalHeritages(data: PatrimoineGeologique[]): void {
+    const heritageArray = this.geologicalHeritages;
+    data.forEach((heritage: PatrimoineGeologique) => {
+      heritageArray.push(this.fb.group({
+        lb: [heritage.lb, Validators.required],
+        nombre_etoiles: [heritage.nombre_etoiles, Validators.required],
+        interet_geol_principal: [heritage.interet_geol_principal, Validators.required],
+        age_des_terrains_le_plus_recent: [heritage.age_des_terrains_le_plus_recent, Validators.required],
+        age_des_terrains_le_plus_ancien: [heritage.age_des_terrains_le_plus_ancien, Validators.required],
+        bibliographie: [heritage.bibliographie]  // Nouveau champ
+      }));
+    });
+  }
+
+  addHeritage(): void {
+    this.geologicalHeritages.push(this.fb.group({
+      lb: ['', Validators.required],
+      nombre_etoiles: [0, Validators.required],
+      interet_geol_principal: ['', Validators.required],
+      age_des_terrains_le_plus_recent: ['', Validators.required],
+      age_des_terrains_le_plus_ancien: ['', Validators.required],
+      bibliographie: ['']  // Nouveau champ
+    }));
+  }
+
+  removeHeritage(index: number): void {
+    this.geologicalHeritages.removeAt(index);
+  }
+
+  rateHeritage(index: number, rating: number): void {
+    this.geologicalHeritages.at(index).get('nombre_etoiles')?.setValue(rating);
+  }
+
   onSubmit(): void {
     if (this.tInfosBaseSiteForm.valid) {
       const formData = this.tInfosBaseSiteForm.value;
       formData['id_site'] = this.id_site;
 
-      console.log('Submitting form with slug:', this.siteSlug);  // Debugging log
-      console.log('Submitting form with id_site:', this.id_site);  // Debugging log
+      console.log('Submitting form with slug:', this.siteSlug);
+      console.log('Submitting form with id_site:', this.id_site);
       this.tInfosBaseSiteService.updateSite(this.siteSlug!, formData).subscribe(
         response => {
           this.router.navigate([`/site/${this.siteSlug}`]);

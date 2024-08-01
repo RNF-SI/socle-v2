@@ -11,8 +11,8 @@ class TInfosBaseSite(db.Model):
     
     id_site = db.Column(db.Integer, db.ForeignKey('site.id_site'), primary_key=True, nullable=False)
     reserve_created_on_geological_basis = db.Column(db.Boolean, nullable=False)
-    reserve_contains_geological_heritage_inpg = db.Column(db.Boolean)
-    reserve_contains_geological_heritage_other = db.Column(db.String)
+    #reserve_contains_geological_heritage_inpg = db.Column(db.Boolean)  
+   # reserve_contains_geological_heritage_other = db.Column(db.String)
     protection_perimeter_contains_geological_heritage_inpg = db.Column(db.Boolean)
     protection_perimeter_contains_geological_heritage_other = db.Column(db.String)
     main_geological_interests_stratigraphic = db.Column(db.Boolean)
@@ -85,7 +85,7 @@ class Site(db.Model):
 
     slug = db.Column(db.String(255), unique=True)# ajouter slug  
 
-    infos_base = db.relationship("TInfosBaseSite", backref="site", foreign_keys=TInfosBaseSite.id_site)
+    infos_base = db.relationship("TInfosBaseSite", foreign_keys=TInfosBaseSite.id_site, uselist=False)
 
     inpg = db.relationship(
         'Inpg',
@@ -132,3 +132,19 @@ class Inpg(db.Model):
     age_des_terrains_le_plus_ancien = db.Column(db.String)
     geom = db.Column(Geometry('MULTIPOLYGON', srid=4326), nullable=True)
 
+
+class PatrimoineGeologiqueGestionnaire(db.Model):
+    __tablename__ = 'patrimoine_geologique_gestionnaire'
+
+    id_patrimoine = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    id_site = db.Column(db.Integer, db.ForeignKey('site.id_site'), primary_key=True, nullable=False)
+    lb = db.Column(db.String(254))
+    interet_geol_principal = db.Column(db.String)
+    nombre_etoiles = db.Column(db.Integer)
+    age_des_terrains_le_plus_recent = db.Column(db.String)
+    age_des_terrains_le_plus_ancien = db.Column(db.String)
+    bibliographie = db.Column(db.Text)  # Nouveau champ
+
+    
+
+#     infos_base = db.relationship("TInfosBaseSite", foreign_keys=TInfosBaseSite.id_site)

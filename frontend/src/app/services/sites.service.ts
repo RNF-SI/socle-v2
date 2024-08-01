@@ -21,7 +21,7 @@ export class SitesService {
 
 
   getSiteBySlug(slug: string): Observable<Site> {
-    return this._http.get<Site>(`${environment.apiUrl}/${slug}`);
+    return this._http.get<Site>(`${environment.apiUrl}/site/${slug}`);
   }
 
   addSite(site: Site): Observable<Site> {
