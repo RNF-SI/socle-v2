@@ -29,6 +29,9 @@ import { TInfosBaseSiteComponent } from './components/explorer/t-infos-base-site
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ToastrModule } from 'ngx-toastr';
 import { CapitalizePipe } from './pipes/capitalize.pipe';
+import { MatIconModule } from '@angular/material/icon';
+import { NgbRatingModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
   
 @NgModule({
@@ -69,6 +72,9 @@ import { CapitalizePipe } from './pipes/capitalize.pipe';
     ToastrModule.forRoot({
       timeOut:15000
     }),
+    MatIconModule,
+    NgbRatingModule,
+    NgbModule,
 
   
 

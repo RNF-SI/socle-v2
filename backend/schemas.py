@@ -18,7 +18,7 @@ class SiteSchema(ma.SQLAlchemyAutoSchema):
         model = Site
 
     entites_geol = ma.Nested(lambda: EntiteGeolSchema, many=True)
-    infos_base = ma.Nested(lambda : TInfosBaseSiteSchema, many = True )
+    infos_base = ma.Nested(lambda : TInfosBaseSiteSchema, many = False )
     inpg = ma .Nested(lambda : InpgSchema, many = True)
     ages = ma .Nested(lambda : NomenclatureSchema, many = True)
 

@@ -1,32 +1,76 @@
 .container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  .form-group {
-    margin-bottom: 20px;
-  }
-  
-  .mat-radio-group, .mat-checkbox-group {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .mat-radio-button, .mat-checkbox {
-    margin-bottom: 10px;
-  }
-  
-  .mat-form-field {
-    width: 100%;
-  }
-  
-  button {
-    margin-top: 20px;
-  }
-  
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.mat-radio-group, .mat-checkbox-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.mat-radio-button, .mat-checkbox {
+  margin-bottom: 10px;
+}
+
+.mat-form-field {
+  width: 100%;
+}
+
+button {
+  margin-top: 10px;
+}
+
+.heritage-entry {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.heritage-entry mat-form-field {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.add-button {
+  background-color: yellow;
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 15px auto; /* Center the button */
+}
+
+.remove-button {
+  color: rgb(20, 20, 20);
+  margin-bottom: 50px;
+}
+
+.star-rating {
+  display: flex;
+  align-items: center;
+}
+
+.star-rating .ngb-rating {
+  font-size: 6rem; /* Increase the size of the stars */
+}
+
+.star-rating .ngb-rating .star.filled {
+  color: gold;
+}
+
+.bibliographie-field {
+  margin: 20px auto; /* Center the field */
+  display: block;
+  width: 80%; /* Adjust width as needed */
+}
+
   .stratigraphie {
     display: flex;
     justify-content: center; /* Centre les éléments horizontalement */

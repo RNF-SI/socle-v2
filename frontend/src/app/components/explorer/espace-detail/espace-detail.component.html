@@ -1,11 +1,135 @@
-<div *ngIf="site">
-  <h1>{{ site.nom }}</h1>
-  <div class="container-fluid">
-    <div id="map"></div>
-    <!-- Ajouter d'autres détails ici -->
-    <div class="links-container">
-      <h3><a mat-button [routerLink]="['/fiche-terrain', site.slug]">Fiche de terrain</a></h3>
-      <h3><a mat-button [routerLink]="['/t_infos_base_site', site.slug]">Mini-questionnaire</a></h3>
-    </div>
-  </div>
+<div *ngIf="site" id="export-content">
+  <mat-card class="site-card">
+    <mat-card-header>
+      <mat-card-title>{{ site.nom }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div id="map"></div>
+      <mat-divider></mat-divider>
+      <div class="details-container">
+        <h3>Synthèse</h3>
+
+        <div class="image-placeholder">
+          <!-- Cet espace représente l'endroit où l'image serait placée -->
+        </div>
+        <!-- Question 1 -->
+        <p>
+          <strong> - La réserve a-t-elle été créée sur le fondement d’un patrimoine géologique ?</strong>
+          {{ tInfosBaseSite?.reserve_created_on_geological_basis ? 'Oui' : 'Non' }}
+        </p>
+        <!-- Question 2 -->
+        <p>
+          <strong> - La réserve abrite-t-elle du patrimoine géologique (données INPG) ?</strong>
+          {{ tInfosBaseSite?.reserve_contains_geological_heritage_inpg ? 'Oui' : 'Non' }}
+          <span *ngIf="tInfosBaseSite?.reserve_contains_geological_heritage_inpg">
+            <br><strong>Liste des sites INPG associés à la RN :</strong> {{ tInfosBaseSite?.reserve_contains_geological_heritage_other }}
+          </span>
+        </p>
+        <!-- Question 3 -->
+        <p>
+          <strong> - Le périmètre de protection de la réserve (hors secteurs classés) abrite-t-il du patrimoine géologique (données INPG) ?</strong>
+          {{ tInfosBaseSite?.protection_perimeter_contains_geological_heritage_inpg ? 'Oui' : 'Non' }}
+          <span *ngIf="tInfosBaseSite?.protection_perimeter_contains_geological_heritage_inpg">
+            <br><strong>Détails :</strong> {{ tInfosBaseSite?.protection_perimeter_contains_geological_heritage_other }}
+          </span>
+        </p>
+        <!-- Question 4 -->
+        <p>
+          <strong> - Quels sont les intérêts géologiques principaux de la réserve ?</strong>
+          <span *ngIf="geologicalInterests.length > 0">
+            <ng-container *ngFor="let interest of geologicalInterests">
+              <br><strong>{{ interest }}</strong>
+            </ng-container>
+          </span>
+          <span *ngIf="geologicalInterests.length === 0">
+            Aucun intérêt géologique principal spécifié.
+          </span>
+        </p>
+        <!-- Question 5 -->
+        <p>
+          <strong> - Est-ce que les terrains de la réserve renferment du patrimoine paléontologique ?</strong>
+          <span *ngIf="tInfosBaseSite?.contains_paleontological_heritage">
+            <ul>
+              <li *ngFor="let item of paleontologicalLabels">{{ item }}</li>
+            </ul>
+          </span>
+        </p>
+        <!-- Question 6 -->
+        <p>
+          <strong> - Est-ce que la réserve dispose de collections géologiques propres ?</strong>
+          {{ tInfosBaseSite?.reserve_has_geological_collections ? 'Oui' : 'Non' }}
+        </p>
+        <!-- Question 7 -->
+        <p>
+          <strong> - Est-ce que la réserve dispose d’un lieu d’exposition de collections géologiques ?</strong>
+          {{ tInfosBaseSite?.reserve_has_exhibition ? 'Oui' : 'Non' }}
+        </p>
+        <!-- Question 8 -->
+        <p>
+          <strong> - Âge des terrains à l’affleurement dans la réserve :</strong>
+          <br><strong>Âge des terrains :</strong> {{ tInfosBaseSite?.geological_age }}
+          <br><strong>Étage :</strong> {{ tInfosBaseSite?.etage }}
+          <br><strong>Ère Période Époque :</strong> {{ tInfosBaseSite?.ere_periode_epoque }}
+        </p>
+        <!-- Question 9 -->
+        <p>
+          <strong> - Est-ce que la réserve (périmètre de protection inclus) abrite un stratotype ?</strong>
+          {{ tInfosBaseSite?.reserve_contains_stratotype ? 'Oui' : 'Non' }}
+          <span *ngIf="tInfosBaseSite?.reserve_contains_stratotype">
+            <br><strong>Stratotype de limite :</strong> {{ tInfosBaseSite?.stratotype_details ? 'Oui' : 'Non' }}
+            <span *ngIf="tInfosBaseSite?.stratotype_details">
+              <br><strong>Préciser :</strong> {{ tInfosBaseSite?.stratotype_details }}
+            </span>
+            <br><strong>Stratotype d’étage :</strong> {{ tInfosBaseSite?.stratotype_stage ? 'Oui' : 'Non' }}
+            <span *ngIf="tInfosBaseSite?.stratotype_stage">
+              <br><strong>Préciser :</strong> {{ tInfosBaseSite?.stratotype_stage_input }}
+            </span>
+          </span>
+        </p>
+        <!-- Question 10 -->
+        <p>
+          <strong> - Est-ce que la réserve présente des milieux souterrains abritant un patrimoine naturel identifié, biologique ou géologique (périmètre de protection inclus) ?</strong>
+          {{ tInfosBaseSite?.contains_subterranean_habitats ? 'Oui' : 'Non' }}
+          <span *ngIf="tInfosBaseSite?.contains_subterranean_habitats">
+            <br><strong>Cavités naturelles :</strong> {{ tInfosBaseSite?.subterranean_habitats_natural_cavities ? 'Oui' : 'Non' }}
+            <br><strong>Cavités anthropiques :</strong> {{ tInfosBaseSite?.subterranean_habitats_anthropogenic_cavities ? 'Oui' : 'Non' }}
+          </span>
+        </p>
+        <!-- Question 11 -->
+        <p>
+          <strong> - Est-ce que la réserve est associée à une exploitation de ressources minérales ?</strong>
+          {{ tInfosBaseSite?.associated_with_mineral_resources ? 'Oui' : 'Non' }}
+          <span *ngIf="tInfosBaseSite?.associated_with_mineral_resources">
+            <br><strong>Ancienne carrière :</strong> {{ tInfosBaseSite?.mineral_resources_old_quarry ? 'Oui' : 'Non' }}
+            <br><strong>Carrière en activité :</strong> {{ tInfosBaseSite?.mineral_resources_active_quarry ? 'Oui' : 'Non' }}
+            <span *ngIf="tInfosBaseSite?.mineral_resources_active_quarry">
+              <br><strong>Préciser la substance exploitée :</strong> {{ tInfosBaseSite?.quarry_extracted_material }}
+              <br><strong>Matériau fossilifère :</strong> {{ tInfosBaseSite?.quarry_fossiliferous_material ? 'Oui' : 'Non' }}
+            </span>
+            <br><strong>Ancienne mine :</strong> {{ tInfosBaseSite?.mineral_resources_old_mine ? 'Oui' : 'Non' }}
+            <br><strong>Mine en activité :</strong> {{ tInfosBaseSite?.mineral_resources_active_mine ? 'Oui' : 'Non' }}
+            <span *ngIf="tInfosBaseSite?.mineral_resources_active_mine">
+              <br><strong>Préciser la substance exploitée :</strong> {{ tInfosBaseSite?.mine_extracted_material }}
+              <br><strong>Matériau fossilifère :</strong> {{ tInfosBaseSite?.mine_fossiliferous_material ? 'Oui' : 'Non' }}
+            </span>
+          </span>
+        </p>
+        <!-- Question 12 -->
+        <p>
+          <strong> - Est-ce que la réserve dispose d’un site géologique aménagé pour les visiteurs ?</strong>
+          {{ tInfosBaseSite?.reserve_has_geological_site_for_visitors ? 'Oui' : 'Non' }}
+        </p>
+        <!-- Question 13 -->
+        <p>
+          <strong> - Est-ce que la réserve propose des animations sur la thématique géodiversité / patrimoine géologique ?</strong>
+          {{ tInfosBaseSite?.offers_geodiversity_activities ? 'Oui' : 'Non' }}
+        </p>
+      </div>
+    </mat-card-content>
+    <mat-card-actions class="links-container">
+      <a mat-button [routerLink]="['/fiche-terrain', site.slug]">Fiche de terrain</a>
+      <a mat-button [routerLink]="['/t_infos_base_site', site.slug]">Mini-questionnaire</a>
+      <button mat-button (click)="exportData()">Exporter</button>
+    </mat-card-actions>
+  </mat-card>
 </div>
