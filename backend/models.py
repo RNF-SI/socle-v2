@@ -64,6 +64,11 @@ cor_site_inpg = db.Table('cor_site_inpg',
     db.Column('inpg_id', db.Integer, db.ForeignKey('inpg.id_inpg', ondelete="CASCADE"))
 )
 
+cor_site_ages = db.Table('cor_site_ages',
+    db.Column('site_id', db.Integer, db.ForeignKey('site.id_site', ondelete="CASCADE")),
+    db.Column('nomenclature_id', db.Integer, db.ForeignKey('t_nomenclatures.id_nomenclature', ondelete="CASCADE"))
+)
+
 class Site(db.Model):
     __tablename__ = 'site'
 
@@ -90,6 +95,12 @@ class Site(db.Model):
     inpg = db.relationship(
         'Inpg',
         secondary=cor_site_inpg,
+        passive_deletes=True
+    )
+
+    ages = db.relationship(
+        'Nomenclature',
+        secondary=cor_site_ages,
         passive_deletes=True
     )
 

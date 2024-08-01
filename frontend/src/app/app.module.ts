@@ -28,6 +28,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { TInfosBaseSiteComponent } from './components/explorer/t-infos-base-site/t-infos-base-site.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ToastrModule } from 'ngx-toastr';
+import { CapitalizePipe } from './pipes/capitalize.pipe';
 
   
 @NgModule({
@@ -39,7 +40,8 @@ import { ToastrModule } from 'ngx-toastr';
     ExplorerComponent,
     EspaceDetailComponent,
     FicheTerrainComponent,
-    TInfosBaseSiteComponent
+    TInfosBaseSiteComponent,
+    CapitalizePipe
      
      
   ],

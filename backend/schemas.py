@@ -20,6 +20,7 @@ class SiteSchema(ma.SQLAlchemyAutoSchema):
     entites_geol = ma.Nested(lambda: EntiteGeolSchema, many=True)
     infos_base = ma.Nested(lambda : TInfosBaseSiteSchema, many = True )
     inpg = ma .Nested(lambda : InpgSchema, many = True)
+    ages = ma .Nested(lambda : NomenclatureSchema, many = True)
 
 class EntiteGeolSchema(ma.SQLAlchemyAutoSchema):
     geom = fields.Method('wkt_to_geojson')

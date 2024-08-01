@@ -124,6 +124,8 @@ export class TInfosBaseSiteComponent implements OnInit {
     this.tInfosBaseSiteService.getSiteBySlug(slug).subscribe(
       (site: any) => {
         this.id_site = site.id_site;
+        console.log(site);
+        
 
         // Patch the form with the retrieved data
         this.tInfosBaseSiteForm.patchValue({

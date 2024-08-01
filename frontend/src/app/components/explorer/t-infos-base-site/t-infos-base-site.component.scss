@@ -27,3 +27,15 @@
     margin-top: 20px;
   }
   
+  .stratigraphie {
+    display: flex;
+    justify-content: center; /* Centre les éléments horizontalement */
+    flex-wrap: wrap; /* Permet de passer à la ligne si les éléments dépassent */
+    gap: 16px; /* Espace entre les éléments */
+    margin-top: 16px;
+  }
+  
+  .stratigraphie mat-form-field {
+    flex: 1; /* Permet de répartir les éléments également */
+    min-width: 200px; /* Largeur minimale pour chaque élément */
+  }

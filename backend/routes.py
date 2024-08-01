@@ -149,7 +149,9 @@ def get_t_infos_base_site_by_slug(slug):
 def update_t_infos_base_site(slug):
     try:
         data = request.get_json()
+        print(data)
         t_infos_base_site = TInfosBaseSite.query.filter_by(slug=slug).first()
+        site = Site.query.filter_by(id_site=t_infos_base_site.id_site).first()
         
         if not t_infos_base_site:
             return jsonify({'message': 'TInfosBaseSite non trouvée'}), 404
@@ -194,7 +196,7 @@ def update_t_infos_base_site(slug):
         t_infos_base_site.etage = data.get('etage', t_infos_base_site.etage)
         t_infos_base_site.ere_periode_epoque = data.get('ere_periode_epoque', t_infos_base_site.ere_periode_epoque)
         t_infos_base_site.reserve_contains_stratotype = data.get('reserve_contains_stratotype', t_infos_base_site.reserve_contains_stratotype)
-        t_infos_base_site.stratotype_details = data.get('stratotype_details', t_infos_base_site.stratotype_details)
+        # t_infos_base_site.stratotype_details = data.get('stratotype_details', t_infos_base_site.stratotype_details)
         t_infos_base_site.contains_subterranean_habitats = data.get('contains_subterranean_habitats', t_infos_base_site.contains_subterranean_habitats)
         t_infos_base_site.subterranean_habitats_natural_cavities = data.get('subterranean_habitats_natural_cavities', t_infos_base_site.subterranean_habitats_natural_cavities)
         t_infos_base_site.subterranean_habitats_anthropogenic_cavities = data.get('subterranean_habitats_anthropogenic_cavities', t_infos_base_site.subterranean_habitats_anthropogenic_cavities)
@@ -209,6 +211,19 @@ def update_t_infos_base_site(slug):
         t_infos_base_site.mine_fossiliferous_material = data.get('mine_fossiliferous_material', t_infos_base_site.mine_fossiliferous_material)
         t_infos_base_site.reserve_has_geological_site_for_visitors = data.get('reserve_has_geological_site_for_visitors', t_infos_base_site.reserve_has_geological_site_for_visitors)
         t_infos_base_site.offers_geodiversity_activities = data.get('offers_geodiversity_activities', t_infos_base_site.offers_geodiversity_activities)
+
+        print(data.get('eres'))
+        nouveaux_ages_dict = []
+        for age in data.get('eres') :
+            nomenclature = Nomenclature.query.filter_by(id_nomenclature=age).first()
+            if nomenclature not in site.ages :
+                site.ages.append(nomenclature)
+            nouveaux_ages_dict.append(nomenclature)
+        for age in site.ages :
+            print(age)
+            if age not in nouveaux_ages_dict :
+                site.ages.remove(age)
+
 
         db.session.commit()
         return jsonify({'type': 'success', 'msg': 'TInfosBaseSite mise à jour avec succès !'})
