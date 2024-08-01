@@ -4,8 +4,6 @@ from flask import Flask, request, Response, render_template, redirect, Blueprint
 import requests
 import json
 from app import app, db
-from models import Site, EntiteGeol, TInfosBaseSite, 
-from schemas import TInfosBaseSiteSchema, SiteSchema, 
 from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Nomenclature, BibNomenclatureType
 from schemas import TInfosBaseSiteSchema, SiteSchema, NomenclatureSchema, NomenclatureTypeSchema
 from pypnusershub import routes as fnauth

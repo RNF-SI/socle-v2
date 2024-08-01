@@ -264,6 +264,7 @@ export class TInfosBaseSiteComponent implements OnInit {
     this.filteredEtages = this.etages!.nomenclatures.filter((etage: Nomenclature) =>
       (this.selectedSystemesIds.includes(etage.id_parent) || this.selectedSeriesIds.includes(etage.id_parent))
     );
+  }
   fetchPatrimoineGeologique(): void {
     this.patrimoineGeologiqueService.getPatrimoineGeologique(this.id_site).subscribe(
       (data: any) => {
