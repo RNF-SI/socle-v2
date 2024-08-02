@@ -221,6 +221,10 @@ export class TInfosBaseSiteComponent implements OnInit {
           otherDetails: site.infos_base.contains_paleontological_heritage_other_details
         });
 
+        site.ages.forEach((element: any) => {
+          console.log(element);
+        });
+
         this.fetchPatrimoineGeologique();
       },
       error => {
