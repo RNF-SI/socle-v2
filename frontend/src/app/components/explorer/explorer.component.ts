@@ -20,8 +20,9 @@ export class ExplorerComponent implements OnInit {
   ngOnInit(): void {
     this.sitesService.getSites().subscribe(
       sites => {
-        this.espaces = sites;
-        this.filteredEspaces = sites;
+        // Filtrer les sites pour exclure ceux avec "perimetre protection" dans le nom
+        this.espaces = sites.filter(site => !site.nom.toLowerCase().includes('perimetre protection'));
+        this.filteredEspaces = this.espaces;
       },
       error => {
         console.error('Error fetching sites', error);

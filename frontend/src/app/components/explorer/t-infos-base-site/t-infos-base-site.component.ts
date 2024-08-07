@@ -366,19 +366,26 @@ export class TInfosBaseSiteComponent implements OnInit {
     if (this.tInfosBaseSiteForm.valid) {
       const formData = this.tInfosBaseSiteForm.value;
       formData['id_site'] = this.id_site;
-
+  
+     
+  
       console.log('Submitting form with slug:', this.siteSlug);
       console.log('Submitting form with id_site:', this.id_site);
+      console.log('Form data:', formData); // Pour vérifier les données
+  
       this.tInfosBaseSiteService.updateSite(this.siteSlug!, formData).subscribe(
-        response => {
+        (response: any) => {
+          console.log('Form successfully submitted');
           this.router.navigate([`/site/${this.siteSlug}`]);
         },
-        error => {
+        (error: any) => {
           console.error('Error updating site data', error);
+          alert(`Error updating site data: ${error.message}`); // Ajouter une alerte pour afficher l'erreur
         }
       );
     } else {
       console.error('Form is invalid');
+      alert('Form is invalid. Please check the form fields.');
     }
   }
-}
+}   
