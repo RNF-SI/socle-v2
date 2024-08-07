@@ -13,12 +13,11 @@ export class SitesService {
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
   };
-  apiUrl: any;
+  apiUrl: any = environment.apiUrl;
 
   constructor(
     private _http: HttpClient,
   ) { }
-
 
   getSiteBySlug(slug: string): Observable<Site> {
     return this._http.get<Site>(`${environment.apiUrl}/site/${slug}`);
@@ -35,8 +34,12 @@ export class SitesService {
   getSites(): Observable<Site[]> {
     return this._http.get<Site[]>(`${environment.apiUrl}/sites`);
   }
+
   getEspaces(): Observable<Espace[]> {
     return this._http.get<Espace[]>(this.apiUrl);
   }
-  
+
+  getSitesWithProtection(): Observable<Site[]> {
+    return this._http.get<Site[]>(`${environment.apiUrl}/sites/protection`);
+  }
 }

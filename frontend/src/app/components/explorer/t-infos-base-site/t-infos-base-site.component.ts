@@ -3,10 +3,10 @@ import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NomenclaturesService } from 'src/app/services/nomenclatures.service';
 import { TInfosBaseSiteService } from 'src/app/services/t-infos-base-site.service';
-import { Nomenclature, NomenclatureType } from 'src/app/models/nomenclature.model';
 import { SitesService } from 'src/app/services/sites.service';
-import { PatrimoineGeologiqueService, PatrimoineGeologique } from 'src/app/services/patrimoine-geologique.service';
-
+import { PatrimoineGeologiqueService } from 'src/app/services/patrimoine-geologique.service';
+import { Nomenclature, NomenclatureType } from 'src/app/models/nomenclature.model';
+import { PatrimoineGeologique } from 'src/app/models/patrimoine-geologique.model';
 
 @Component({
   selector: 'app-t-infos-base-site',
@@ -28,6 +28,9 @@ export class TInfosBaseSiteComponent implements OnInit {
   selectedSystemesIds: number[] = [];
   selectedSeriesIds: number[] = [];
   site: any;
+  sitesWithProtection: any[] = [];
+  principalHeritage: any[] = [];
+  protectionHeritage: any[] = [];
 
   geologicalInterestOptions: string[] = [
     'Paléontologie',
@@ -50,12 +53,9 @@ export class TInfosBaseSiteComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private tInfosBaseSiteService: TInfosBaseSiteService,
-
-    private nomenclaturesService : NomenclaturesService,
-
+    private nomenclaturesService: NomenclaturesService,
     private siteService: SitesService,
     private patrimoineGeologiqueService: PatrimoineGeologiqueService,
-
     private router: Router,
     private route: ActivatedRoute
   ) {
@@ -65,6 +65,7 @@ export class TInfosBaseSiteComponent implements OnInit {
       reserve_contains_geological_heritage_inpg: [false],
       geologicalHeritages: this.fb.array([]),
       protection_perimeter_contains_geological_heritage_inpg: [false],
+      protection_geologicalHeritages: this.fb.array([]),
       protection_perimeter_contains_geological_heritage_other: [''],
       main_geological_interests: this.fb.group({
         stratigraphic: [false],
@@ -91,9 +92,6 @@ export class TInfosBaseSiteComponent implements OnInit {
       }),
       reserve_has_geological_collections: [false, Validators.required],
       reserve_has_exhibition: [false, Validators.required],
-      geological_age: [''],
-      etage: [''],
-      ere_periode_epoque: [''],
       reserve_contains_stratotype: [false],
       stratotype_limit: [false],
       stratotype_limit_input: [''],
@@ -126,29 +124,28 @@ export class TInfosBaseSiteComponent implements OnInit {
     this.siteSlug = this.route.snapshot.paramMap.get('slug')!;
     this.fetchSiteDetails(this.siteSlug);
     this.loadNomenclature();
+    this.fetchSitesWithProtection();
   }
 
   loadNomenclature(): void {
     this.nomenclaturesService.getNomenclaturesByTypeId(2).subscribe(
       (nomenclatures: any) => {
-        this.eres = nomenclatures
-        console.log(this.eres);
-        
+        this.eres = nomenclatures;
       }
     );
     this.nomenclaturesService.getNomenclaturesByTypeId(3).subscribe(
       (nomenclatures: any) => {
-        this.systemes = nomenclatures
+        this.systemes = nomenclatures;
       }
     );
     this.nomenclaturesService.getNomenclaturesByTypeId(4).subscribe(
       (nomenclatures: any) => {
-        this.series = nomenclatures
+        this.series = nomenclatures;
       }
     );
     this.nomenclaturesService.getNomenclaturesByTypeId(5).subscribe(
       (nomenclatures: any) => {
-        this.etages = nomenclatures
+        this.etages = nomenclatures;
       }
     );
   }
@@ -158,8 +155,6 @@ export class TInfosBaseSiteComponent implements OnInit {
       (site: any) => {
         this.site = site;
         this.id_site = site.id_site;
-        console.log(site);
-        
 
         this.tInfosBaseSiteForm.patchValue({
           id_site: site.id_site,
@@ -170,9 +165,6 @@ export class TInfosBaseSiteComponent implements OnInit {
           protection_perimeter_contains_geological_heritage_other: site.infos_base.protection_perimeter_contains_geological_heritage_other,
           reserve_has_geological_collections: site.infos_base.reserve_has_geological_collections,
           reserve_has_exhibition: site.infos_base.reserve_has_exhibition,
-          geological_age: site.infos_base.geological_age,
-          etage: site.infos_base.etage,
-          ere_periode_epoque: site.infos_base.ere_periode_epoque,
           reserve_contains_stratotype: site.infos_base.reserve_contains_stratotype,
           stratotype_limit: site.infos_base.stratotype_limit,
           stratotype_limit_input: site.infos_base.stratotype_limit_input,
@@ -193,7 +185,11 @@ export class TInfosBaseSiteComponent implements OnInit {
           mine_extracted_material: site.infos_base.mine_extracted_material,
           mine_fossiliferous_material: site.infos_base.mine_fossiliferous_material,
           reserve_has_geological_site_for_visitors: site.infos_base.reserve_has_geological_site_for_visitors,
-          offers_geodiversity_activities: site.infos_base.offers_geodiversity_activities
+          offers_geodiversity_activities: site.infos_base.offers_geodiversity_activities,
+          eres: site.ages.eres,
+          systemes: site.ages.systemes,
+          series: site.ages.series,
+          etages: site.ages.etages
         });
 
         this.tInfosBaseSiteForm.get('main_geological_interests')?.patchValue({
@@ -229,12 +225,114 @@ export class TInfosBaseSiteComponent implements OnInit {
     );
   }
 
+  fetchSitesWithProtection(): void {
+    this.siteService.getSitesWithProtection().subscribe(
+      (sites: any[]) => {
+        this.sitesWithProtection = sites;
+      },
+      error => {
+        console.error('Error fetching sites with protection', error);
+      }
+    );
+  }
+
+  fetchPatrimoineGeologique(): void {
+    this.patrimoineGeologiqueService.getPatrimoineGeologique(this.id_site).subscribe(
+      (data: any) => {
+        if (data && data.principal && data.protection) {
+          this.principalHeritage = data.principal;
+          this.protectionHeritage = data.protection;
+          this.populateGeologicalHeritages(this.principalHeritage);
+          this.populateProtectionGeologicalHeritages(this.protectionHeritage);
+        } else {
+          console.error('Unexpected data format:', data);
+        }
+      },
+      (error: any) => {
+        console.error('Error fetching geological heritage data', error);
+      }
+    );
+  }
+
+  get geologicalHeritages(): FormArray {
+    return this.tInfosBaseSiteForm.get('geologicalHeritages') as FormArray;
+  }
+
+  get protectionGeologicalHeritages(): FormArray {
+    return this.tInfosBaseSiteForm.get('protection_geologicalHeritages') as FormArray;
+  }
+
+  populateGeologicalHeritages(data: PatrimoineGeologique[]): void {
+    const heritageArray = this.geologicalHeritages;
+    data.forEach((heritage: PatrimoineGeologique) => {
+      heritageArray.push(this.fb.group({
+        lb: [heritage.lb, Validators.required],
+        nombre_etoiles: [heritage.nombre_etoiles, Validators.required],
+        interet_geol_principal: [heritage.interet_geol_principal, Validators.required],
+        age_des_terrains_le_plus_recent: [heritage.age_des_terrains_le_plus_recent],
+        age_des_terrains_le_plus_ancien: [heritage.age_des_terrains_le_plus_ancien],
+        bibliographie: [heritage.bibliographie, Validators.required]
+      }));
+    });
+  }
+
+  populateProtectionGeologicalHeritages(data: PatrimoineGeologique[]): void {
+    const heritageArray = this.protectionGeologicalHeritages;
+    data.forEach((heritage: PatrimoineGeologique) => {
+      heritageArray.push(this.fb.group({
+        lb: [heritage.lb, Validators.required],
+        nombre_etoiles: [heritage.nombre_etoiles, Validators.required],
+        interet_geol_principal: [heritage.interet_geol_principal, Validators.required],
+        age_des_terrains_le_plus_recent: [heritage.age_des_terrains_le_plus_recent],
+        age_des_terrains_le_plus_ancien: [heritage.age_des_terrains_le_plus_ancien],
+        bibliographie: [heritage.bibliographie, Validators.required]
+      }));
+    });
+  }
+
+  addHeritage(): void {
+    this.geologicalHeritages.push(this.fb.group({
+      lb: ['', Validators.required],
+      nombre_etoiles: [0, Validators.required],
+      interet_geol_principal: ['', Validators.required],
+      age_des_terrains_le_plus_recent: [''],
+      age_des_terrains_le_plus_ancien: [''],
+      bibliographie: ['', Validators.required]
+    }));
+  }
+
+  addProtectionHeritage(): void {
+    this.protectionGeologicalHeritages.push(this.fb.group({
+      lb: ['', Validators.required],
+      nombre_etoiles: [0, Validators.required],
+      interet_geol_principal: ['', Validators.required],
+      age_des_terrains_le_plus_recent: [''],
+      age_des_terrains_le_plus_ancien: [''],
+      bibliographie: ['', Validators.required]
+    }));
+  }
+
+  removeHeritage(index: number): void {
+    this.geologicalHeritages.removeAt(index);
+  }
+
+  removeProtectionHeritage(index: number): void {
+    this.protectionGeologicalHeritages.removeAt(index);
+  }
+
+  rateHeritage(index: number, rating: number): void {
+    this.geologicalHeritages.at(index).get('nombre_etoiles')?.setValue(rating);
+  }
+
+  rateProtectionHeritage(index: number, rating: number): void {
+    this.protectionGeologicalHeritages.at(index).get('nombre_etoiles')?.setValue(rating);
+  }
+
   onEresSelectionChange(event: { value: any[] }): void {
     this.selectedEresIds = event.value;
     this.filteredSystemes = this.systemes!.nomenclatures.filter((systeme: Nomenclature) =>
       this.selectedEresIds.includes(systeme.id_parent)
     );
-    // Mise à jour des séries et étages
     this.updateSeriesAndEtages();
   }
 
@@ -243,13 +341,11 @@ export class TInfosBaseSiteComponent implements OnInit {
     this.filteredSeries = this.series!.nomenclatures.filter((serie: Nomenclature) =>
       this.selectedSystemesIds.includes(serie.id_parent)
     );
-    // Mise à jour des étages
     this.updateEtages();
   }
 
   onSeriesSelectionChange(event: { value: any[] }): void {
     this.selectedSeriesIds = event.value;
-    // Mise à jour des étages
     this.updateEtages();
   }
 
@@ -264,57 +360,6 @@ export class TInfosBaseSiteComponent implements OnInit {
     this.filteredEtages = this.etages!.nomenclatures.filter((etage: Nomenclature) =>
       (this.selectedSystemesIds.includes(etage.id_parent) || this.selectedSeriesIds.includes(etage.id_parent))
     );
-  }
-  fetchPatrimoineGeologique(): void {
-    this.patrimoineGeologiqueService.getPatrimoineGeologique(this.id_site).subscribe(
-      (data: any) => {
-        if (Array.isArray(data)) {
-          this.populateGeologicalHeritages(data);
-        } else {
-          console.error("Expected an array but got:", data);
-        }
-      },
-      (error: any) => {
-        console.error('Error fetching geological heritage data', error);
-      }
-    );
-  }
-
-  get geologicalHeritages(): FormArray {
-    return this.tInfosBaseSiteForm.get('geologicalHeritages') as FormArray;
-  }
-
-  populateGeologicalHeritages(data: PatrimoineGeologique[]): void {
-    const heritageArray = this.geologicalHeritages;
-    data.forEach((heritage: PatrimoineGeologique) => {
-      heritageArray.push(this.fb.group({
-        lb: [heritage.lb, Validators.required],
-        nombre_etoiles: [heritage.nombre_etoiles, Validators.required],
-        interet_geol_principal: [heritage.interet_geol_principal, Validators.required],
-        age_des_terrains_le_plus_recent: [heritage.age_des_terrains_le_plus_recent, Validators.required],
-        age_des_terrains_le_plus_ancien: [heritage.age_des_terrains_le_plus_ancien, Validators.required],
-        bibliographie: [heritage.bibliographie]  // Nouveau champ
-      }));
-    });
-  }
-
-  addHeritage(): void {
-    this.geologicalHeritages.push(this.fb.group({
-      lb: ['', Validators.required],
-      nombre_etoiles: [0, Validators.required],
-      interet_geol_principal: ['', Validators.required],
-      age_des_terrains_le_plus_recent: ['', Validators.required],
-      age_des_terrains_le_plus_ancien: ['', Validators.required],
-      bibliographie: ['']  // Nouveau champ
-    }));
-  }
-
-  removeHeritage(index: number): void {
-    this.geologicalHeritages.removeAt(index);
-  }
-
-  rateHeritage(index: number, rating: number): void {
-    this.geologicalHeritages.at(index).get('nombre_etoiles')?.setValue(rating);
   }
 
   onSubmit(): void {

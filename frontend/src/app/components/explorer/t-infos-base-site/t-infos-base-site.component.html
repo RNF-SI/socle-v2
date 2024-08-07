@@ -5,26 +5,25 @@
     <!-- Question 1 -->
     <div class="form-group">
       <label>
-        <h6>Est-ce que la réserve a été créée sur le fondement d’un patrimoine géologique</h6>
+        <h6>Est-ce que la réserve a été créée sur le fondement d’un patrimoine géologique ?</h6>
       </label>
       <div>
         <mat-slide-toggle formControlName="reserve_created_on_geological_basis">Non / Oui</mat-slide-toggle>
       </div>
     </div>
 <!-- Question 2 -->
-   <!-- Question 2 -->
 <div class="container">
   <div class="form-group">
     <label>
-      <h6>Est-ce que la réserve abrite du patrimoine géologique</h6>
+      <h6>Est-ce que la réserve abrite du patrimoine géologique ?</h6>
     </label>
     <div>
       <div *ngIf="tInfosBaseSiteForm.get('reserve_contains_geological_heritage_inpg')?.value">
         <div *ngFor="let inpg of site.inpg">
           <p>
             <a [href]="inpg.url" target="_blank">{{ inpg.lb_site }}</a>
-            {{ inpg.interet_geol_principal }} - 
-            <ngb-rating [max]="3" [(rate)]="inpg.nombre_etoiles" [readonly]="true"></ngb-rating>
+            {{ inpg.interet_geol_principal }} -
+            <ngb-rating [max]="3" [(rate)]="inpg.nombre_etoiles" [readonly]="true" class="star-rating"></ngb-rating>
           </p>
         </div>
 
@@ -35,11 +34,11 @@
             </button>
             <mat-form-field appearance="fill">
               <mat-label>Libellé</mat-label>
-              <input matInput formControlName="lb">
+              <input matInput formControlName="lb" required>
             </mat-form-field>
             <mat-form-field appearance="fill">
               <mat-label>Intérêt Géologique Principal</mat-label>
-              <mat-select formControlName="interet_geol_principal">
+              <mat-select formControlName="interet_geol_principal" required>
                 <mat-option *ngFor="let option of geologicalInterestOptions" [value]="option">
                   {{ option }}
                 </mat-option>
@@ -53,19 +52,17 @@
               <mat-label>Âge des Terrains le Plus Ancien</mat-label>
               <input matInput formControlName="age_des_terrains_le_plus_ancien">
             </mat-form-field>
-            
-           
-            
+
             <mat-form-field appearance="fill" class="bibliographie-field">
               <mat-label>Bibliographie</mat-label>
-              <textarea matInput formControlName="bibliographie"></textarea>
+              <input matInput formControlName="bibliographie" required>
             </mat-form-field>
             <div class="star-rating">
-              <ngb-rating [max]="3" [(rate)]="heritage.value.nombre_etoiles" [readonly]="false"></ngb-rating>
+              <ngb-rating [max]="3" [(rate)]="heritage.value.nombre_etoiles" [readonly]="false" class="star-rating"></ngb-rating>
             </div>
           </div>
         </div>
-        
+
         <button mat-fab class="add-button" (click)="addHeritage()">
           <mat-icon>+</mat-icon>
         </button>
@@ -74,28 +71,68 @@
   </div>
 </div>
 
-    
-
-        
-  
-    
-    <!-- Question 3 -->
-    <div class="form-group">
-      <label>
-        <h6>Est-ce que le périmètre de protection de la réserve (hors secteurs classés) abrite du patrimoine géologique (données INPG)</h6>
-      </label>
-      <div>
-        <mat-checkbox formControlName="protection_perimeter_contains_geological_heritage_inpg">Oui</mat-checkbox>
-        <div *ngIf="tInfosBaseSiteForm.get('protection_perimeter_contains_geological_heritage_inpg')?.value">
-          <mat-form-field>
-            <mat-label>Préciser les détails</mat-label>
-            <input matInput formControlName="protection_perimeter_contains_geological_heritage_other">
-          </mat-form-field>
+<!-- Question 3 -->
+<div class="container">
+  <div class="form-group">
+    <label>
+      <h6>Est-ce que le périmètre de protection de la réserve abrite du patrimoine géologique ?</h6>
+    </label>
+    <div *ngFor="let site of sitesWithProtection">
+      <div *ngIf="site.perimetre_protection">
+        <div *ngFor="let inpg of site.inpg">
+          <p>
+            <a [href]="inpg.url" target="_blank">{{ inpg.lb_site }}</a>
+            {{ inpg.interet_geol_principal }} -
+            <ngb-rating [max]="3" [(rate)]="inpg.nombre_etoiles" [readonly]="true" class="star-rating"></ngb-rating>
+          </p>
         </div>
       </div>
     </div>
+    <div *ngIf="tInfosBaseSiteForm.get('protection_perimeter_contains_geological_heritage_inpg')?.value">
+      <div formArrayName="protection_geologicalHeritages" *ngFor="let heritage of protectionGeologicalHeritages.controls; let i = index">
+        <div [formGroupName]="i" class="heritage-entry">
+          <button mat-icon-button class="remove-button" (click)="removeProtectionHeritage(i)">
+            <mat-icon>x</mat-icon>
+          </button>
+          <mat-form-field appearance="fill">
+            <mat-label>Libellé</mat-label>
+            <input matInput formControlName="lb" required>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Intérêt Géologique Principal</mat-label>
+            <mat-select formControlName="interet_geol_principal" required>
+              <mat-option *ngFor="let option of geologicalInterestOptions" [value]="option">
+                {{ option }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Âge des Terrains le Plus Récent</mat-label>
+            <input matInput formControlName="age_des_terrains_le_plus_recent">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Âge des Terrains le Plus Ancien</mat-label>
+            <input matInput formControlName="age_des_terrains_le_plus_ancien">
+          </mat-form-field>
 
-    <!-- Question 4 -->
+          <mat-form-field appearance="fill" class="bibliographie-field">
+            <mat-label>Bibliographie</mat-label>
+            <input matInput formControlName="bibliographie" required>
+          </mat-form-field>
+          <div class="star-rating">
+            <ngb-rating [max]="3" [(rate)]="heritage.value.nombre_etoiles" [readonly]="false" class="star-rating"></ngb-rating>
+          </div>
+        </div>
+      </div>
+      <button mat-fab class="add-button" (click)="addProtectionHeritage()">
+        <mat-icon>+</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>
+
+
+    <!-- Question 4 
     <div class="form-group" formGroupName="main_geological_interests">
       <label>
         <h6>Quels sont les intérêts géologiques principaux de la réserve</h6>
@@ -113,7 +150,7 @@
         <mat-checkbox formControlName="hydrogeology">Hydrogéologie</mat-checkbox>
         <mat-checkbox formControlName="tectonics">Tectonique</mat-checkbox>
       </div>
-    </div>
+    </div>-->
 
     <!-- Question 5 -->
     <div class="form-group" formGroupName="contains_paleontological_heritage">
@@ -144,7 +181,7 @@
     <!-- Question 6 -->
     <div class="form-group">
       <label>
-        <h6>Est-ce que la réserve dispose de collections géologiques propres</h6>
+        <h6>Est-ce que la réserve dispose de collections géologiques propres ?</h6>
       </label>
       <div>
         <mat-slide-toggle formControlName="reserve_has_geological_collections">Non / Oui</mat-slide-toggle>
@@ -154,7 +191,7 @@
     <!-- Question 7 -->
     <div class="form-group">
       <label>
-        <h6>Est-ce que la réserve dispose d’un lieu d’exposition de collections géologiques</h6>
+        <h6>Est-ce que la réserve dispose d’un lieu d’exposition de collections géologiques ?</h6>
       </label>
       <div>
         <mat-slide-toggle formControlName="reserve_has_exhibition">Non / Oui</mat-slide-toggle>
@@ -164,7 +201,7 @@
     <!-- Question 8 -->
     <div class="form-group">
       <label>
-        <h6>Âge des terrains à l’affleurement dans la réserve</h6>
+        <h6>Âge des terrains à l’affleurement dans la réserve ?</h6>
       </label>
       <div class="stratigraphie">
         <mat-form-field *ngIf="eres">
@@ -201,7 +238,7 @@
     <!-- Question 9 -->
     <div class="form-group">
       <label>
-        <h6>Est-ce que la réserve (périmètre de protection inclus) abrite un stratotype ?</h6>
+        <h6>Est-ce que la réserve abrite un stratotype ?</h6>
       </label>
       <div>
         <mat-radio-group formControlName="reserve_contains_stratotype">
@@ -230,7 +267,7 @@
     <!-- Question 10 -->
     <div class="form-group">
       <label>
-        <h6>Est-ce que la réserve présente des milieux souterrains abritant un patrimoine naturel identifié, biologique ou géologique (périmètre de protection inclus)</h6>
+        <h6>Est-ce que la réserve présente des milieux souterrains abritant un patrimoine naturel identifié, biologique ou géologique ?</h6>
       </label>
       <div>
         <mat-radio-group formControlName="contains_subterranean_habitats">
@@ -286,7 +323,7 @@
     <!-- Question 12 -->
     <div class="form-group">
       <label>
-        <h6>Est-ce que la réserve dispose d’un site géologique aménagé pour les visiteurs</h6>
+        <h6>Est-ce que la réserve dispose d’un site géologique aménagé pour les visiteurs ?</h6>
       </label>
       <div>
         <mat-slide-toggle formControlName="reserve_has_geological_site_for_visitors">Non / Oui</mat-slide-toggle>
@@ -296,7 +333,7 @@
     <!-- Question 13 -->
     <div class="form-group">
       <label>
-        <h6>Est-ce que la réserve propose des animations sur la thématique géodiversité / patrimoine géologique</h6>
+        <h6>Est-ce que la réserve propose des animations sur la thématique géodiversité / patrimoine géologique ?</h6>
       </label>
       <div>
         <mat-slide-toggle formControlName="offers_geodiversity_activities">Non / Oui</mat-slide-toggle>

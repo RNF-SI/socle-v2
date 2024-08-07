@@ -35,9 +35,9 @@ class TInfosBaseSite(db.Model):
     contains_paleontological_heritage_other_details = db.Column(db.String)  # Nouveau champ
     reserve_has_geological_collections = db.Column(db.Boolean, nullable=False)
     reserve_has_exhibition = db.Column(db.Boolean, nullable=False)
-    geological_age = db.Column(db.String)
-    etage = db.Column(db.String)
-    ere_periode_epoque = db.Column(db.String)
+    #geological_age = db.Column(db.String)
+    #etage = db.Column(db.String)
+    #ere_periode_epoque = db.Column(db.String)
     reserve_contains_stratotype = db.Column(db.Boolean)
     stratotype_limit = db.Column(db.Boolean)  # Nouveau champ
     stratotype_limit_input = db.Column(db.String)  # Nouveau champ
@@ -73,6 +73,8 @@ class Site(db.Model):
     __tablename__ = 'site'
 
     id_site = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    perimetre_protection = db.Column(db.Boolean, default=False)  # Nouveau champ
+    id_perimetre_protection = db.Column(db.Integer, db.ForeignKey('site.id_site'), nullable=True) # Assurez-vous que cette ligne est correcte
     nom = db.Column(db.String(255), nullable=False)
     altitude_max = db.Column(db.Float, nullable=True)
     altitude_min = db.Column(db.Float, nullable=True)
@@ -90,6 +92,8 @@ class Site(db.Model):
 
     slug = db.Column(db.String(255), unique=True)# ajouter slug  
 
+    perimetre_protection_site = db.relationship("Site", remote_side=[id_site])
+
     infos_base = db.relationship("TInfosBaseSite", foreign_keys=TInfosBaseSite.id_site, uselist=False)
 
     inpg = db.relationship(
@@ -103,6 +107,10 @@ class Site(db.Model):
         secondary=cor_site_ages,
         passive_deletes=True
     )
+
+    patrimoines_geologiques = db.relationship('PatrimoineGeologiqueGestionnaire', backref='site', passive_deletes=True)
+    
+
 
 class EntiteGeol(db.Model):
     __tablename__ = 'entite_geol'
@@ -147,13 +155,16 @@ class PatrimoineGeologiqueGestionnaire(db.Model):
     __tablename__ = 'patrimoine_geologique_gestionnaire'
 
     id_patrimoine = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
-    id_site = db.Column(db.Integer, db.ForeignKey('site.id_site'), primary_key=True, nullable=False)
+    id_site = db.Column(db.Integer, db.ForeignKey('site.id_site'), nullable=False)
     lb = db.Column(db.String(254))
     interet_geol_principal = db.Column(db.String)
     nombre_etoiles = db.Column(db.Integer)
     age_des_terrains_le_plus_recent = db.Column(db.String)
     age_des_terrains_le_plus_ancien = db.Column(db.String)
     bibliographie = db.Column(db.Text)  # Nouveau champ
+    
+
+ 
     
 class Nomenclature(db.Model):
     __tablename__ = 't_nomenclatures'

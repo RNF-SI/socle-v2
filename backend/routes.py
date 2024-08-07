@@ -5,10 +5,13 @@ import requests
 import json
 from app import app, db
 from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Nomenclature, BibNomenclatureType
-from schemas import TInfosBaseSiteSchema, SiteSchema, NomenclatureSchema, NomenclatureTypeSchema
+from schemas import PatrimoineGeologiqueGestionnaireSchema, PerimetreProtectionSchema, TInfosBaseSiteSchema, SiteSchema, NomenclatureSchema, NomenclatureTypeSchema
 from pypnusershub import routes as fnauth
+import logging
 
 bp = Blueprint('routes', __name__)
+
+logging.basicConfig(level=logging.DEBUG)
 
 @bp.route('/sites', methods=['GET'])
 def getSites():
@@ -91,7 +94,7 @@ def submitData():
             #contains_paleontological_heritage_other_details=data.get('contains_paleontological_heritage_other_details'),
             reserve_has_geological_collections=data.get('reserve_has_geological_collections'),
             reserve_has_exhibition=data.get('reserve_has_exhibition'),
-            geological_age=data.get('geological_age'),
+            #geological_age=data.get('geological_age'),
             reserve_contains_stratotype=data.get('reserve_contains_stratotype'),
             stratotype_details=data.get('stratotype_details'),
             contains_subterranean_habitats=data.get('contains_subterranean_habitats'),
@@ -143,21 +146,21 @@ def get_t_infos_base_site_by_slug(slug):
 def update_t_infos_base_site(slug):
     try:
         data = request.get_json()
-        print(data)
-        t_infos_base_site = TInfosBaseSite.query.filter_by(slug=slug).first()
-        site = Site.query.filter_by(id_site=t_infos_base_site.id_site).first()
+        print('Received data:', data)  # Ajoutez ceci pour vérifier les données reçues
         
+        t_infos_base_site = TInfosBaseSite.query.filter_by(slug=slug).first()
         if not t_infos_base_site:
             return jsonify({'message': 'TInfosBaseSite non trouvée'}), 404
         
+        site = Site.query.filter_by(id_site=t_infos_base_site.id_site).first()
+        if not site:
+            return jsonify({'message': 'Site non trouvé'}), 404
+        
         # Mise à jour des champs
         t_infos_base_site.reserve_created_on_geological_basis = data.get('reserve_created_on_geological_basis', t_infos_base_site.reserve_created_on_geological_basis)
-        #t_infos_base_site.reserve_contains_geological_heritage_inpg = data.get('reserve_contains_geological_heritage_inpg', t_infos_base_site.reserve_contains_geological_heritage_inpg)
-        #t_infos_base_site.reserve_contains_geological_heritage_other = data.get('reserve_contains_geological_heritage_other', t_infos_base_site.reserve_contains_geological_heritage_other)
         t_infos_base_site.protection_perimeter_contains_geological_heritage_inpg = data.get('protection_perimeter_contains_geological_heritage_inpg', t_infos_base_site.protection_perimeter_contains_geological_heritage_inpg)
         t_infos_base_site.protection_perimeter_contains_geological_heritage_other = data.get('protection_perimeter_contains_geological_heritage_other', t_infos_base_site.protection_perimeter_contains_geological_heritage_other)
         
-        # Handle nested data for main_geological_interests
         main_geological_interests = data.get('main_geological_interests', {})
         t_infos_base_site.main_geological_interests_stratigraphic = main_geological_interests.get('stratigraphic', t_infos_base_site.main_geological_interests_stratigraphic)
         t_infos_base_site.main_geological_interests_paleontological = main_geological_interests.get('paleontological', t_infos_base_site.main_geological_interests_paleontological)
@@ -171,7 +174,6 @@ def update_t_infos_base_site(slug):
         t_infos_base_site.main_geological_interests_hydrogeology = main_geological_interests.get('hydrogeology', t_infos_base_site.main_geological_interests_hydrogeology)
         t_infos_base_site.main_geological_interests_tectonics = main_geological_interests.get('tectonics', t_infos_base_site.main_geological_interests_tectonics)
         
-        # Handle nested data for contains_paleontological_heritage
         contains_paleontological_heritage = data.get('contains_paleontological_heritage', {})
         t_infos_base_site.contains_paleontological_heritage = contains_paleontological_heritage.get('answer', t_infos_base_site.contains_paleontological_heritage)
         t_infos_base_site.contains_paleontological_heritage_vertebrates = contains_paleontological_heritage.get('vertebrates', t_infos_base_site.contains_paleontological_heritage_vertebrates)
@@ -181,15 +183,11 @@ def update_t_infos_base_site(slug):
         t_infos_base_site.contains_paleontological_heritage_other = contains_paleontological_heritage.get('other', t_infos_base_site.contains_paleontological_heritage_other)
         t_infos_base_site.contains_paleontological_heritage_other_details = contains_paleontological_heritage.get('otherDetails', t_infos_base_site.contains_paleontological_heritage_other_details)
         
-        # Continue updating other fields as done previously
         t_infos_base_site.reserve_has_geological_collections = data.get('reserve_has_geological_collections', t_infos_base_site.reserve_has_geological_collections)
         t_infos_base_site.reserve_has_exhibition = data.get('reserve_has_exhibition', t_infos_base_site.reserve_has_exhibition)
-        t_infos_base_site.geological_age = data.get('geological_age', t_infos_base_site.geological_age)
-        t_infos_base_site.etage = data.get('etage', t_infos_base_site.etage)
-        t_infos_base_site.ere_periode_epoque = data.get('ere_periode_epoque', t_infos_base_site.ere_periode_epoque)
         t_infos_base_site.reserve_contains_stratotype = data.get('reserve_contains_stratotype', t_infos_base_site.reserve_contains_stratotype)
-        t_infos_base_site.stratotype_limit = data.get('stratotype_limit', t_infos_base_site.stratotype_limit)  # Nouveau champ
-        t_infos_base_site.stratotype_limit_input = data.get('stratotype_limit_input', t_infos_base_site.stratotype_limit_input)  # Nouveau champ
+        t_infos_base_site.stratotype_limit = data.get('stratotype_limit', t_infos_base_site.stratotype_limit)
+        t_infos_base_site.stratotype_limit_input = data.get('stratotype_limit_input', t_infos_base_site.stratotype_limit_input)
         t_infos_base_site.stratotype_stage = data.get('stratotype_stage', t_infos_base_site.stratotype_stage)
         t_infos_base_site.stratotype_stage_input = data.get('stratotype_stage_input', t_infos_base_site.stratotype_stage_input)
         t_infos_base_site.contains_subterranean_habitats = data.get('contains_subterranean_habitats', t_infos_base_site.contains_subterranean_habitats)
@@ -206,28 +204,42 @@ def update_t_infos_base_site(slug):
         t_infos_base_site.mine_fossiliferous_material = data.get('mine_fossiliferous_material', t_infos_base_site.mine_fossiliferous_material)
         t_infos_base_site.reserve_has_geological_site_for_visitors = data.get('reserve_has_geological_site_for_visitors', t_infos_base_site.reserve_has_geological_site_for_visitors)
         t_infos_base_site.offers_geodiversity_activities = data.get('offers_geodiversity_activities', t_infos_base_site.offers_geodiversity_activities)
-
-        print(data.get('eres'))
+        
         nouveaux_ages_dict = []
-        for age in data.get('eres') :
-            nomenclature = Nomenclature.query.filter_by(id_nomenclature=age).first()
-            if nomenclature not in site.ages :
-                site.ages.append(nomenclature)
-            nouveaux_ages_dict.append(nomenclature)
-        for age in site.ages :
-            print(age)
-            if age not in nouveaux_ages_dict :
+        if 'eres' in data and data['eres'] is not None:
+            for age in data['eres']:
+                nomenclature = Nomenclature.query.filter_by(id_nomenclature=age).first()
+                if nomenclature not in site.ages:
+                    site.ages.append(nomenclature)
+                nouveaux_ages_dict.append(nomenclature)
+        for age in site.ages:
+            if age not in nouveaux_ages_dict:
                 site.ages.remove(age)
-
+        
+        # Gestion du patrimoine géologique
+        if 'geologicalHeritages' in data and data['geologicalHeritages'] is not None:
+            for heritage_data in data['geologicalHeritages']:
+                heritage = PatrimoineGeologiqueGestionnaire.query.filter_by(id_site=site.id_site, lb=heritage_data['lb']).first()
+                if not heritage:
+                    heritage = PatrimoineGeologiqueGestionnaire(
+                        id_site=site.id_site,
+                        lb=heritage_data['lb'],
+                        interet_geol_principal=heritage_data['interet_geol_principal'],
+                        nombre_etoiles=heritage_data['nombre_etoiles'],
+                        age_des_terrains_le_plus_recent=heritage_data['age_des_terrains_le_plus_recent'],
+                        age_des_terrains_le_plus_ancien=heritage_data['age_des_terrains_le_plus_ancien'],
+                        bibliographie=heritage_data.get('bibliographie', '')
+                    )
+                    db.session.add(heritage)
+                else:
+                    heritage.interet_geol_principal = heritage_data['interet_geol_principal']
+                    heritage.nombre_etoiles = heritage_data['nombre_etoiles']
+                    heritage.age_des_terrains_le_plus_recent = heritage_data['age_des_terrains_le_plus_recent']
+                    heritage.age_des_terrains_le_plus_ancien = heritage_data['age_des_terrains_le_plus_ancien']
+                    heritage.bibliographie = heritage_data.get('bibliographie', '')
 
         db.session.commit()
         return jsonify({'type': 'success', 'msg': 'TInfosBaseSite mise à jour avec succès !'})
-        
-        
-
-    
-    
-    
 
     except Exception as e:
         print(f"Error: {str(e)}")  # Debugging log
@@ -238,6 +250,7 @@ def update_t_infos_base_site(slug):
         )
         response.status_code = 500
         return response
+
 @bp.route('/nomenclatures/<id_type>', methods=['GET'])
 def get_nomenclatures_by_type(id_type):
     nomenclatures = BibNomenclatureType.query.filter_by(id_type=id_type).first()
@@ -249,76 +262,82 @@ def get_nomenclatures_by_type(id_type):
 ### 
 @bp.route('/patrimoine_geologique/<int:id_site>', methods=['GET'])
 def get_patrimoine_geologique(id_site):
+    logging.info(f"Received request for patrimoine geologique with id_site: {id_site}")
     try:
-        site = Site.query.get(id_site)
-        if not site:
-            return jsonify({'error': 'Site not found'}), 404
+        # Récupérer le site principal
+        site_principal = Site.query.get(id_site)
+        if not site_principal:
+            logging.warning(f"Site principal with id {id_site} not found")
+            return jsonify({'message': 'Site principal non trouvé'}), 404
 
-        geological_heritages = PatrimoineGeologiqueGestionnaire.query.filter_by(id_site=id_site).all()
-        
-        heritage_list = []
-        for heritage in geological_heritages:
-            heritage_data = {
-                'id_patrimoine': heritage.id_patrimoine,
-                'lb': heritage.lb,
-                'nombre_etoiles': heritage.nombre_etoiles,
-                'interet_geol_principal': heritage.interet_geol_principal,
-                'age_des_terrains_le_plus_recent': heritage.age_des_terrains_le_plus_recent,
-                'age_des_terrains_le_plus_ancien': heritage.age_des_terrains_le_plus_ancien,
-                'bibliographie': heritage.bibliographie
-            }
-            heritage_list.append(heritage_data)
-        
-        return jsonify(heritage_list)  # Ensure this returns a list
-    except Exception as e:
-        app.logger.error(f"Error fetching geological heritage: {str(e)}")
-        return jsonify({'error': str(e)}), 500
+        logging.debug(f"Site principal found: {site_principal}")
 
+        # Récupérer les patrimoines géologiques pour le site principal
+        patrimoines_geologiques_principal = PatrimoineGeologiqueGestionnaire.query.filter_by(id_site=id_site).all()
+        logging.debug(f"Found {len(patrimoines_geologiques_principal)} patrimoines geologiques for site principal")
 
-    
-@bp.route('/patrimoine_geologique/<int:id_site>', methods=['PUT'])
-def update_patrimoine_geologique(id_site):
-    data = request.json
-    try:
-        site = Site.query.get(id_site)
-        if not site:
-            return jsonify({'error': 'Site not found'}), 404
+        patrimoines_geologiques_protection = []
 
-        existing_heritages = {heritage.id_patrimoine: heritage for heritage in PatrimoineGeologiqueGestionnaire.query.filter_by(id_site=id_site).all()}
-        
-        updated_heritages_ids = []
-        for heritage_data in data.get('geological_heritages', []):
-            heritage_id = heritage_data.get('id_patrimoine')
-            if heritage_id in existing_heritages:
-                heritage = existing_heritages[heritage_id]
-                heritage.lb = heritage_data.get('lb', heritage.lb)
-                heritage.nombre_etoiles = heritage_data.get('nombre_etoiles', heritage.nombre_etoiles)
-                heritage.interet_geol_principal = heritage_data.get('interet_geol_principal', heritage.interet_geol_principal)
-                heritage.age_des_terrains_le_plus_recent = heritage_data.get('age_des_terrains_le_plus_recent', heritage.age_des_terrains_le_plus_recent)
-                heritage.age_des_terrains_le_plus_ancien = heritage_data.get('age_des_terrains_le_plus_ancien', heritage.age_des_terrains_le_plus_ancien)
-                heritage.bibliographie = heritage_data.get('bibliographie', heritage.bibliographie)
-                updated_heritages_ids.append(heritage.id_patrimoine)
+        # Récupérer les patrimoines géologiques pour le périmètre de protection s'il existe
+        if not site_principal.perimetre_protection:
+            logging.debug(f"Site principal has perimetre protection with ID: {site_principal.id_perimetre_protection}")
+            site_protection = Site.query.get(site_principal.id_perimetre_protection)
+            if site_protection:
+                logging.debug(f"Site protection found: {site_protection}")
+                patrimoines_geologiques_protection = PatrimoineGeologiqueGestionnaire.query.filter_by(id_site=site_protection.id_site).all()
+                logging.debug(f"Found {len(patrimoines_geologiques_protection)} patrimoines geologiques for site protection")
             else:
-                new_heritage = PatrimoineGeologiqueGestionnaire(
-                    id_site=id_site,
-                    lb=heritage_data['lb'],
-                    nombre_etoiles=heritage_data['nombre_etoiles'],
-                    interet_geol_principal=heritage_data['interet_geol_principal'],
-                    age_des_terrains_le_plus_recent=heritage_data['age_des_terrains_le_plus_recent'],
-                    age_des_terrains_le_plus_ancien=heritage_data['age_des_terrains_le_plus_ancien'],
-                    bibliographie=heritage_data['bibliographie']
-                )
-                db.session.add(new_heritage)
-                db.session.flush()  # Pour obtenir l'ID du nouvel héritage
-                updated_heritages_ids.append(new_heritage.id_patrimoine)
-        
-        # Suppression des héritages non inclus dans la mise à jour
-        for heritage_id in existing_heritages:
-            if heritage_id not in updated_heritages_ids:
-                db.session.delete(existing_heritages[heritage_id])
+                logging.warning(f"Site protection with id {site_principal.id_perimetre_protection} not found")
+        else:
+            logging.debug("Site principal does not have perimetre protection")
 
+        if not patrimoines_geologiques_principal and not patrimoines_geologiques_protection:
+            logging.warning(f"No patrimoine geologique found for site with id {id_site}")
+            return jsonify({'message': 'Aucun patrimoine géologique trouvé pour ce site'}), 404
+
+        schema = PatrimoineGeologiqueGestionnaireSchema(many=True)
+        response_data = {
+            'principal': schema.dump(patrimoines_geologiques_principal),
+            'protection': schema.dump(patrimoines_geologiques_protection)
+        }
+
+        logging.info(f"Returning patrimoine geologique data for site with id {id_site}")
+        return jsonify(response_data)
+    except Exception as e:
+        logging.error(f"Error occurred: {str(e)}", exc_info=True)  # Debugging log with stack trace
+        response = jsonify(
+            type='bug',
+            msg='Erreur lors de la récupération du patrimoine géologique',
+            flask_message=str(e)
+        )
+        response.status_code = 500
+        return response
+@bp.route('/sites/protection', methods=['GET'])
+def get_sites_with_protection():
+    sites = Site.query.filter(Site.perimetre_protection == True).all()
+    schema = PerimetreProtectionSchema(many=True)
+    site_obj = schema.dump(sites)
+    return jsonify(site_obj)
+
+
+@bp.route('/patrimoine_geologique/<int:id_site>', methods=['POST'])
+def add_patrimoine_geologique(id_site):
+    data = request.get_json()
+    try:
+        for heritage in data.get('geologicalHeritages', []):
+            patrimoine = PatrimoineGeologiqueGestionnaire(
+                id_site=id_site,
+                lb=heritage['lb'],
+                interet_geol_principal=heritage['interet_geol_principal'],
+                nombre_etoiles=heritage['nombre_etoiles'],
+                age_des_terrains_le_plus_recent=heritage.get('age_des_terrains_le_plus_recent'),
+                age_des_terrains_le_plus_ancien=heritage.get('age_des_terrains_le_plus_ancien'),
+                bibliographie=heritage['bibliographie']
+            )
+            db.session.add(patrimoine)
         db.session.commit()
-        return jsonify({'message': 'Geological heritage updated successfully'})
+        return jsonify({'message': 'Patrimoine géologique ajouté avec succès'}), 201
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'message': 'Erreur lors de l\'ajout du patrimoine géologique', 'error': str(e)}), 500
+
