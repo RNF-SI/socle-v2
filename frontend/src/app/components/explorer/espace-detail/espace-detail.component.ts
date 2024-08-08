@@ -6,7 +6,7 @@ import { Site } from 'src/app/models/site.model';
 import { GeologicalInterests } from 'src/app/models/geological-interests.model';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-
+import { PatrimoineGeologiqueService } from 'src/app/services/patrimoine-geologique.service';
 
 @Component({
   selector: 'app-espace-detail',
@@ -16,78 +16,139 @@ import html2canvas from 'html2canvas';
 export class EspaceDetailComponent implements OnInit {
   site: Site | undefined;
   tInfosBaseSite: any;
+  patrimoineGeologique: any;
   geologicalInterests: string[] = [];
   paleontologicalLabels: string[] = [];
+  principalHeritage: any[] = [];
+  protectionHeritage: any[] = [];
+  reserveContainsGeologicalHeritage: any[] = [];
+  protectionPerimeterContainsGeologicalHeritage: any[] = [];
+  siteSlug: any;
 
   constructor(
     private route: ActivatedRoute,
     private siteService: SitesService,
-    private tInfosBaseSiteService: TInfosBaseSiteService
+    private tInfosBaseSiteService: TInfosBaseSiteService,
+    private patrimoineGeologiqueService: PatrimoineGeologiqueService
   ) {}
 
   ngOnInit(): void {
     const slug = this.route.snapshot.paramMap.get('slug');
     console.log('Slug:', slug);
-    this.siteService.getSites().subscribe((data: Site[]) => {
-      this.site = data.find(site => site.slug === slug);
-       
-    });
 
     if (slug) {
-      this.siteService.getSiteBySlug(slug).subscribe((data: any) => {
-        this.tInfosBaseSite = data;
-        console.log('tInfosBaseSite:', this.tInfosBaseSite);
-        this.setGeologicalInterests();
-        this.setPaleontologicalLabels();
+      this.siteService.getSites().subscribe((sites: Site[]) => {
+        this.site = sites.find(site => site.slug === slug);
+        console.log('Site:', this.site);
+
+        if (this.site) {
+          this.tInfosBaseSiteService.getSiteBySlug(slug).subscribe((data: any) => {
+            console.log('Response data from getSiteBySlug:', data);
+            this.tInfosBaseSite = data;
+           
+             
+            
+
+             
+          });
+        }
+
+        this.fetchSiteDetails(this.siteSlug);
+
+        this.fetchPatrimoineGeologique(this.site?.id_site);
+
+
       });
     }
   }
+   
 
-  setPaleontologicalLabels(): void {
-    console.log('contains_paleontological_heritage:', this.tInfosBaseSite?.contains_paleontological_heritage);
+  fetchSiteDetails(slug: string){
+    this.tInfosBaseSiteService.getTInfosBaseSites(slug).subscribe(
+      (data: any) => {
+        if(data && data.reserve_contains_geological_heritage_inpg && data.protection_perimeter_contains_geological_heritage_inpg ){
+           this.reserveContainsGeologicalHeritage = data.reserve_contains_geological_heritage_inpg;
+           this.protectionPerimeterContainsGeologicalHeritage = data.protection_perimeter_contains_geological_heritage_inpg;
+        } else {
+          console.error('les data', data);
+        }
+      },
+      (error: any) => {
+        console.error('Error fetching geological heritage data', error);
+      }
+    );
 
-    if (this.tInfosBaseSite?.contains_paleontological_heritage) {
-      if (this.tInfosBaseSite.contains_paleontological_heritage_vertebrates) {
+  }
+
+  fetchPatrimoineGeologique(siteId: any): void {
+    this.patrimoineGeologiqueService.getPatrimoineGeologique(siteId).subscribe(
+      (data: any) => {
+        if (data && data.principal && data.protection) {
+          this.principalHeritage = data.principal;
+          this.protectionHeritage = data.protection;
+        } else {
+          console.error('Unexpected data format:', data);
+        }
+      },
+      (error: any) => {
+        console.error('Error fetching geological heritage data', error);
+      }
+    );
+  }
+
+  setGeologicalHeritages(): void {
+    this.principalHeritage = this.patrimoineGeologique?.geologicalHeritages || [];
+  }
+
+  setProtectionGeologicalHeritages(): void {
+    this.protectionHeritage = this.patrimoineGeologique?.protectionGeologicalHeritages || [];
+  }
+
+  
+
+   
+
+  setPaleontologicalLabels(patrimoineGeologique: any): void {
+    if (patrimoineGeologique?.contains_paleontological_heritage) {
+      if (patrimoineGeologique.contains_paleontological_heritage_vertebrates) {
         this.paleontologicalLabels.push(this.getPaleontologicalLabel('vertebrates'));
       }
-      if (this.tInfosBaseSite.contains_paleontological_heritage_invertebrates) {
+      if (patrimoineGeologique.contains_paleontological_heritage_invertebrates) {
         this.paleontologicalLabels.push(this.getPaleontologicalLabel('invertebrates'));
       }
-      if (this.tInfosBaseSite.contains_paleontological_heritage_plants) {
+      if (patrimoineGeologique.contains_paleontological_heritage_plants) {
         this.paleontologicalLabels.push(this.getPaleontologicalLabel('plants'));
       }
-      if (this.tInfosBaseSite.contains_paleontological_heritage_trace_fossils) {
+      if (patrimoineGeologique.contains_paleontological_heritage_trace_fossils) {
         this.paleontologicalLabels.push(this.getPaleontologicalLabel('traceFossils'));
       }
-      if (this.tInfosBaseSite.contains_paleontological_heritage_other) {
+      if (patrimoineGeologique.contains_paleontological_heritage_other) {
         this.paleontologicalLabels.push(this.getPaleontologicalLabel('other'));
-        if (this.tInfosBaseSite.contains_paleontological_heritage_other_details) {
-          this.paleontologicalLabels.push(`Préciser : ${this.tInfosBaseSite.contains_paleontological_heritage_other_details}`);
+        if (patrimoineGeologique.contains_paleontological_heritage_other_details) {
+          this.paleontologicalLabels.push(`Préciser : ${patrimoineGeologique.contains_paleontological_heritage_other_details}`);
         }
       }
     }
-    console.log('PaleontologicalLabels:', this.paleontologicalLabels);
   }
 
-  setGeologicalInterests(): void {
+  setGeologicalInterests(patrimoineGeologique: any): void {
     const interests: GeologicalInterests = {
-      stratigraphic: this.tInfosBaseSite?.main_geological_interests_stratigraphic,
-      paleontological: this.tInfosBaseSite?.main_geological_interests_paleontological,
-      sedimentological: this.tInfosBaseSite?.main_geological_interests_sedimentological,
-      geomorphological: this.tInfosBaseSite?.main_geological_interests_geomorphological,
-      mineral_resource: this.tInfosBaseSite?.main_geological_interests_mineral_resource,
-      mineralogical: this.tInfosBaseSite?.main_geological_interests_mineralogical,
-      metamorphism: this.tInfosBaseSite?.main_geological_interests_metamorphism,
-      volcanism: this.tInfosBaseSite?.main_geological_interests_volcanism,
-      plutonism: this.tInfosBaseSite?.main_geological_interests_plutonism,
-      hydrogeology: this.tInfosBaseSite?.main_geological_interests_hydrogeology,
-      tectonics: this.tInfosBaseSite?.main_geological_interests_tectonics
+      stratigraphic: patrimoineGeologique?.main_geological_interests_stratigraphic,
+      paleontological: patrimoineGeologique?.main_geological_interests_paleontological,
+      sedimentological: patrimoineGeologique?.main_geological_interests_sedimentological,
+      geomorphological: patrimoineGeologique?.main_geological_interests_geomorphological,
+      mineral_resource: patrimoineGeologique?.main_geological_interests_mineral_resource,
+      mineralogical: patrimoineGeologique?.main_geological_interests_mineralogical,
+      metamorphism: patrimoineGeologique?.main_geological_interests_metamorphism,
+      volcanism: patrimoineGeologique?.main_geological_interests_volcanism,
+      plutonism: patrimoineGeologique?.main_geological_interests_plutonism,
+      hydrogeology: patrimoineGeologique?.main_geological_interests_hydrogeology,
+      tectonics: patrimoineGeologique?.main_geological_interests_tectonics
     };
 
     this.geologicalInterests = (Object.keys(interests) as (keyof GeologicalInterests)[])
       .filter(key => interests[key])
       .map(key => this.getInterestLabel(key));
-    console.log('GeologicalInterests:', this.geologicalInterests);
   }
 
   getInterestLabel(key: keyof GeologicalInterests): string {

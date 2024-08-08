@@ -11,6 +11,9 @@ import { PatrimoineGeologique } from '../models/patrimoine-geologique.model';
   providedIn: 'root'
 })
 export class PatrimoineGeologiqueService {
+  getSiteBySlug(slug: string) {
+    throw new Error('Method not implemented.');
+  }
   constructor(private http: HttpClient) { }
 
   getPatrimoineGeologique(siteId: number): Observable<PatrimoineGeologique[]> {

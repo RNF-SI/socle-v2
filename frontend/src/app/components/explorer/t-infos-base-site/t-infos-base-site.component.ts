@@ -160,9 +160,9 @@ export class TInfosBaseSiteComponent implements OnInit {
           id_site: site.id_site,
           reserve_created_on_geological_basis: site.infos_base.reserve_created_on_geological_basis,
           reserve_contains_geological_heritage_inpg: site.reserve_contains_geological_heritage_inpg || site.inpg.length > 0,
-          reserve_contains_geological_heritage_other: site.reserve_contains_geological_heritage_other,
+          //reserve_contains_geological_heritage_other: site.reserve_contains_geological_heritage_other,
           protection_perimeter_contains_geological_heritage_inpg: site.protection_perimeter_contains_geological_heritage_inpg || site.inpg.length > 0,
-          protection_perimeter_contains_geological_heritage_other: site.infos_base.protection_perimeter_contains_geological_heritage_other,
+          //protection_perimeter_contains_geological_heritage_other: site.infos_base.protection_perimeter_contains_geological_heritage_other,
           reserve_has_geological_collections: site.infos_base.reserve_has_geological_collections,
           reserve_has_exhibition: site.infos_base.reserve_has_exhibition,
           reserve_contains_stratotype: site.infos_base.reserve_contains_stratotype,
@@ -389,7 +389,7 @@ export class TInfosBaseSiteComponent implements OnInit {
       );
     } else {
       console.error('Form is invalid');
-      alert('Form is invalid. Please check the form fields.');
+      alert('Oublie pas remplire les donnes.');
     }
   }
 }   

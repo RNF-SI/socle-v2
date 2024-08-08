@@ -16,11 +16,11 @@ export class TInfosBaseSiteService {
     return this.http.post(`${environment.apiUrl}/t_infos_base_site`, data);
   }
 
-  // getSiteBySlug(slug: string): Observable<any> {
-  //   return this.http.get(`${environment.apiUrl}/t_infos_base_site/${slug}`);
-  // }
+  getSiteBySlug(slug: string): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/t_infos_base_site/${slug}`);
+   }
 
-  getTInfosBaseSites(): Observable<any[]> {
+  getTInfosBaseSites(slug: string): Observable<any[]> {
     return this.http.get<any[]>(`${environment.apiUrl}/t_infos_base_sites`);
   }
 
