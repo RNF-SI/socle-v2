@@ -53,7 +53,7 @@ export class EspaceDetailComponent implements OnInit {
           });
         }
 
-        this.fetchSiteDetails(this.siteSlug);
+        
 
         this.fetchPatrimoineGeologique(this.site?.id_site);
 
@@ -63,22 +63,7 @@ export class EspaceDetailComponent implements OnInit {
   }
    
 
-  fetchSiteDetails(slug: string){
-    this.tInfosBaseSiteService.getTInfosBaseSites(slug).subscribe(
-      (data: any) => {
-        if(data && data.reserve_contains_geological_heritage_inpg && data.protection_perimeter_contains_geological_heritage_inpg ){
-           this.reserveContainsGeologicalHeritage = data.reserve_contains_geological_heritage_inpg;
-           this.protectionPerimeterContainsGeologicalHeritage = data.protection_perimeter_contains_geological_heritage_inpg;
-        } else {
-          console.error('les data', data);
-        }
-      },
-      (error: any) => {
-        console.error('Error fetching geological heritage data', error);
-      }
-    );
-
-  }
+ 
 
   fetchPatrimoineGeologique(siteId: any): void {
     this.patrimoineGeologiqueService.getPatrimoineGeologique(siteId).subscribe(

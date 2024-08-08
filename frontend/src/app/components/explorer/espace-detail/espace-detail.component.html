@@ -10,8 +10,8 @@
           <strong> - La réserve a-t-elle été créée sur le fondement d’un patrimoine géologique ?</strong>
           {{ tInfosBaseSite?.reserve_created_on_geological_basis ? 'Oui' : 'Non' }}
         </p>
-        <strong> - La réserve abrite-t-elle du patrimoine géologique (données INPG) ?</strong>
-        <div>Selon l'inpg</div>
+        <strong> - La réserve abrite-t-elle du patrimoine géologique ?</strong>
+        <div> => Selon l'inpg</div>
         <div *ngFor="let inpg of site.inpg">
           <div>
              
@@ -24,7 +24,7 @@
         
         <span *ngIf="tInfosBaseSite?.reserve_contains_geological_heritage_inpg"> 
         </span>
-        <div>Selon d'autres données</div>
+        <div> => Selon d'autres données</div>
         <span *ngIf="true">
             
           
@@ -36,11 +36,11 @@
         </span>
         
         <p>
-          <strong> - Le périmètre de protection de la réserve (hors secteurs classés) abrite-t-il du patrimoine géologique (données INPG) ?</strong>
+          <strong> - Le périmètre de protection de la réserve abrite-t-il du patrimoine géologique ?</strong>
           <span *ngIf="tInfosBaseSite?.protection_perimeter_contains_geological_heritage_inpg">
           </span> 
           <span *ngIf="true">
-            <div>Selon l'inpg</div>
+            <div> => Selon l'inpg</div>
             <div *ngFor="let inpg of site.perimetre_protection.inpg">
               <div>
                               
@@ -49,7 +49,7 @@
                 <ngb-rating [max]="3" [(rate)]="inpg.nombre_etoiles" [readonly]="true" class="star-rating"></ngb-rating>
               </div>
             </div>
-            <div>Selon d'autres données</div>
+            <div> => Selon d'autres données</div>
             <div *ngFor="let heritage of protectionHeritage">
               <a [href]="heritage.url" target="_blank">{{ heritage.lb }}</a>
               {{ heritage.interet_geol_principal }} -
@@ -91,7 +91,7 @@
           <br><strong>Ère Période Époque :</strong> {{ tInfosBaseSite?.ere_periode_epoque }}
         </p>
         <p>
-          <strong> - Est-ce que la réserve (périmètre de protection inclus) abrite un stratotype ?</strong>
+          <strong> - Est-ce que la réserve abrite un stratotype ?</strong>
           {{ tInfosBaseSite?.reserve_contains_stratotype ? 'Oui' : 'Non' }}
           <span *ngIf="tInfosBaseSite?.reserve_contains_stratotype">
             <br><strong>Stratotype de limite :</strong> {{ tInfosBaseSite?.stratotype_limit ? 'Oui' : 'Non' }}
@@ -105,7 +105,7 @@
           </span>
         </p>
         <p>
-          <strong> - Est-ce que la réserve présente des milieux souterrains abritant un patrimoine naturel identifié, biologique ou géologique (périmètre de protection inclus) ?</strong>
+          <strong> - Est-ce que la réserve présente des milieux souterrains abritant un patrimoine naturel identifié, biologique ou géologique ?</strong>
           {{ tInfosBaseSite?.contains_subterranean_habitats ? 'Oui' : 'Non' }}
           <span *ngIf="tInfosBaseSite?.contains_subterranean_habitats">
             <br><strong>Cavités naturelles :</strong> {{ tInfosBaseSite?.subterranean_habitats_natural_cavities ? 'Oui' : 'Non' }}
