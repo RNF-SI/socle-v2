@@ -43,5 +43,18 @@
   .spacing {
     height: 20px; /* Ajustez cette valeur pour créer plus ou moins d'espace */
   }
+  .star-rating {
+    font-size: 24px; /* Taille des étoiles */
+    color: gold; /* Couleur des étoiles */
+  }
+  
+  /* Pour s'assurer que les étoiles inactives soient grises */
+  .star-rating .ngb-star {
+    color: lightgray;
+  }
+  
+  .star-rating .ngb-star.filled {
+    color: gold;
+  }
   
   

@@ -52,18 +52,7 @@ button {
   margin-bottom: 50px;
 }
 
-.star-rating {
-  display: flex;
-  align-items: center;
-}
-
-.star-rating .ngb-rating {
-  font-size: 50rem; /* Increase the size of the stars */
-}
-
-.star-rating .ngb-rating .star.filled {
-  color: gold;
-}
+ 
 
 .bibliographie-field {
   margin: 20px auto; /* Center the field */
@@ -82,4 +71,17 @@ button {
   .stratigraphie mat-form-field {
     flex: 1; /* Permet de répartir les éléments également */
     min-width: 200px; /* Largeur minimale pour chaque élément */
+  }
+  .star-rating {
+    font-size: 24px; /* Taille des étoiles */
+    color: gold; /* Couleur des étoiles */
+  }
+  
+  /* Pour s'assurer que les étoiles inactives soient grises */
+  .star-rating .ngb-star {
+    color: lightgray;
+  }
+  
+  .star-rating .ngb-star.filled {
+    color: gold;
   }
