@@ -14,50 +14,87 @@
         
         <div>
           <strong>La réserve abrite-t-elle du patrimoine géologique ?</strong>
+          
           <div>=> Selon l'inpg</div>
-          <div *ngFor="let inpg of site.inpg">
-            <a [href]="inpg.url" target="_blank">{{ inpg.lb_site }}</a>
-            {{ inpg.interet_geol_principal }}
-            <ngb-rating [max]="3" [(rate)]="inpg.nombre_etoiles" [readonly]="true" class="star-rating"></ngb-rating>
+          <div *ngIf="site.inpg && site.inpg.length > 0; else noInpgData">
+            <div *ngFor="let inpg of site.inpg">
+              <a [href]="inpg.url" target="_blank">{{ inpg.lb_site }}</a>
+              {{ inpg.interet_geol_principal }}
+              <ngb-rating [max]="3" [(rate)]="inpg.nombre_etoiles" [readonly]="true" class="star-rating"></ngb-rating>
+            </div>
           </div>
-
+          <ng-template #noInpgData>
+            <div>Aucune données.</div>
+          </ng-template>
+        
           <div>=> Selon d'autres données</div>
-          <div *ngFor="let heritage of principalHeritage">
-            <a [href]="heritage.url" target="_blank">{{ heritage.lb }}</a>
-            {{ heritage.interet_geol_principal }} -
-            <ngb-rating [max]="3" [(rate)]="heritage.nombre_etoiles" [readonly]="true" class="star-rating"></ngb-rating>
+          <div *ngIf="principalHeritage && principalHeritage.length > 0; else noHeritageData">
+            <div *ngFor="let heritage of principalHeritage">
+              <a [href]="heritage.url" target="_blank">{{ heritage.lb }}</a>
+              {{ heritage.interet_geol_principal }} - {{ heritage.bibliographie }} -
+              <ngb-rating [max]="3" [(rate)]="heritage.nombre_etoiles" [readonly]="true" class="star-rating"></ngb-rating>
+            </div>
           </div>
+          <ng-template #noHeritageData>
+            <div>Aucune données.</div>
+          </ng-template>
         </div>
         
         <div>
           <strong>Le périmètre de protection de la réserve abrite-t-il du patrimoine géologique ?</strong>
+          
+          <!-- Vérification des données INPG -->
           <div>=> Selon l'inpg</div>
-          <div *ngFor="let inpg of site.perimetre_protection.inpg">
-            <a [href]="inpg.url" target="_blank">{{ inpg.lb_site }}</a>
-            {{ inpg.interet_geol_principal }}
-            <ngb-rating [max]="3" [(rate)]="inpg.nombre_etoiles" [readonly]="true" class="star-rating"></ngb-rating>
+          <div *ngIf="site.perimetre_protection.inpg.length > 0; else noDataINPG">
+            <div *ngFor="let inpg of site.perimetre_protection.inpg">
+              <a [href]="inpg.url" target="_blank">{{ inpg.lb_site }}</a>
+              {{ inpg.interet_geol_principal }}
+              <ngb-rating [max]="3" [(rate)]="inpg.nombre_etoiles" [readonly]="true" class="star-rating"></ngb-rating>
+            </div>
           </div>
-
+          <ng-template #noDataINPG>
+            <p>Aucune données.</p>
+          </ng-template>
+        
+          <!-- Vérification des données de patrimoine géologique -->
           <div>=> Selon d'autres données</div>
-          <div *ngFor="let heritage of protectionHeritage">
-            <a [href]="heritage.url" target="_blank">{{ heritage.lb }}</a>
-            {{ heritage.interet_geol_principal }} -
-            <ngb-rating [max]="3" [(rate)]="heritage.nombre_etoiles" [readonly]="true" class="star-rating"></ngb-rating>
+          <div *ngIf="protectionHeritage.length > 0; else noDataHeritage">
+            <div *ngFor="let heritage of protectionHeritage">
+              <a [href]="heritage.url" target="_blank">{{ heritage.lb }}</a>
+              {{ heritage.interet_geol_principal }} -
+              <ngb-rating [max]="3" [(rate)]="heritage.nombre_etoiles" [readonly]="true" class="star-rating"></ngb-rating>
+            </div>
           </div>
+          <ng-template #noDataHeritage>
+            <p>Aucune données.</p>
+          </ng-template>
         </div>
+        
 
         <div>
           <strong>Quels sont les intérêts géologiques principaux de la réserve ?</strong>
+        
           <div>=> Selon l'inpg</div>
-          <ng-container *ngFor="let inpg of site.inpg">
-            <strong>{{ inpg.interet_geol_principal }}</strong><br>
-          </ng-container>
-
+          <div *ngIf="site.inpg && site.inpg.length > 0; else noInpgInterests">
+            <ng-container *ngFor="let inpg of site.inpg">
+              <strong>{{ inpg.interet_geol_principal }}</strong><br>
+            </ng-container>
+          </div>
+          <ng-template #noInpgInterests>
+            <div>Aucune données.</div>
+          </ng-template>
+        
           <div>=> Selon d'autres données</div>
-          <ng-container *ngFor="let heritage of principalHeritage">
-            <strong>{{ heritage.interet_geol_principal }}</strong><br>
-          </ng-container>
+          <div *ngIf="principalHeritage && principalHeritage.length > 0; else noHeritageInterests">
+            <ng-container *ngFor="let heritage of principalHeritage">
+              <strong>{{ heritage.interet_geol_principal }}</strong><br>
+            </ng-container>
+          </div>
+          <ng-template #noHeritageInterests>
+            <div>Aucune données.</div>
+          </ng-template>
         </div>
+        
 
         <div>
           <strong>Les terrains de la réserve renferment-ils du patrimoine paléontologique ?</strong>

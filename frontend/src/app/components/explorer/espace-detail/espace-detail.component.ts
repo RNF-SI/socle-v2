@@ -44,12 +44,7 @@ export class EspaceDetailComponent implements OnInit {
         if (this.site) {
           this.tInfosBaseSiteService.getSiteBySlug(slug).subscribe((data: any) => {
             console.log('Response data from getSiteBySlug:', data);
-            this.tInfosBaseSite = data;
-           
-             
-            
-
-             
+            this.tInfosBaseSite = data;  
           });
         }
 
@@ -182,3 +177,4 @@ export class EspaceDetailComponent implements OnInit {
     }
   }
 }
+

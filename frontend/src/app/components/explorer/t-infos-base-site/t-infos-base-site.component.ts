@@ -384,12 +384,12 @@ export class TInfosBaseSiteComponent implements OnInit {
         },
         (error: any) => {
           console.error('Error updating site data', error);
-          alert(`Error updating site data: ${error.message}`); // Ajouter une alerte pour afficher l'erreur
+           
         }
       );
     } else {
       console.error('Form is invalid');
-      alert('Oublie pas remplire les donnes.');
+      
     }
   }
 }   

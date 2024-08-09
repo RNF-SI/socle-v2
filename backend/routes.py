@@ -217,8 +217,8 @@ def update_t_infos_base_site(slug):
                 site.ages.remove(age)
 
         # Gestion du patrimoine géologique principal
-        if 'geologicalHeritages' in data and data['geologicalHeritages'] is not None:
-            for heritage_data in data['geologicalHeritages']:
+        if 'patrimoines_geologiques_principal' in data and data['patrimoines_geologiques_principal'] is not None:
+            for heritage_data in data['patrimoines_geologiques_principal']:
                 heritage = PatrimoineGeologiqueGestionnaire.query.filter_by(id_site=site.id_site, lb=heritage_data['lb']).first()
                 if not heritage:
                     heritage = PatrimoineGeologiqueGestionnaire(
@@ -239,8 +239,8 @@ def update_t_infos_base_site(slug):
                     heritage.bibliographie = heritage_data.get('bibliographie', '')
 
         # Gestion du patrimoine géologique de protection
-        if 'protectionGeologicalHeritages' in data and data['protectionGeologicalHeritages'] is not None:
-            for heritage_data in data['protectionGeologicalHeritages']:
+        if 'patrimoines_geologiques_protection' in data and data['patrimoines_geologiques_protection'] is not None:
+            for heritage_data in data['patrimoines_geologiques_protection']:
                 heritage = PatrimoineGeologiqueGestionnaire.query.filter_by(id_site=site.id_site, lb=heritage_data['lb']).first()
                 if not heritage:
                     heritage = PatrimoineGeologiqueGestionnaire(
