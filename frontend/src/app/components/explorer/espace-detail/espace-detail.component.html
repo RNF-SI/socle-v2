@@ -35,7 +35,7 @@
           </div>
         </span>
         
-        <p>
+     
           <strong> - Le périmètre de protection de la réserve abrite-t-il du patrimoine géologique ?</strong>
           <span *ngIf="tInfosBaseSite?.protection_perimeter_contains_geological_heritage_inpg">
           </span> 
@@ -56,30 +56,34 @@
               <ngb-rating [max]="3" [(rate)]="heritage.nombre_etoiles" [readonly]="true" class="star-rating"></ngb-rating>
             </div>
           </span>
-        </p>
-        <p>
+         
+         
           <strong> - Quels sont les intérêts géologiques principaux de la réserve ?</strong>
-          <span *ngIf="geologicalInterests.length > 0">
-            <ng-container *ngFor="let interest of geologicalInterests">
-              <br><strong>{{ interest }}</strong>
-            </ng-container>
-          </span>
-          <span *ngIf="geologicalInterests.length === 0">
-            Aucun intérêt géologique principal spécifié.
-          </span>
-        </p>
-        <p>
+            <div> => Selon l'inpg
+             <ng-container *ngFor="let inpg of site.inpg">
+               <br><strong>{{ inpg.interet_geol_principal }}</strong>
+             </ng-container>
+           </div>
+            
+              <div> => Selon d'autre données
+               <ng-container *ngFor="let heritage of principalHeritage">
+                 <br><strong>{{ heritage.interet_geol_principal }}</strong>
+               </ng-container>
+             </div>
+             
+        
+         
           <strong> - Est-ce que les terrains de la réserve renferment du patrimoine paléontologique ?</strong>
           <span *ngIf="tInfosBaseSite?.contains_paleontological_heritage">
             <ul>
               <li *ngFor="let item of paleontologicalLabels">{{ item }}</li>
             </ul>
           </span>
-        </p>
-        <p>
+         
+         
           <strong> - Est-ce que la réserve dispose de collections géologiques propres ?</strong>
           {{ tInfosBaseSite?.reserve_has_geological_collections ? 'Oui' : 'Non' }}
-        </p>
+         
         <p>
           <strong> - Est-ce que la réserve dispose d’un lieu d’exposition de collections géologiques ?</strong>
           {{ tInfosBaseSite?.reserve_has_exhibition ? 'Oui' : 'Non' }}
