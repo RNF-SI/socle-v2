@@ -56,23 +56,18 @@
               <ngb-rating [max]="3" [(rate)]="heritage.nombre_etoiles" [readonly]="true" class="star-rating"></ngb-rating>
             </div>
           </span>
-         
-         
+      
           <strong> - Quels sont les intérêts géologiques principaux de la réserve ?</strong>
             <div> => Selon l'inpg
              <ng-container *ngFor="let inpg of site.inpg">
                <br><strong>{{ inpg.interet_geol_principal }}</strong>
              </ng-container>
            </div>
-            
-              <div> => Selon d'autre données
-               <ng-container *ngFor="let heritage of principalHeritage">
+           <div> => Selon d'autre données
+              <ng-container *ngFor="let heritage of principalHeritage">
                  <br><strong>{{ heritage.interet_geol_principal }}</strong>
-               </ng-container>
-             </div>
-             
-        
-         
+              </ng-container>
+            </div>         
           <strong> - Est-ce que les terrains de la réserve renferment du patrimoine paléontologique ?</strong>
           <span *ngIf="tInfosBaseSite?.contains_paleontological_heritage">
             <ul>
@@ -84,17 +79,17 @@
           <strong> - Est-ce que la réserve dispose de collections géologiques propres ?</strong>
           {{ tInfosBaseSite?.reserve_has_geological_collections ? 'Oui' : 'Non' }}
          
-        <p>
+     
           <strong> - Est-ce que la réserve dispose d’un lieu d’exposition de collections géologiques ?</strong>
           {{ tInfosBaseSite?.reserve_has_exhibition ? 'Oui' : 'Non' }}
-        </p>
-        <p>
+       
+      
           <strong> - Âge des terrains à l’affleurement dans la réserve :</strong>
           <br><strong>Âge des terrains :</strong> {{ tInfosBaseSite?.geological_age }}
           <br><strong>Étage :</strong> {{ tInfosBaseSite?.etage }}
           <br><strong>Ère Période Époque :</strong> {{ tInfosBaseSite?.ere_periode_epoque }}
-        </p>
-        <p>
+ 
+ 
           <strong> - Est-ce que la réserve abrite un stratotype ?</strong>
           {{ tInfosBaseSite?.reserve_contains_stratotype ? 'Oui' : 'Non' }}
           <span *ngIf="tInfosBaseSite?.reserve_contains_stratotype">
@@ -107,16 +102,16 @@
               <br><strong>Préciser :</strong> {{ tInfosBaseSite?.stratotype_stage_input }}
             </span>
           </span>
-        </p>
-        <p>
+      
+    
           <strong> - Est-ce que la réserve présente des milieux souterrains abritant un patrimoine naturel identifié, biologique ou géologique ?</strong>
           {{ tInfosBaseSite?.contains_subterranean_habitats ? 'Oui' : 'Non' }}
           <span *ngIf="tInfosBaseSite?.contains_subterranean_habitats">
             <br><strong>Cavités naturelles :</strong> {{ tInfosBaseSite?.subterranean_habitats_natural_cavities ? 'Oui' : 'Non' }}
             <br><strong>Cavités anthropiques :</strong> {{ tInfosBaseSite?.subterranean_habitats_anthropogenic_cavities ? 'Oui' : 'Non' }}
           </span>
-        </p>
-        <p>
+ 
+ 
           <strong> - Est-ce que la réserve est associée à une exploitation de ressources minérales ?</strong>
           {{ tInfosBaseSite?.associated_with_mineral_resources ? 'Oui' : 'Non' }}
           <span *ngIf="tInfosBaseSite?.associated_with_mineral_resources">
@@ -133,15 +128,14 @@
               <br><strong>Matériau fossilifère :</strong> {{ tInfosBaseSite?.mine_fossiliferous_material ? 'Oui' : 'Non' }}
             </span>
           </span>
-        </p>
-        <p>
+   
+    
           <strong> - Est-ce que la réserve dispose d’un site géologique aménagé pour les visiteurs ?</strong>
           {{ tInfosBaseSite?.reserve_has_geological_site_for_visitors ? 'Oui' : 'Non' }}
-        </p>
-        <p>
+      
           <strong> - Est-ce que la réserve propose des animations sur la thématique géodiversité / patrimoine géologique ?</strong>
           {{ tInfosBaseSite?.offers_geodiversity_activities ? 'Oui' : 'Non' }}
-        </p>
+     
       </div>
     </mat-card-content>
     <mat-card-actions class="links-container">
