@@ -20,11 +20,11 @@
     <div>
       <div *ngIf="tInfosBaseSiteForm.get('reserve_contains_geological_heritage_inpg')?.value">
         <div *ngFor="let inpg of site.inpg">
-          <p>
+           
             <a [href]="inpg.url" target="_blank">{{ inpg.lb_site }}</a>
             {{ inpg.interet_geol_principal }} -
             <ngb-rating [max]="3" [(rate)]="inpg.nombre_etoiles" [readonly]="true" class="star-rating"></ngb-rating>
-          </p>
+         
         </div>
 
         <div formArrayName="geologicalHeritages" *ngFor="let heritage of geologicalHeritages.controls; let i = index">
