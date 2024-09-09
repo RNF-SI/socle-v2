@@ -32,6 +32,8 @@ import { CapitalizePipe } from './pipes/capitalize.pipe';
 import { MatIconModule } from '@angular/material/icon';
 import { NgbRatingModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { SaisirComponent } from './components/saisir/saisir.component';
+ 
 
   
 @NgModule({
@@ -44,7 +46,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     EspaceDetailComponent,
     FicheTerrainComponent,
     TInfosBaseSiteComponent,
-    CapitalizePipe
+    CapitalizePipe,
+    SaisirComponent
      
      
   ],

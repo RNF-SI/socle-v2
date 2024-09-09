@@ -12,6 +12,7 @@ import { ExplorerComponent } from './components/explorer/explorer.component';
 import { EspaceDetailComponent } from './components/explorer/espace-detail/espace-detail.component';
 import { FicheTerrainComponent } from './components/explorer/fiche-terrain/fiche-terrain.component';
 import { TInfosBaseSiteComponent } from './components/explorer/t-infos-base-site/t-infos-base-site.component';
+import { SaisirComponent } from './components/saisir/saisir.component';
 
 const routes: Routes = [
   {
@@ -37,7 +38,7 @@ const routes: Routes = [
         component: AideComponent
       },
       {
-        path: 'liens',
+        path: 'A propos',
         component: LiensComponent
       },
       {
@@ -57,6 +58,11 @@ const routes: Routes = [
         path: 'fiche-terrain/:slug',
         component: FicheTerrainComponent 
       },
+
+      {
+        path: 'saisir', // Ajout de la route pour le composant Saisir
+        component: SaisirComponent
+      }
        
      
   
