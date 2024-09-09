@@ -1,0 +1,22 @@
+.search-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+  }
+  
+  mat-form-field {
+    width: 50%;
+    max-width: 500px;
+  }
+  
+  .espace-card {
+    width: 100%;
+    max-width: 750px;
+    margin-bottom: 30px;
+    cursor: pointer;
+  
+    &:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+  }
+  
