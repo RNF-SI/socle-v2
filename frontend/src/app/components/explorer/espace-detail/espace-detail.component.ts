@@ -24,6 +24,8 @@ export class EspaceDetailComponent implements OnInit {
   reserveContainsGeologicalHeritage: any[] = [];
   protectionPerimeterContainsGeologicalHeritage: any[] = [];
   siteSlug: any;
+  geologicalUnitsOptions: string[] = [];
+  geologicalUnits: string[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -34,27 +36,23 @@ export class EspaceDetailComponent implements OnInit {
 
   ngOnInit(): void {
     const slug = this.route.snapshot.paramMap.get('slug');
-    console.log('Slug:', slug);
-
+ 
     if (slug) {
       this.siteService.getSites().subscribe((sites: Site[]) => {
         this.site = sites.find(site => site.slug === slug);
         console.log('Site:', this.site);
 
         if (this.site) {
-          this.tInfosBaseSiteService.getSiteBySlug(slug).subscribe((data: any) => {
-            console.log('Response data from getSiteBySlug:', data);
-            this.tInfosBaseSite = data;  
+          this.tInfosBaseSiteService.getSiteBySlug(slug).subscribe((data: string) => {
+             this.tInfosBaseSite = data;  
+             this.geologicalUnitsOptions = this.geologicalUnits;
+              
           });
         }
-
-        
-
         this.fetchPatrimoineGeologique(this.site?.id_site);
-
-
       });
     }
+ 
   }
    
 

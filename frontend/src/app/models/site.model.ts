@@ -16,7 +16,7 @@ export interface Photo {
     inpg: any;
     perimetre_protection: any;
     interet_geol_principal: any;
-    // Ajoutez d'autres propriétés si nécessaire
+  
   }
   
   

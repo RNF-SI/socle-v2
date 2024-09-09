@@ -8,6 +8,7 @@ export interface Nomenclature {
     id_type: number;
     source: string | null;
     statut: string | null;
+    systemes: string;
   }
 
   export interface NomenclatureType {
@@ -19,3 +20,4 @@ export interface Nomenclature {
     source: string,
     statut: null
   }
+  

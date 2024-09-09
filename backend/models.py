@@ -32,17 +32,17 @@ class TInfosBaseSite(db.Model):
     contains_paleontological_heritage_plants = db.Column(db.Boolean)
     contains_paleontological_heritage_trace_fossils = db.Column(db.Boolean)
     contains_paleontological_heritage_other = db.Column(db.Boolean)
-    contains_paleontological_heritage_other_details = db.Column(db.String)  # Nouveau champ
+    contains_paleontological_heritage_other_details = db.Column(db.String)  
     reserve_has_geological_collections = db.Column(db.Boolean, nullable=False)
     reserve_has_exhibition = db.Column(db.Boolean, nullable=False)
     #geological_age = db.Column(db.String)
     #etage = db.Column(db.String)
     #ere_periode_epoque = db.Column(db.String)
     reserve_contains_stratotype = db.Column(db.Boolean)
-    stratotype_limit = db.Column(db.Boolean)  # Nouveau champ
-    stratotype_limit_input = db.Column(db.String)  # Nouveau champ
-    stratotype_stage = db.Column(db.Boolean)  # Nouveau champ
-    stratotype_stage_input = db.Column(db.String)  # Nouveau champ
+    stratotype_limit = db.Column(db.Boolean)   
+    stratotype_limit_input = db.Column(db.String) 
+    stratotype_stage = db.Column(db.Boolean)   
+    stratotype_stage_input = db.Column(db.String)   
     contains_subterranean_habitats = db.Column(db.Boolean)
     subterranean_habitats_natural_cavities = db.Column(db.Boolean)
     subterranean_habitats_anthropogenic_cavities = db.Column(db.Boolean)
@@ -73,8 +73,8 @@ class Site(db.Model):
     __tablename__ = 'site'
 
     id_site = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
-    perimetre_protection = db.Column(db.Boolean, default=False)  # Nouveau champ
-    id_perimetre_protection = db.Column(db.Integer, db.ForeignKey('site.id_site'), nullable=True) # Assurez-vous que cette ligne est correcte
+    perimetre_protection = db.Column(db.Boolean, default=False)  
+    id_perimetre_protection = db.Column(db.Integer, db.ForeignKey('site.id_site'), nullable=True)  
     nom = db.Column(db.String(255), nullable=False)
     altitude_max = db.Column(db.Float, nullable=True)
     altitude_min = db.Column(db.Float, nullable=True)
@@ -90,7 +90,7 @@ class Site(db.Model):
     utilisateur_ajout = db.Column(db.Integer, nullable=True)
     utilisateur_maj = db.Column(db.Integer, nullable=True)
 
-    slug = db.Column(db.String(255), unique=True)# ajouter slug  
+    slug = db.Column(db.String(255), unique=True) 
 
     perimetre_protection_site = db.relationship("Site", remote_side=[id_site])
 
@@ -161,7 +161,7 @@ class PatrimoineGeologiqueGestionnaire(db.Model):
     nombre_etoiles = db.Column(db.Integer)
     age_des_terrains_le_plus_recent = db.Column(db.String)
     age_des_terrains_le_plus_ancien = db.Column(db.String)
-    bibliographie = db.Column(db.Text)  # Nouveau champ
+    bibliographie = db.Column(db.Text)   
     
 
  

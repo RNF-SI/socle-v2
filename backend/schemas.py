@@ -37,7 +37,7 @@ class SiteSchema(ma.SQLAlchemyAutoSchema):
     infos_base = ma.Nested(lambda : TInfosBaseSiteSchema, many = False )
     inpg = ma .Nested(lambda : InpgSchema, many = True)
     ages = ma .Nested(lambda : NomenclatureSchema, many = True)
-    perimetre_protection = ma.Nested(PerimetreProtectionSchema, many=False, attribute='perimetre_protection_site')
+    perimetre_protection = ma.Nested(PerimetreProtectionSchema, many=False, attribute='perimetre_protection_site')# achanger
 
 
 class EntiteGeolSchema(ma.SQLAlchemyAutoSchema):

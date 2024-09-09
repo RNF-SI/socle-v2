@@ -11,6 +11,12 @@ export const AppConfig = {
             "classFa":"fas" as const,
             "nomFa":"house" as const,
             "lien":""
+        }
+        ,{
+            "nom":"saisir", 
+            "classFa":"fas" as const,
+            "nomFa":"magnifying-glass" as const,
+            "lien":"saisir"
         },{
             "nom":"explorer", 
             "classFa":"fas" as const,
@@ -18,17 +24,24 @@ export const AppConfig = {
             "lien":"explorer"
         },
         {
+            "nom":"A propos", 
+            "classFa":"fas" as const,
+            "nomFa":"magnifying-glass" as const,
+            "lien":"A propos"
+        },
+        {
+            "nom":"Contacts", 
+            "classFa":"fas" as const,
+            "nomFa":"magnifying-glass" as const,
+            "lien":"Contacts"
+        },
+        {
             "nom":"aide", 
             "classFa":"fas" as const,
             "nomFa":"magnifying-glass" as const,
             "lien":"aide"
         },
-        {
-            "nom":"liens", 
-            "classFa":"fas" as const,
-            "nomFa":"magnifying-glass" as const,
-            "lien":"liens"
-        },
+       
        
     ],
 
