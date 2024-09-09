@@ -6,12 +6,12 @@
     <mat-card-content>
       <div class="details-container">
         <h3>Synthèse</h3>
-        
+        <!-- Question 1 -->
         <div>
           <strong>La réserve a-t-elle été créée sur le fondement d’un patrimoine géologique ?</strong>
           {{ tInfosBaseSite?.reserve_created_on_geological_basis ? 'Oui' : 'Non' }}
         </div>
-        
+         <!-- Question 2 -->
         <div>
           <strong>La réserve abrite-t-elle du patrimoine géologique ?</strong>
           
@@ -20,7 +20,7 @@
             <div *ngFor="let inpg of site.inpg">
               <a [href]="inpg.url" target="_blank">{{ inpg.lb_site }}</a>
               {{ inpg.interet_geol_principal }}
-              <ngb-rating [max]="3" [(rate)]="inpg.nombre_etoiles" [readonly]="true" class="star-rating"></ngb-rating>
+               
             </div>
           </div>
           <ng-template #noInpgData>
@@ -32,7 +32,7 @@
             <div *ngFor="let heritage of principalHeritage">
               <a [href]="heritage.url" target="_blank">{{ heritage.lb }}</a>
               {{ heritage.interet_geol_principal }} - {{ heritage.bibliographie }} -
-              <ngb-rating [max]="3" [(rate)]="heritage.nombre_etoiles" [readonly]="true" class="star-rating"></ngb-rating>
+              
             </div>
           </div>
           <ng-template #noHeritageData>
@@ -49,7 +49,7 @@
             <div *ngFor="let inpg of site.perimetre_protection.inpg">
               <a [href]="inpg.url" target="_blank">{{ inpg.lb_site }}</a>
               {{ inpg.interet_geol_principal }}
-              <ngb-rating [max]="3" [(rate)]="inpg.nombre_etoiles" [readonly]="true" class="star-rating"></ngb-rating>
+              
             </div>
           </div>
           <ng-template #noDataINPG>
@@ -62,7 +62,7 @@
             <div *ngFor="let heritage of protectionHeritage">
               <a [href]="heritage.url" target="_blank">{{ heritage.lb }}</a>
               {{ heritage.interet_geol_principal }} -
-              <ngb-rating [max]="3" [(rate)]="heritage.nombre_etoiles" [readonly]="true" class="star-rating"></ngb-rating>
+               
             </div>
           </div>
           <ng-template #noDataHeritage>
@@ -113,12 +113,25 @@
            <div>{{ tInfosBaseSite?.reserve_has_exhibition ? 'Oui' : 'Non' }}</div>
         </div>
 
-        <div>
+       <!-- <div>
           <strong>Âge des terrains à l’affleurement dans la réserve :</strong><br>
           <strong>Âge des terrains :</strong> {{ tInfosBaseSite?.geological_age }}<br>
           <strong>Étage :</strong> {{ tInfosBaseSite?.etage }}<br>
           <strong>Ère Période Époque :</strong> {{ tInfosBaseSite?.ere_periode_epoque }}
+        </div>-->
+        <div>
+          <strong>À quel ensemble géologique appartient la réserve naturelle ?</strong>
+          <div *ngIf="tInfosBaseSite.geologicalUnits; else noGeologicalUnits">
+            <ul>
+              <li *ngFor="let unit of tInfosBaseSite.geologicalUnits">{{ unit }}</li>
+            </ul>
+          </div>
+          <ng-template #noGeologicalUnits>
+            <div>Aucun ensemble géologique sélectionné.</div>
+          </ng-template>
         </div>
+        
+      
 
         <div>
           <strong>La réserve abrite-t-elle un stratotype ?</strong>

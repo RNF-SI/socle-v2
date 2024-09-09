@@ -1,16 +1,22 @@
 <div class="container">
-  <h1>Mini Questionnaire</h1>
+ 
   <form [formGroup]="tInfosBaseSiteForm" (ngSubmit)="onSubmit()">
     <input type="hidden" formControlName="id_site">
+    
     <!-- Question 1 -->
     <div class="form-group">
       <label>
         <h6>Est-ce que la réserve a été créée sur le fondement d’un patrimoine géologique ?</h6>
       </label>
       <div>
-        <mat-slide-toggle formControlName="reserve_created_on_geological_basis">Non / Oui</mat-slide-toggle>
+        <mat-radio-group class="color-button" formControlName="answer">
+          <mat-radio-button [value]="true">Oui</mat-radio-button>
+          <mat-radio-button [value]="false">Non</mat-radio-button>
+        </mat-radio-group>
       </div>
     </div>
+    
+    
 <!-- Question 2 -->
 <div class="container">
   <div class="form-group">
@@ -18,19 +24,20 @@
       <h6>Est-ce que la réserve abrite du patrimoine géologique ?</h6>
     </label>
     <div>
+      <h6> Données INPG </h6>
       <div *ngIf="tInfosBaseSiteForm.get('reserve_contains_geological_heritage_inpg')?.value">
         <div *ngFor="let inpg of site.inpg">
            
             <a [href]="inpg.url" target="_blank">{{ inpg.lb_site }}</a>
             {{ inpg.interet_geol_principal }} -
-            <ngb-rating [max]="3" [(rate)]="inpg.nombre_etoiles" [readonly]="true" class="star-rating"></ngb-rating>
+            <!--<ngb-rating [max]="3" [(rate)]="inpg.nombre_etoiles" [readonly]="true" class="star-rating"></ngb-rating>-->
          
         </div>
-
+        <h6>Ajouter un site</h6>
         <div formArrayName="geologicalHeritages" *ngFor="let heritage of geologicalHeritages.controls; let i = index">
           <div [formGroupName]="i" class="heritage-entry">
             <button mat-icon-button class="remove-button" (click)="removeHeritage(i)">
-              <mat-icon>x</mat-icon>
+              <mat-icon> - </mat-icon>
             </button>
             <mat-form-field appearance="fill">
               <mat-label>Libellé</mat-label>
@@ -57,9 +64,9 @@
               <mat-label>Bibliographie</mat-label>
               <input matInput formControlName="bibliographie" required>
             </mat-form-field>
-            <div class="star-rating">
+            <!--<div class="star-rating">
               <ngb-rating [max]="3" [(rate)]="heritage.value.nombre_etoiles" [readonly]="false" class="star-rating"></ngb-rating>
-            </div>
+            </div>-->
           </div>
         </div>
 
@@ -77,22 +84,24 @@
     <label>
       <h6>Est-ce que le périmètre de protection de la réserve abrite du patrimoine géologique ?</h6>
     </label>
+    <h6> Données INPG </h6>
     <div *ngFor="let site of sitesWithProtection">
       <div *ngIf="site.perimetre_protection">
         <div *ngFor="let inpg of site.inpg">
           <p>
             <a [href]="inpg.url" target="_blank">{{ inpg.lb_site }}</a>
             {{ inpg.interet_geol_principal }} -
-            <ngb-rating [max]="3" [(rate)]="inpg.nombre_etoiles" [readonly]="true" class="star-rating"></ngb-rating>
+           <!-- <ngb-rating [max]="3" [(rate)]="inpg.nombre_etoiles" [readonly]="true" class="star-rating"></ngb-rating>-->
           </p>
         </div>
       </div>
     </div>
+    <h6>Ajouter un site</h6>
     <div *ngIf="tInfosBaseSiteForm.get('protection_perimeter_contains_geological_heritage_inpg')?.value">
       <div formArrayName="protection_geologicalHeritages" *ngFor="let heritage of protectionGeologicalHeritages.controls; let i = index">
         <div [formGroupName]="i" class="heritage-entry">
           <button mat-icon-button class="remove-button" (click)="removeProtectionHeritage(i)">
-            <mat-icon>x</mat-icon>
+            <mat-icon> - </mat-icon>
           </button>
           <mat-form-field appearance="fill">
             <mat-label>Libellé</mat-label>
@@ -119,9 +128,9 @@
             <mat-label>Bibliographie</mat-label>
             <input matInput formControlName="bibliographie" required>
           </mat-form-field>
-          <div class="star-rating">
+         <!-- <div class="star-rating">
             <ngb-rating [max]="3" [(rate)]="heritage.value.nombre_etoiles" [readonly]="false" class="star-rating"></ngb-rating>
-          </div>
+          </div>-->
         </div>
       </div>
       <button mat-fab class="add-button" (click)="addProtectionHeritage()">
@@ -167,24 +176,27 @@
           <mat-checkbox formControlName="invertebrates">Invertébrés</mat-checkbox>
           <mat-checkbox formControlName="plants">Végétaux</mat-checkbox>
           <mat-checkbox formControlName="traceFossils">Traces fossiles</mat-checkbox>
-          <mat-checkbox formControlName="other">Autres</mat-checkbox>
+         <!-- <mat-checkbox formControlName="other">Autres</mat-checkbox>
           <div *ngIf="tInfosBaseSiteForm.get('contains_paleontological_heritage')?.get('other')?.value">
             <mat-form-field>
               <mat-label>Préciser</mat-label>
               <input matInput formControlName="otherDetails">
             </mat-form-field>
-          </div>
+          </div>-->
         </div>
       </div>
     </div>
 
-    <!-- Question 6 -->
-    <div class="form-group">
+     <!-- Question 6 -->
+     <div class="form-group">
       <label>
         <h6>Est-ce que la réserve dispose de collections géologiques propres ?</h6>
       </label>
       <div>
-        <mat-slide-toggle formControlName="reserve_has_geological_collections">Non / Oui</mat-slide-toggle>
+        <mat-radio-group formControlName="reserve_has_geological_collections">
+          <mat-radio-button [value]="false">Non</mat-radio-button>
+          <mat-radio-button [value]="true">Oui</mat-radio-button>
+        </mat-radio-group>
       </div>
     </div>
 
@@ -194,11 +206,31 @@
         <h6>Est-ce que la réserve dispose d’un lieu d’exposition de collections géologiques ?</h6>
       </label>
       <div>
-        <mat-slide-toggle formControlName="reserve_has_exhibition">Non / Oui</mat-slide-toggle>
+        <mat-radio-group formControlName="reserve_has_exhibition">
+          <mat-radio-button [value]="false">Non</mat-radio-button>
+          <mat-radio-button [value]="true">Oui</mat-radio-button>
+        </mat-radio-group>
       </div>
     </div>
+    <!--question remplace  la question 8-1 -->
+    <div class ="form-group">
+      <label>
+        <h6>A quel ensemble géologique la réseve naturelle ? </h6>
+      </label>
+    </div>
+     <mat-form-field appearance="fill">
+       <mat-label>Sélectionner les ensembles géologiques</mat-label>
+       <mat-select formControlName="geologicalUnits" multiple>
+         <mat-option *ngFor="let unit of geologicalUnitsOptions" [value]="unit.id_nomenclature">
+           {{ unit.label }}
+         </mat-option>
+       </mat-select>
+     </mat-form-field>
+   
+    
+    
 
-    <!-- Question 8 -->
+    <!-- Question 8 
     <div class="form-group">
       <label>
         <h6>Âge des terrains à l’affleurement dans la réserve ?</h6>
@@ -233,7 +265,7 @@
           </mat-select>
         </mat-form-field>        
       </div>
-    </div>
+    </div>-->
 
     <!-- Question 9 -->
     <div class="form-group">
@@ -281,54 +313,66 @@
       </div>
     </div>
 
-    <!-- Question 11 -->
+    <!--question 11 modifier -->
     <div class="form-group">
-      <label>Est-ce que la réserve est associée à une exploitation de ressources minérales ?</label>
+      <label>
+        <h6>Est-ce que la réserve est associée à une exploitation de ressources minérales ?</h6>
+      </label>
       <div>
         <mat-radio-group formControlName="associated_with_mineral_resources">
           <mat-radio-button [value]="true">Oui</mat-radio-button>
-          <div *ngIf="tInfosBaseSiteForm.get('associated_with_mineral_resources')?.value">
-            <div>
-              <mat-checkbox formControlName="mineral_resources_old_quarry">Ancienne carrière</mat-checkbox>
-              <mat-checkbox formControlName="mineral_resources_active_quarry">Carrière en activité</mat-checkbox>
-              <div *ngIf="tInfosBaseSiteForm.get('mineral_resources_active_quarry')?.value">
-                <label>Préciser la substance exploitée</label>
-                <input type="text" formControlName="quarry_extracted_material" />
-                <label>Préciser si le matériau est fossilifère</label>
-                <mat-radio-group formControlName="quarry_fossiliferous_material">
-                  <mat-radio-button [value]="true">Oui</mat-radio-button>
-                  <mat-radio-button [value]="false">Non</mat-radio-button>
-                </mat-radio-group>
-              </div>
-            </div>
-            <div>
-              <mat-checkbox formControlName="mineral_resources_old_mine">Ancienne mine</mat-checkbox>
-              <mat-checkbox formControlName="mineral_resources_active_mine">Mine en activité</mat-checkbox>
-              <div *ngIf="tInfosBaseSiteForm.get('mineral_resources_active_mine')?.value">
-                <label>Préciser la substance exploitée</label>
-                <input type="text" formControlName="mine_extracted_material" />
-                <label>Préciser si le matériau est fossilifère</label>
-                <mat-radio-group formControlName="mine_fossiliferous_material">
-                  <mat-radio-button [value]="true">Oui</mat-radio-button>
-                  <mat-radio-button [value]="false">Non</mat-radio-button>
-                </mat-radio-group>
-              </div>
-            </div>
-          </div>
           <mat-radio-button [value]="false">Non</mat-radio-button>
         </mat-radio-group>
+    
+        <div *ngIf="tInfosBaseSiteForm.get('associated_with_mineral_resources')?.value">
+          <div>
+            <mat-checkbox formControlName="mineral_resources_old_quarry">Ancienne carrière</mat-checkbox>
+            <mat-checkbox formControlName="mineral_resources_active_quarry">Carrière en activité</mat-checkbox>
+            <mat-checkbox formControlName="mineral_resources_old_mine">Ancienne mine</mat-checkbox>
+            <mat-checkbox formControlName="mineral_resources_active_mine">Mine en activité</mat-checkbox>
+          </div>
+    
+          <div *ngIf="tInfosBaseSiteForm.get('mineral_resources_active_quarry')?.value || tInfosBaseSiteForm.get('mineral_resources_old_quarry')?.value">
+            <div formArrayName="quarry_extracted_materials">
+              <div *ngFor="let material of quarryExtractedMaterials.controls; let i = index" [formGroupName]="i">
+                <label>Préciser la substance exploitée</label>
+                <mat-form-field appearance="fill">
+                  <mat-select formControlName="substance" multiple>
+                    <mat-option *ngFor="let substance of substancesOptions" [value]="substance.mnemonique">
+                      {{ substance.label }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+    
+                <label>Préciser si le matériau est fossilifère</label>
+                <mat-radio-group formControlName="fossiliferous">
+                  <mat-radio-button [value]="true">Oui</mat-radio-button>
+                  <mat-radio-button [value]="false">Non</mat-radio-button>
+                </mat-radio-group>
+              </div>
+            </div>
+            <button mat-icon-button type="button" (click)="addQuarryExtractedMaterial()">
+              <mat-icon> + </mat-icon>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
+    
+    
 
-    <!-- Question 12 -->
-    <div class="form-group">
-      <label>
-        <h6>Est-ce que la réserve dispose d’un site géologique aménagé pour les visiteurs ?</h6>
-      </label>
-      <div>
-        <mat-slide-toggle formControlName="reserve_has_geological_site_for_visitors">Non / Oui</mat-slide-toggle>
+       <!-- Question 12 -->
+       <div class="form-group">
+        <label>
+          <h6>Est-ce que la réserve dispose d’un site géologique aménagé pour les visiteurs ?</h6>
+        </label>
+        <div>
+          <mat-radio-group formControlName="reserve_has_geological_site_for_visitors">
+            <mat-radio-button [value]="false">Non</mat-radio-button>
+            <mat-radio-button [value]="true">Oui</mat-radio-button>
+          </mat-radio-group>
+        </div>
       </div>
-    </div>
 
     <!-- Question 13 -->
     <div class="form-group">
@@ -336,7 +380,10 @@
         <h6>Est-ce que la réserve propose des animations sur la thématique géodiversité / patrimoine géologique ?</h6>
       </label>
       <div>
-        <mat-slide-toggle formControlName="offers_geodiversity_activities">Non / Oui</mat-slide-toggle>
+        <mat-radio-group formControlName="offers_geodiversity_activities">
+          <mat-radio-button [value]="false">Non</mat-radio-button>
+          <mat-radio-button [value]="true">Oui</mat-radio-button>
+        </mat-radio-group>
       </div>
     </div>
 

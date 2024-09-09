@@ -8,24 +8,21 @@
 
 .form-group {
   margin-bottom: 20px;
+  
+  
 }
 
-.mat-radio-group, .mat-checkbox-group {
-  display: flex;
-  flex-direction: column;
-}
+ 
 
-.mat-radio-button, .mat-checkbox {
-  margin-bottom: 10px;
-}
+ 
 
 .mat-form-field {
   width: 100%;
+  
 }
 
-button {
-  margin-top: 10px;
-}
+ 
+
 
 .heritage-entry {
   display: flex;
@@ -39,7 +36,7 @@ button {
 }
 
 .add-button {
-  background-color: yellow;
+  background-color: #0B885D;
   color: black;
   display: flex;
   align-items: center;
@@ -48,8 +45,13 @@ button {
 }
 
 .remove-button {
-  color: rgb(20, 20, 20);
+ 
+  color: black;
+   
   margin-bottom: 50px;
+   
+  justify-content: center;
+  
 }
 
  
@@ -74,7 +76,7 @@ button {
   }
   .star-rating {
     font-size: 24px; /* Taille des étoiles */
-    color: gold; /* Couleur des étoiles */
+    color: #0B885D; /* Couleur des étoiles */
   }
   
   /* Pour s'assurer que les étoiles inactives soient grises */
@@ -83,5 +85,23 @@ button {
   }
   
   .star-rating .ngb-star.filled {
-    color: gold;
+    color: #0B885D;
   }
+
+  .color-button .mat-radio-label-content {
+    color: #0B885D; /* Couleur du texte */
+  }
+  
+  .color-button .mat-radio-outer-circle,
+  .color-button .mat-radio-inner-circle {
+    border-color: #0B885D; /* Couleur du cercle extérieur */
+  }
+  
+  .color-button.mat-radio-checked .mat-radio-outer-circle {
+    background-color: #0B885D; /* Couleur du cercle intérieur quand coché */
+  }
+  
+  .color-button.mat-radio-checked .mat-radio-inner-circle {
+    background-color: #0B885D; /* Couleur de l'intérieur du bouton radio quand coché */
+  }
+  

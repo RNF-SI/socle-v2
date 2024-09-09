@@ -31,6 +31,9 @@ export class TInfosBaseSiteComponent implements OnInit {
   sitesWithProtection: any[] = [];
   principalHeritage: any[] = [];
   protectionHeritage: any[] = [];
+  geologicalUnitsOptions: Nomenclature[] = [];
+  substancesOptions: Nomenclature[] = [];
+   
 
   geologicalInterestOptions: string[] = [
     'Paléontologie',
@@ -48,8 +51,10 @@ export class TInfosBaseSiteComponent implements OnInit {
     'Géomorphologie',
     'Minéralogie',
     'Collection'
-  ];
+  ]
+  
 
+ 
   constructor(
     private fb: FormBuilder,
     private tInfosBaseSiteService: TInfosBaseSiteService,
@@ -61,6 +66,15 @@ export class TInfosBaseSiteComponent implements OnInit {
   ) {
     this.tInfosBaseSiteForm = this.fb.group({
       id_site: [''],
+      geologicalUnits: [], // Gère les ensembles géologiques sélectionnés
+      associated_with_mineral_resources: [false, Validators.required],
+      mineral_resources_old_quarry: [false],
+      mineral_resources_active_quarry: [false],
+      mineral_resources_old_mine: [false],
+      mineral_resources_active_mine: [false],
+      quarry_extracted_materials: this.fb.array([]),
+      mine_extracted_materials: this.fb.array([]),
+     
       reserve_created_on_geological_basis: [false, Validators.required],
       reserve_contains_geological_heritage_inpg: [false],
       geologicalHeritages: this.fb.array([]),
@@ -102,13 +116,8 @@ export class TInfosBaseSiteComponent implements OnInit {
       subterranean_habitats_natural_cavities: [false],
       subterranean_habitats_anthropogenic_cavities: [false],
       does_not_contain_subterranean_habitats: [false],
-      associated_with_mineral_resources: [false],
-      mineral_resources_old_quarry: [false],
-      mineral_resources_active_quarry: [false],
       quarry_extracted_material: [''],
       quarry_fossiliferous_material: [false],
-      mineral_resources_old_mine: [false],
-      mineral_resources_active_mine: [false],
       mine_extracted_material: [''],
       mine_fossiliferous_material: [false],
       reserve_has_geological_site_for_visitors: [false],
@@ -124,31 +133,67 @@ export class TInfosBaseSiteComponent implements OnInit {
     this.siteSlug = this.route.snapshot.paramMap.get('slug')!;
     this.fetchSiteDetails(this.siteSlug);
     this.loadNomenclature();
+    this.loadSubstances(); // Charger les substances ici
     this.fetchSitesWithProtection();
+     
   }
 
+  //loadNomenclature(): void {
+    //this.nomenclaturesService.getNomenclaturesByTypeId(2).subscribe(
+      //(nomenclatures: any) => {
+       // this.eres = nomenclatures;
+      //}
+  //  );
+    //this.nomenclaturesService.getNomenclaturesByTypeId(3).subscribe(
+    //  (nomenclatures: any) => {
+       // this.systemes = nomenclatures;
+      //}
+   // );
+   // this.nomenclaturesService.getNomenclaturesByTypeId(4).subscribe(
+     // (nomenclatures: any) => {
+       // this.series = nomenclatures;
+     // }
+    //);
+    //this.nomenclaturesService.getNomenclaturesByTypeId(5).subscribe(
+      //(nomenclatures: any) => {
+        //this.etages = nomenclatures;
+      //}
+    //);
+    
+  //}
   loadNomenclature(): void {
-    this.nomenclaturesService.getNomenclaturesByTypeId(2).subscribe(
-      (nomenclatures: any) => {
-        this.eres = nomenclatures;
-      }
-    );
-    this.nomenclaturesService.getNomenclaturesByTypeId(3).subscribe(
-      (nomenclatures: any) => {
-        this.systemes = nomenclatures;
-      }
-    );
-    this.nomenclaturesService.getNomenclaturesByTypeId(4).subscribe(
-      (nomenclatures: any) => {
-        this.series = nomenclatures;
-      }
-    );
-    this.nomenclaturesService.getNomenclaturesByTypeId(5).subscribe(
-      (nomenclatures: any) => {
-        this.etages = nomenclatures;
+    this.nomenclaturesService.getNomenclaturesByTypeId(6).subscribe(
+      (response: any) => {
+        if (response && Array.isArray(response.nomenclatures)) {
+          this.geologicalUnitsOptions = response.nomenclatures;
+        } else {
+          console.error('Expected nomenclatures to be an array, but got:', response);
+        }
+      },
+      (      error: any) => {
+        console.error('Error fetching geological units', error);
       }
     );
   }
+
+  loadSubstances(): void {
+    this.nomenclaturesService.getNomenclaturesByTypeId(7).subscribe(
+      (response: any) => {
+        if (response && Array.isArray(response.nomenclatures)) {
+          this.substancesOptions = response.nomenclatures;
+        } else {
+          console.error('Expected nomenclatures to be an array, but got:', response);
+        }
+      },
+      (      error: any) => {
+        console.error('Error fetching substances', error);
+      }
+    );
+  }
+  
+  
+
+  
 
   fetchSiteDetails(slug: string): void {
     this.siteService.getSiteBySlug(slug).subscribe(
@@ -186,7 +231,7 @@ export class TInfosBaseSiteComponent implements OnInit {
           mine_fossiliferous_material: site.infos_base.mine_fossiliferous_material,
           reserve_has_geological_site_for_visitors: site.infos_base.reserve_has_geological_site_for_visitors,
           offers_geodiversity_activities: site.infos_base.offers_geodiversity_activities,
-          eres: site.ages.eres,
+          eres: site.eres,
           systemes: site.ages.systemes,
           series: site.ages.series,
           etages: site.ages.etages
@@ -216,6 +261,8 @@ export class TInfosBaseSiteComponent implements OnInit {
           other: site.infos_base.contains_paleontological_heritage_other,
           otherDetails: site.infos_base.contains_paleontological_heritage_other_details
         });
+
+       
 
         site.ages.forEach((element: any) => {
           console.log(element);
@@ -365,6 +412,33 @@ export class TInfosBaseSiteComponent implements OnInit {
       (this.selectedSystemesIds.includes(etage.id_parent) || this.selectedSeriesIds.includes(etage.id_parent))
     );
   }
+
+  get quarryExtractedMaterials(): FormArray {
+    return this.tInfosBaseSiteForm.get('quarry_extracted_materials') as FormArray;
+  }
+  
+  get mineExtractedMaterials(): FormArray {
+    return this.tInfosBaseSiteForm.get('mine_extracted_materials') as FormArray;
+  }
+  
+  addQuarryExtractedMaterial(): void {
+    this.quarryExtractedMaterials.push(
+      this.fb.group({
+        substance: [''],
+        fossiliferous: [false]
+      })
+    );
+  }
+  
+  addMineExtractedMaterial(): void {
+    this.mineExtractedMaterials.push(
+      this.fb.group({
+        substance: [''],
+        fossiliferous: [false]
+      })
+    );
+  }
+  
 
   onSubmit(): void {
     if (this.tInfosBaseSiteForm.valid) {
