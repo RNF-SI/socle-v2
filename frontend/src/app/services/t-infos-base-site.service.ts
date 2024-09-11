@@ -27,11 +27,5 @@ export class TInfosBaseSiteService {
   updateSite(slug: string, data: any): Observable<any> {
     return this.http.put(`${environment.apiUrl}/t_infos_base_site/${slug}`, data);
   }
-  updatePatrimoineGeologique(siteId: number, geologicalHeritages: PatrimoineGeologique[], protectionGeologicalHeritages: PatrimoineGeologique[]): Observable<any> {
-    return this.http.put(`${environment.apiUrl}/t_infos_base_site/${siteId}`, {
-      geologicalHeritages: geologicalHeritages,
-      protectionGeologicalHeritages: protectionGeologicalHeritages
-    });
-  }
- 
+  
 }

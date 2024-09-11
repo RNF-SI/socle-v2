@@ -104,4 +104,39 @@
   .color-button.mat-radio-checked .mat-radio-inner-circle {
     background-color: #0B885D; /* Couleur de l'intérieur du bouton radio quand coché */
   }
+  .button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px; /* Optionnel : ajustez l'espace au-dessus du bouton */
+  }
+  
+  .custom-button {
+    background-color: #0B885D !important;
+    color: white; /* Pour le texte en blanc */
+  }
+  .submit-button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+   
+  }
+  
+  .submit-button-container button {
+    background-color: #0B885D; /* Exemple de couleur verte */
+    color: white; /* Couleur du texte en blanc */
+    margin-right: 10px; /* Espace à droite du bouton, vous pouvez ajuster selon vos besoins */
+  }
+  .full-width {
+    width: 100%; /* Assure que le champ prend toute la largeur disponible */
+    min-width: 300px; /* Ou une autre largeur minimale adaptée */
+  }
+  
+  
+ 
+ 
+  
+
+ 
+  
   
