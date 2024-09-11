@@ -7,6 +7,8 @@ import { SitesService } from 'src/app/services/sites.service';
 import { PatrimoineGeologiqueService } from 'src/app/services/patrimoine-geologique.service';
 import { Nomenclature, NomenclatureType } from 'src/app/models/nomenclature.model';
 import { PatrimoineGeologique } from 'src/app/models/patrimoine-geologique.model';
+import Swal from 'sweetalert2';
+
 
 @Component({
   selector: 'app-t-infos-base-site',
@@ -135,6 +137,11 @@ export class TInfosBaseSiteComponent implements OnInit {
     this.loadNomenclature();
     this.loadSubstances(); // Charger les substances ici
     this.fetchSitesWithProtection();
+    // Ajouter un champ par défaut pour la protection géologique dès l'initialisation
+    this.addProtectionHeritage();
+
+    // Ajouter un champ par défaut pour les héritages géologiques dès l'initialisation
+    this.addHeritage();
      
   }
 
@@ -362,6 +369,7 @@ export class TInfosBaseSiteComponent implements OnInit {
       bibliographie: ['', Validators.required]
     }));
   }
+  
 
   removeHeritage(index: number): void {
     this.geologicalHeritages.removeAt(index);
@@ -424,11 +432,12 @@ export class TInfosBaseSiteComponent implements OnInit {
   addQuarryExtractedMaterial(): void {
     this.quarryExtractedMaterials.push(
       this.fb.group({
-        substance: [''],
-        fossiliferous: [false]
+        substance: ['', Validators.required], // Assurez-vous que les champs nécessaires sont présents
+        fossiliferous: [false] // Vous pouvez ajouter d'autres contrôles de formulaire selon vos besoins
       })
     );
   }
+  
   
   addMineExtractedMaterial(): void {
     this.mineExtractedMaterials.push(
@@ -442,28 +451,45 @@ export class TInfosBaseSiteComponent implements OnInit {
 
   onSubmit(): void {
     if (this.tInfosBaseSiteForm.valid) {
-      const formData = this.tInfosBaseSiteForm.value;
-      formData['id_site'] = this.id_site;
+      // Seulement ici, vous gérez les Swal pour la validation
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Vos données ont été bien envoyées",
+        showConfirmButton: false,
+        timer: 1500
+      }).then(() => {
+        // Deuxième alerte Swal
+        Swal.fire({
+          title: "Vous pouvez maintenant aller voir la synthèse ou remplir la fiche de détails.",
+          showDenyButton: true,
+          showCancelButton: true,
+          confirmButtonText: "Synthèse",
+          denyButtonText: `Fiche details`
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Logique de soumission du formulaire
+            const formData = this.tInfosBaseSiteForm.value;
+            formData['id_site'] = this.id_site;
   
-     
-  
-      console.log('Submitting form with slug:', this.siteSlug);
-      console.log('Submitting form with id_site:', this.id_site);
-      console.log('Form data:', formData); // Pour vérifier les données
-  
-      this.tInfosBaseSiteService.updateSite(this.siteSlug!, formData).subscribe(
-        (response: any) => {
-          console.log('Form successfully submitted');
-          this.router.navigate([`/site/${this.siteSlug}`]);
-        },
-        (error: any) => {
-          console.error('Error updating site data', error);
-           
-        }
-      );
-    } else {
-      console.error('Form is invalid');
-      
-    }
+            this.tInfosBaseSiteService.updateSite(this.siteSlug!, formData).subscribe(
+              (response: any) => {
+                Swal.fire("Les données sont sauvegardées.", "", "success").then(() => {
+                  this.router.navigate([`/site/${this.siteSlug}`]);
+                });
+              },
+              (error: any) => {
+                Swal.fire("Error", "There was an error updating the site data", "error");
+              }
+            );
+          } else if (result.isDenied) {
+            // Action pour "Fiche details"
+            Swal.fire("Allez remplir fiche details.", "", "success").then(() => {
+              this.router.navigate([`/fiche-terrain/${this.siteSlug}`]);
+            });
+          }
+        });
+      });
+    }  
   }
-}   
+}  

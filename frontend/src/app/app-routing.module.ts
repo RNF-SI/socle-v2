@@ -13,6 +13,9 @@ import { EspaceDetailComponent } from './components/explorer/espace-detail/espac
 import { FicheTerrainComponent } from './components/explorer/fiche-terrain/fiche-terrain.component';
 import { TInfosBaseSiteComponent } from './components/explorer/t-infos-base-site/t-infos-base-site.component';
 import { SaisirComponent } from './components/saisir/saisir.component';
+import { AuthGuard } from './auth.guard';
+ 
+
 
 const routes: Routes = [
   {
@@ -39,6 +42,7 @@ const routes: Routes = [
       },
       {
         path: 'A propos',
+         
         component: LiensComponent
       },
       {
@@ -60,8 +64,9 @@ const routes: Routes = [
       },
 
       {
-        path: 'saisir', // Ajout de la route pour le composant Saisir
-        component: SaisirComponent
+        path: 'saisir',
+        component: SaisirComponent,
+        canActivate: [AuthGuard] // Appliquer le guard ici
       }
        
      
