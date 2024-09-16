@@ -14,6 +14,7 @@ import { FicheTerrainComponent } from './components/explorer/fiche-terrain/fiche
 import { TInfosBaseSiteComponent } from './components/explorer/t-infos-base-site/t-infos-base-site.component';
 import { SaisirComponent } from './components/saisir/saisir.component';
 import { AuthGuard } from './auth.guard';
+import { ContactsComponent } from './components/contacts/contacts.component';
  
 
 
@@ -67,7 +68,10 @@ const routes: Routes = [
         path: 'saisir',
         component: SaisirComponent,
         canActivate: [AuthGuard] // Appliquer le guard ici
-      }
+      },
+      { path: 'contacts',
+       component: ContactsComponent },
+
        
      
   
