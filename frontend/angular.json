@@ -50,7 +50,8 @@
               "raf",
               "rgbcolor",
               "html2canvas",
-              "sweetalert2"
+              "sweetalert2",
+              "leaflet"
             ]
           },
           "configurations": {

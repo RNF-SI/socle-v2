@@ -33,6 +33,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { NgbRatingModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SaisirComponent } from './components/saisir/saisir.component';
+import { ContactsComponent } from './components/contacts/contacts.component';
  
 
   
@@ -47,7 +48,8 @@ import { SaisirComponent } from './components/saisir/saisir.component';
     FicheTerrainComponent,
     TInfosBaseSiteComponent,
     CapitalizePipe,
-    SaisirComponent
+    SaisirComponent,
+    ContactsComponent
      
      
   ],
