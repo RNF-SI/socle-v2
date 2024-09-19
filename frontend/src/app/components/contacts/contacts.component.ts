@@ -8,8 +8,8 @@ import { Component, OnInit } from '@angular/core';
 export class ContactsComponent implements OnInit {
 
   contacts: any[] = [
-    { name: '', email: 'contact1@example.com', phone: '123-456-7890' },
-    { name: 'Contact 2', email: 'contact2@example.com', phone: '098-765-4321' }
+    { name: 'En cas de question sur le projet Socle :', role:'Corentin Guinault: Chargé de projet Géodiversité ', email: 'corentin.guinault@rnfrance.org', phone: '03.80.48.94.77' },
+    { name: 'En cas de question sur les aspects informatiques et base de données :', role: ' Zacharie moulin: Chargé de mission Géomatique ', email: 'zacharie.moulin@rnfrance.org', phone: '0380489478' }
     // Ajoute ici les contacts ou récupère-les depuis un service
   ];
 
