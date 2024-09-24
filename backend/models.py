@@ -4,6 +4,7 @@ from geoalchemy2 import Geometry
 
 from flask_sqlalchemy import SQLAlchemy
 
+
 # db = SQLAlchemy()
  
 class TInfosBaseSite(db.Model):
@@ -85,6 +86,7 @@ class Site(db.Model):
     autres_cartes_geol = db.Column(db.Text, nullable=True)
     statut_validation = db.Column(db.String(20), nullable=True)
     geom = db.Column(Geometry('MULTIPOLYGON', srid=4326), nullable=True)
+    geom_point = db.Column(Geometry('POINT', srid=4326), nullable=True)  
     date_ajout = db.Column(db.DateTime, default=db.func.now(), nullable=False)
     date_maj = db.Column(db.DateTime, nullable=False)
     utilisateur_ajout = db.Column(db.Integer, nullable=True)

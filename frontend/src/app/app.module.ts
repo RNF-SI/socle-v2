@@ -80,10 +80,13 @@ import { ContactsComponent } from './components/contacts/contacts.component';
     MatIconModule,
     NgbRatingModule,
     NgbModule,
+    
+   
 
   
 
   ],
+  
   providers: [TInfosBaseSiteService],
   bootstrap: [AppComponent]
 })
