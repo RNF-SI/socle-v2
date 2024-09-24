@@ -1,14 +1,57 @@
 <div class="container contenu">
-    <div>
-        Venez saisir et consulter les données géologiques associées aux espaces naturels français. <br> 
-        Il vous faut un compte pour y accéder (connectez vous en cliquant sur le symbole <fa-icon [icon]="['fas', 'right-to-bracket']"></fa-icon> en haut à droite)
-        <br> <br>
-        <div class="inscription-div">
-            <span class="inscription"><a href="http://plateformes.reserves-naturelles.org/inscription" target="_blank">
-                    <fa-icon [icon]="['fas', 'user-plus']"></fa-icon> INSCRIVEZ-VOUS DÈS MAINTENANT EN CLIQUANT ICI
-                </a></span>
-        </div>
-        <br>
-        Votre inscription sera modérée par un administrateur, seuls les membres du réseau peuvent accéder à cette application. <br> 
+  <h3 class="main-title">Bienvenue sur la base de données géologiques de Réserves Naturelles de France !</h3>
+  <h6 class="subtitle">Venez saisir et consulter les données géologiques associées aux réserves naturelles</h6>
+  <br>
+  <h6 class="contunu">
+    Venez saisir et consulter les données géologiques associées aux espaces naturels français.
+    <br>
+    Il vous faut un compte pour y accéder (connectez-vous en cliquant sur le symbole
+    <fa-icon [icon]="['fas', 'right-to-bracket']"></fa-icon> en haut à droite)
+    <br><br>
+    <div class="inscription-div">
+      <span class="inscription">
+        <a href="http://plateformes.reserves-naturelles.org/inscription" target="_blank">
+          <fa-icon [icon]="['fas', 'user-plus']"></fa-icon> INSCRIVEZ-VOUS DÈS MAINTENANT EN CLIQUANT ICI
+        </a>
+      </span>
     </div>
+    <br>
+    Votre inscription sera modérée par un administrateur, seuls les membres du réseau peuvent accéder à cette application.
+    <br><br>
+
+    <!-- Afficher le nombre total de sites sans périmètre de protection -->
+    <div class="statistiques-texte">
+      <p>
+        <img src="assets/images/symbol1.png" alt="Icône des réserves naturelles" class="statistiques-image">
+        Nombre total de réserves naturelles en France métropolitaine et outre-mer sans périmètre de protection : {{ totalSites }}
+      </p>
+
+      <p>
+        <img src="assets/images/stratotype.png" alt="Icône de stratotypes" class="statistiques-image">
+        C'est le nombre de stratotypes protégés par des réserves naturelles, c'est-à-dire des affleurements de référence pour les géologues du monde entier : {{ totalStratotypes }}
+      </p>
+
+      <p>
+        <img src="assets/images/INPG.png" alt="Icône de site INPG" class="statistiques-image">
+        Nombre de sites de l'Inventaire National du Patrimoine Géologique (INPG) qui sont localisés au moins en partie en réserve naturelle : {{ totalInpgSites }}
+      </p>
+
+      <div class="statistiques-texte">
+        <p>
+          <!-- Icône SVG dynamique pour le pourcentage avec inclinaison -->
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="hexagon pourcentage-incline">
+            <!-- Fond avec couleur de base -->
+            <polygon points="50,5 93,25 93,75 50,95 7,75 7,25" fill="#afb42b" />
+            <!-- Partie remplie avec la couleur demandée, ajustée par le pourcentage -->
+            <clipPath id="hexClip">
+              <rect [attr.y]="100 - inpgPercentage" width="100" [attr.height]="inpgPercentage" fill="#00695c"></rect>
+            </clipPath>
+            <polygon points="50,5 93,25 93,75 50,95 7,75 7,25" fill="#00695c" clip-path="url(#hexClip)" />
+          </svg>
+          Soit la proportion des réserve naturelles qui sont connues pour abriter du patrimoine géologique : {{ inpgPercentage.toFixed(2) }}%
+        </p>
+      </div>
+      
+    </div>
+  </h6>
 </div>

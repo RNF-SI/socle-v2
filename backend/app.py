@@ -18,6 +18,7 @@ from pypnusershub.login_manager import login_manager
 
 app = Flask(__name__)
 app.config.from_object(Config)
+cors = CORS(app)
 
 login_manager.init_app(app)
 

@@ -58,6 +58,26 @@ def update_site(id):
     db.session.commit()
     return jsonify(site.to_dict())
 
+@bp.route('/site/<slug>', methods=['GET'])
+def get_centroids():
+    try:
+        # Utilisation de ST_AsGeoJSON pour convertir les objets WKBElement en GeoJSON
+        centroids = Site.query.with_entities(func.ST_AsGeoJSON(Site.geom_point)).filter(Site.geom_point.isnot(None)).all()
+
+        # Extraire les données GeoJSON
+        result = [{"centroid": centroid[0]} for centroid in centroids if centroid[0] is not None]
+        
+        return jsonify(result)
+    except Exception as e:
+        print(f"Erreur lors de la récupération des centroïdes : {e}")
+        abort(500)
+
+@bp.route('/sites/count', methods=['GET'])
+def get_site_count():
+    # Compter uniquement les sites sans périmètre de protection
+    total_sites_without_protection = Site.query.filter(Site.perimetre_protection == False).count()
+    return jsonify({'total_sites': total_sites_without_protection})
+
  
 
 @bp.route('/t_infos_base_site', methods=['POST'])
@@ -274,6 +294,27 @@ def update_t_infos_base_site(slug):
         return response
 
 
+@bp.route('/stratotypes/count', methods=['GET'])
+def get_stratotype_count():
+    try:
+        # Compte le nombre de lignes où `reserve_contains_stratotype` est vrai
+        stratotype_count = db.session.query(TInfosBaseSite).filter_by(reserve_contains_stratotype=True).count()
+        return jsonify({'total_stratotypes': stratotype_count}), 200
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return jsonify({'message': 'Erreur lors de la récupération du nombre de stratotypes', 'error': str(e)}), 500
+
+@bp.route('/sites/inpg/count', methods=['GET'])
+def get_inpg_site_count():
+    try:
+        # Compter le nombre de sites qui ont au moins une entrée INPG associée
+        inpg_site_count = db.session.query(Site).join(Site.inpg).distinct().count()
+        return jsonify({'total_inpg_sites': inpg_site_count}), 200
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return jsonify({'message': 'Erreur lors de la récupération du nombre de sites INPG', 'error': str(e)}), 500
+
+  
 @bp.route('/nomenclatures/<id_type>', methods=['GET'])
 def get_nomenclatures_by_type(id_type):
     nomenclatures = BibNomenclatureType.query.filter_by(id_type=id_type).first()
