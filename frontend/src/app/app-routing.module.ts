@@ -71,10 +71,10 @@ const routes: Routes = [
       },
       { path: 'contacts',
        component: ContactsComponent },
+      
 
        
      
-  
   
     ]
   },

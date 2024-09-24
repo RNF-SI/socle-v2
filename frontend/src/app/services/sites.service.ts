@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Site } from '../models/site.model';
 import { Observable } from 'rxjs';
-import { Espace } from '../models/espace.model';
+ 
 
 @Injectable({
   providedIn: 'root'
@@ -35,11 +35,30 @@ export class SitesService {
     return this._http.get<Site[]>(`${environment.apiUrl}/sites`);
   }
 
-  getEspaces(): Observable<Espace[]> {
-    return this._http.get<Espace[]>(this.apiUrl);
-  }
-
+ 
   getSitesWithProtection(): Observable<Site[]> {
     return this._http.get<Site[]>(`${environment.apiUrl}/sites/protection`);
   }
+
+   // Nouvelle méthode pour récupérer les centroïdes
+   getCentroids(): Observable<any> {
+    return this._http.get(`${environment.apiUrl}/sites`);  // URL de ton API Flask
+  }
+
+  getSiteCount(): Observable<any> {
+    return this._http.get<any>(`${environment.apiUrl}/sites/count`);
+  }
+
+  getStratotypeCount(): Observable<any> {
+    return this._http.get<any>(`${environment.apiUrl}/stratotypes/count`);
+     
+  }
+
+   // Nouvelle méthode pour obtenir le nombre de sites INPG
+   getInpgSiteCount(): Observable<any> {
+    return this._http.get<any>(`${environment.apiUrl}/sites/inpg/count`);
+     
+  }
+
+ 
 }

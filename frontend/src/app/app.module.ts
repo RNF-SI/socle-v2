@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { BrowserModule } from 'node_modules/@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { HomeRnfModule } from './home-rnf/home-rnf.module';

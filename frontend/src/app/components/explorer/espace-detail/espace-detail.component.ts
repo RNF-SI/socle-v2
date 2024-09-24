@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import { GeologicalInterests } from 'src/app/models/geological-interests.model';
+import { Site } from 'src/app/models/site.model';
+import { PatrimoineGeologiqueService } from 'src/app/services/patrimoine-geologique.service';
 import { SitesService } from 'src/app/services/sites.service';
 import { TInfosBaseSiteService } from 'src/app/services/t-infos-base-site.service';
-import { Site } from 'src/app/models/site.model';
-import { GeologicalInterests } from 'src/app/models/geological-interests.model';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
-import { PatrimoineGeologiqueService } from 'src/app/services/patrimoine-geologique.service';
 
 @Component({
   selector: 'app-espace-detail',

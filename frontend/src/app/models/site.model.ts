@@ -3,6 +3,7 @@ export interface Photo {
   }
   
   export interface Site {
+    total_sites_without_protection: number;
     id_site: Site;
     id: number;
     nom: string;
@@ -16,6 +17,7 @@ export interface Photo {
     inpg: any;
     perimetre_protection: any;
     interet_geol_principal: any;
+   
   
   }
   
