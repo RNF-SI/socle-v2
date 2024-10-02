@@ -1,116 +1,162 @@
 .contenu {
-    font-family: Century Gothic, sans-serif;
-    margin-top: 20px;
-    text-align: justify;
-  }
-  
-  .contenu a {
-    font-weight: 600;
-    color: #333;
-  }
-  
-  .inscription {
-    background-color: #DC8063;
-    font-weight: 600;
-    padding: 5px;
-  }
-  
-  .inscription-div {
-    text-align: center;
-  }
-  
-  .inscription a {
-    color: white;
-  }
-  
-  .main-title {
-    text-align: center;
-    color: #097c03;
-    font-size: 24px;
-    font-weight: bold;
-  }
-  
-  .subtitle, .contunu {
-    text-align: center;
-    color: #333;
-    font-size: 16px;
-    margin-top: 10px;
-  }
-  
-  /* Styles pour la carte */
-  .site-container {
-    position: relative;
-    width: 100%;
-    height: 70vh; /* Ajuste la hauteur de la carte */
-  }
-  
-  .map-card {
-    width: 100%;
-    height: 100%;
-  }
-  
-  
-  /* Styles pour le tableau des réserves */
-  .tableau-reserves {
-    margin-top: 30px;
-  }
-  
-  .search-filters {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-  }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  th, td {
-    padding: 10px;
-    border: 1px solid #ddd;
-  }
-  
-  th {
-    background-color: #f4f4f4;
-    color: #333;
-  }
-  
-  td {
-    text-align: left;
-    color: #333;
-  }
-  
-  .statistiques-texte p {
-    display: flex;
-    align-items: center;
-    margin: 0;
-  }
-  
+  font-family: Century Gothic, sans-serif;
+  margin-top: 20px;
+  text-align: justify;
+  padding-left: 10%;  
+  padding-right: 10%;
+}
+
+.main-title {
+  text-align: center;
+  color: #097c03;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.subtitle {
+  text-align: center;
+  color: #333;
+  font-size: 16px;
+  margin-top: 10px;
+  margin-bottom: 20px;  
+}
+
+.chiffre-clé {
+  margin: 0 auto;  
+  text-align: justify;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;  
+  margin-bottom: 40px;
+}
+
   .statistiques-image {
-    width: 80px; /* Ajuste la taille selon tes besoins */
-    height: 80px;
-    margin-right: 10px; /* Espace entre l'image et le texte */
+    width: 99px;  
+    height: 99px;
+    margin-right: 10px;  
     
   }
-
-  .statistiques-texte p {
+  .statistiques-item {
     display: flex;
     align-items: center;
-    margin: 10px 0;
+    margin-bottom: 20px; /* Espace entre les blocs */
   }
-  
-  .hexagon {
-    width: 50px;
-    height: 50px;
+ 
+.icon-container {
+    position: relative;
+    width: 99px;  
+    height: 105px;
     margin-right: 10px;
-  }
-  
-  /* Icône pourcentage incliné */
-.pourcentage-incline {
-  width: 50px;
-  height: 50px;
-  margin-right: 10px;
-  transform: rotate(-10deg); /* Ajuste l'angle de rotation ici */
 }
-  
+
+.icon-text-container {
+    display: flex;
+    align-items: center;  
+}
+.text-container {
+  display: flex;
+  align-items: center;
+}
+
+
+
+.hexagon {
+    width: 100%;
+    height: 100%;
+}
+
+.icon-background {
+    position: absolute;
+    top: 0;
+    left: -2px;  
+    width: 100%;
+    height: 100%;
+}
+
+.icon-fill {
+    position: absolute;
+    bottom: 0;  
+    left: -6.58px;  
+    width: 110%;  
+    height: 100%;  
+    overflow: hidden;
+    transform: rotate(0deg);  
+}
+
+ 
+p {
+  max-width: 400px; /* Limite la largeur du paragraphe */
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 0; /* Supprime la marge pour un alignement optimal */
+  color: #333;
+}
+ 
+ 
+
+.big-number {
+    font-size: 50px;  
+    font-weight: bold;
+    color: #050505;
+    margin-bottom: 10px;
+    margin-right: 15px;
+}
+.map-card {
+    width: 50%;
+    height: 50%;
+}
+
+.site-container {
+  position: relative;
+  width: 100%;
+  height: 70vh; 
+  margin-bottom: 50px;  
+}
+
+.search-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.header-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 2fr; /* Ajuste la proportion de chaque colonne */
+  padding: 10px;
+  font-weight: bold;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 20px;
+}
+
+.site-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 2fr; /* Même proportion que l'en-tête */
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  align-items: center;
+}
+
+.site-name {
+  text-align: left;
+  color: #A1C376;
+}
+
+.site-code {
+  text-align: left;
+  color: #A1C376;
+}
+
+.site-type {
+  text-align: left;
+  color: #A1C376;
+}
+
+.site-metier {
+  text-align: left;
+  color: #A1C376;
+}
+
+
+ 

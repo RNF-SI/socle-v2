@@ -4,7 +4,7 @@ from flask import Flask, request, Response, render_template, redirect, Blueprint
 import requests
 import json
 from app import app, db
-from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Nomenclature, BibNomenclatureType
+from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Nomenclature, BibNomenclatureType,Inpg, Site, cor_site_inpg
 from schemas import PatrimoineGeologiqueGestionnaireSchema, PerimetreProtectionSchema, TInfosBaseSiteSchema, SiteSchema, NomenclatureSchema, NomenclatureTypeSchema
 from pypnusershub import routes as fnauth
 import logging
@@ -79,6 +79,90 @@ def get_site_count():
     return jsonify({'total_sites': total_sites_without_protection})
 
  
+
+@bp.route('/sites', methods=['GET'])
+def get_sites_by_type_rn_and_code():
+    type_rn = request.args.get('type_rn')  # Récupère le type de RN depuis la requête
+    code = request.args.get('code')  # Récupère le code depuis la requête
+
+    query = Site.query
+    if type_rn:
+        query = query.filter_by(type_rn=type_rn)
+    if code:
+        query = query.filter_by(code=code)
+
+    sites = query.all()  # Renvoie les sites filtrés par type_rn et/ou code
+    schema = SiteSchema(many=True)
+    return schema.jsonify(sites)
+
+@bp.route('/sites/patrimoine', methods=['GET'])
+def get_sites_patrimoine():
+    patrimoine_filter = request.args.get('patrimoine', 'all')
+
+    if patrimoine_filter == 'oui':
+        # Récupérer les sites qui ont un patrimoine géologique
+        sites_with_patrimoine = db.session.query(Site, db.func.array_agg(Inpg.id_metier)).join(PatrimoineGeologiqueGestionnaire, Site.id_site == PatrimoineGeologiqueGestionnaire.id_site)\
+            .outerjoin(cor_site_inpg, Site.id_site == cor_site_inpg.c.site_id)\
+            .outerjoin(Inpg, cor_site_inpg.c.inpg_id == Inpg.id_inpg)\
+            .group_by(Site.id_site).all()
+    elif patrimoine_filter == 'non':
+        # Récupérer les sites qui n'ont pas de patrimoine géologique
+        sites_without_patrimoine = db.session.query(Site, db.func.array_agg(Inpg.id_metier)).outerjoin(PatrimoineGeologiqueGestionnaire).filter(PatrimoineGeologiqueGestionnaire.id_site == None)\
+            .outerjoin(cor_site_inpg, Site.id_site == cor_site_inpg.c.site_id)\
+            .outerjoin(Inpg, cor_site_inpg.c.inpg_id == Inpg.id_inpg)\
+            .group_by(Site.id_site).all()
+        sites_with_patrimoine = sites_without_patrimoine
+    else:
+        # Récupérer tous les sites
+        sites_with_patrimoine = db.session.query(Site, db.func.array_agg(Inpg.id_metier)).outerjoin(cor_site_inpg, Site.id_site == cor_site_inpg.c.site_id)\
+            .outerjoin(Inpg, cor_site_inpg.c.inpg_id == Inpg.id_inpg)\
+            .group_by(Site.id_site).all()
+
+    # Serializer et retourner la réponse
+    result = []
+    site_schema = SiteSchema(many=False)
+    for site, id_metiers in sites_with_patrimoine:
+        site_data = site_schema.dump(site)
+        site_data['id_metier'] = ', '.join([str(metier) for metier in id_metiers])  # Concaténer les id_metier
+        result.append(site_data)
+
+    return jsonify(result)
+
+
+@bp.route('/sites/inpg', methods=['GET'])
+def get_sites_with_inpg():
+    # Requête qui retourne un site et tous ses id_metier associés
+    sites = db.session.query(Site, db.func.array_agg(Inpg.id_metier)).outerjoin(cor_site_inpg, Site.id_site == cor_site_inpg.c.site_id)\
+        .outerjoin(Inpg, cor_site_inpg.c.inpg_id == Inpg.id_inpg).group_by(Site.id_site).all()
+
+    # Serializer pour récupérer les sites et leurs id_metier en tant que liste
+    site_schema = SiteSchema(many=False)
+    result = []
+    for site, id_metiers in sites:
+        # Assurez-vous de bien sérialiser chaque site indépendamment
+        site_data = site_schema.dump(site)  # Sérialiser uniquement le site
+        site_data['id_metier'] = ', '.join([str(metier) for metier in id_metiers])  # Concaténer les id_metier
+        result.append(site_data)
+
+    return jsonify(result)
+
+
+@bp.route('/sites/region', methods=['GET'])
+def get_sites_by_region():
+    region_filter = request.args.get('region', 'all')
+
+    if region_filter != 'all':
+        # Récupérer les sites qui appartiennent à la région sélectionnée
+        sites_by_region = Site.query.filter(Site.region == region_filter).all()
+    else:
+        # Récupérer tous les sites
+        sites_by_region = Site.query.all()
+
+    # Serializer et retourner la réponse
+    site_schema = SiteSchema(many=True)
+    return jsonify(site_schema.dump(sites_by_region))
+
+
 
 @bp.route('/t_infos_base_site', methods=['POST'])
 def submitData():

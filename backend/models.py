@@ -94,6 +94,12 @@ class Site(db.Model):
 
     slug = db.Column(db.String(255), unique=True) 
 
+    type_rn = db.Column(db.String(3), nullable=False)  # RNN, RNR, RNC etc.
+    code = db.Column(db.String(10), nullable=True)  # Ajout du champ 'code'
+    region = db.Column(db.String(100), nullable=False)  # Nouveau champ pour la région
+
+
+
     perimetre_protection_site = db.relationship("Site", remote_side=[id_site])
 
     infos_base = db.relationship("TInfosBaseSite", foreign_keys=TInfosBaseSite.id_site, uselist=False)

@@ -1,14 +1,17 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Site } from '../models/site.model';
-import { Observable } from 'rxjs';
  
 
 @Injectable({
   providedIn: 'root'
 })
 export class SitesService {
+  navigate(arg0: string[]) {
+    throw new Error('Method not implemented.');
+  }
   
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -59,6 +62,33 @@ export class SitesService {
     return this._http.get<any>(`${environment.apiUrl}/sites/inpg/count`);
      
   }
+
+  getSitesByTypeRnAndCode(typeRn: string, code: string): Observable<Site[]> {
+    let params = new HttpParams();
+    if (typeRn) {
+        params = params.set('type_rn', typeRn);  // Ajoute le filtre si présent
+    }
+    if (code) {
+        params = params.set('code', code);  // Ajoute le filtre si présent
+    }
+    return this._http.get<Site[]>(environment.apiUrl, { params });
+}
+
+getFilteredSites(patrimoine: string): Observable<Site[]> {
+  let params = new HttpParams().set('patrimoine', patrimoine);
+  return this._http.get<Site[]>(`${environment.apiUrl}/sites/patrimoine`, { params });
+}
+
+
+getSitesWithInpg(): Observable<Site[]> {
+  return this._http.get<Site[]>(`${environment.apiUrl}/sites/inpg`);
+}
+
+getSitesByRegion(region: string): Observable<Site[]> {
+  let params = new HttpParams().set('region', region);
+  return this._http.get<Site[]>(`${environment.apiUrl}/sites/region`, { params });
+}
+
 
  
 }

@@ -3,6 +3,12 @@ export interface Photo {
   }
   
   export interface Site {
+    region: string;
+    has_patrimoine_geologique: any;
+    hasPatrimoine: boolean;
+    code: string;
+    type_rn: string;
+    id_metier?: string;  // Ajout de la propriété id_metier
     total_sites_without_protection: number;
     id_site: Site;
     id: number;
