@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router'; // Importer le Router ici
 import { SitesService } from 'src/app/services/sites.service';
 import { Site } from '../../models/site.model'; // Assurez-vous que le modèle Site est bien importé
 
@@ -21,7 +22,10 @@ export class AccueilComponent implements OnInit {
   regions: string[] = ['Normandie', 'Pays de la Loire', 'Corse', 'Provence-Alpes-Côte d\'Azur', 'Grand Est', 'Auvergne-Rhône-Alpes', 'Bretagne', 'Hauts-de-France', 'Occitanie', 'Nouvelle-Aquitaine', 'Bourgogne-Franche-Comté', 'Île-de-France', 'Guyane', 'La Réunion', 'Centre-Val de Loire', 'Guadeloupe', 'Martinique', 'Mayotte'];  // Liste des régions
   selectedRegion: string = '';  // Stocke la région sélectionnée
 
-  constructor(private siteService: SitesService) { }
+  constructor(
+    private siteService: SitesService, 
+    private router: Router // Injection du Router ici
+  ) { }
 
   ngOnInit(): void {
     // Fetch statistics
@@ -67,6 +71,10 @@ export class AccueilComponent implements OnInit {
         console.error('Error fetching sites', error);
       }
     );
+  }
+
+  goToEspaceDetail(slug: string): void {
+    this.router.navigate(['/site', slug]);  // Utilisation du Router pour naviguer
   }
 
   handleSearch(event: Event): void {
@@ -115,17 +123,30 @@ export class AccueilComponent implements OnInit {
     this.selectedRegion = region;
     this.applyFilters();
   }
-  
+
   applyFilters(): void {
     this.filteredEspaces = this.espaces.filter(site => {
-      const matchesTypeRn = this.selectedTypeRn ? site.type_rn === this.selectedTypeRn : true;
-      const matchesSearch = this.searchQuery ? site.nom.toLowerCase().includes(this.searchQuery.toLowerCase()) : true;
-      const matchesCode = this.selectedCode ? site.code.toLowerCase().includes(this.selectedCode.toLowerCase()) : true;
-      const matchesRegion = this.selectedRegion ? site.region === this.selectedRegion : true;
-      return matchesTypeRn && matchesSearch && matchesCode && matchesRegion;
+      const matchesTypeRn = this.selectedTypeRn.length > 0 
+        ? this.selectedTypeRn.includes(site.type_rn) 
+        : true;
+
+      const matchesRegion = this.selectedRegion.length > 0 
+        ? this.selectedRegion.includes(site.region)
+        : true;
+
+      const matchesSearch = this.searchQuery 
+        ? site.nom.toLowerCase().includes(this.searchQuery) || site.code.toLowerCase().includes(this.searchQuery) 
+        : true;
+
+      return matchesTypeRn && matchesRegion && matchesSearch;
     });
   }
   
+  isLastElement(array: any[], element: any): boolean {
+    return array.indexOf(element) === array.length - 1;
+  }
+  
+
   getClipPath(percentage: number): string {
     const clipHeight = 100 - percentage;  
     return `inset(${clipHeight}% 0 0 0)`;

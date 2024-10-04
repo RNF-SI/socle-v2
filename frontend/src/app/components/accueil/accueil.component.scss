@@ -101,9 +101,10 @@ p {
     margin-bottom: 10px;
     margin-right: 15px;
 }
+
 .map-card {
-    width: 50%;
-    height: 50%;
+  width: 100%;
+  height: 400px; /* Ajuste la hauteur de la carte */
 }
 
 .site-container {
@@ -116,9 +117,14 @@ p {
 .search-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
-  margin-bottom: 30px;
+  gap: 10px;
+  margin-bottom: 20px;
+  
 }
+.search-container mat-form-field:first-child {
+  height: 40%; /* Exemple de largeur dynamique */
+}
+
 
 .header-row {
   display: grid;
@@ -158,5 +164,20 @@ p {
   color: #A1C376;
 }
 
-
+.metier-link {
+  color:  #A1C376;
+}
  
+
+.statistiques-image-common {
+  width: 99px;  
+  height: 99px;
+  margin-right: 10px;
+}
+
+.icon-container {
+  position: relative;
+  width: 99px;  
+  height: 105px;
+  margin-right: 10px;
+}

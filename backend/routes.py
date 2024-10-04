@@ -129,22 +129,22 @@ def get_sites_patrimoine():
     return jsonify(result)
 
 
+# Flask route update
 @bp.route('/sites/inpg', methods=['GET'])
 def get_sites_with_inpg():
     # Requête qui retourne un site et tous ses id_metier associés
-    sites = db.session.query(Site, db.func.array_agg(Inpg.id_metier)).outerjoin(cor_site_inpg, Site.id_site == cor_site_inpg.c.site_id)\
+    sites = db.session.query(Site, db.func.array_agg(Inpg.id_metier), db.func.array_agg(Inpg.url)).outerjoin(cor_site_inpg, Site.id_site == cor_site_inpg.c.site_id)\
         .outerjoin(Inpg, cor_site_inpg.c.inpg_id == Inpg.id_inpg).group_by(Site.id_site).all()
 
-    # Serializer pour récupérer les sites et leurs id_metier en tant que liste
     site_schema = SiteSchema(many=False)
     result = []
-    for site, id_metiers in sites:
-        # Assurez-vous de bien sérialiser chaque site indépendamment
+    for site, id_metiers, urls in sites:
         site_data = site_schema.dump(site)  # Sérialiser uniquement le site
-        site_data['id_metier'] = ', '.join([str(metier) for metier in id_metiers])  # Concaténer les id_metier
+        site_data['id_metier'] = [{'id': metier, 'url': url} for metier, url in zip(id_metiers, urls)]  # Associer chaque `id_metier` à son `url`
         result.append(site_data)
 
     return jsonify(result)
+
 
 
 @bp.route('/sites/region', methods=['GET'])

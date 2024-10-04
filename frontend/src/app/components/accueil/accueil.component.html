@@ -29,6 +29,14 @@
     </div>
 
     <div class="statistiques-item">
+      <img src="assets/images/IconCG.png" alt="Icône de stratotypes" class="statistiques-image1 statistiques-image-common">
+      <div class="text-container">
+        <span class="big-number">{{ totalStratotypes }}</span>
+        <p>C’est le nombre de réserves naturelles qui ont été créées en premier lieu pour protéger du patrimoine géologique </p>
+      </div>
+    </div>
+
+    <div class="statistiques-item">
       <img src="assets/images/INPG.png" alt="Icône de site INPG" class="statistiques-image">
       <div class="text-container">
         <span class="big-number">{{ totalInpgSites }}</span>
@@ -45,17 +53,19 @@
     </div>
   </div>
 
+  
+
   <div class="search-container">
     <!-- Filtres de recherche -->
     <mat-form-field appearance="outline">
-      <mat-label>Rechercher un site</mat-label>
-      <input matInput (input)="handleSearch($event)" placeholder="Ex: Aiguilles Rouges">
+      <mat-label>Rechercher réserve naturelle </mat-label>
+      <input matInput (input)="handleSearch($event)" placeholder="Ex: Aiguilles Rouges ou RNN18">
     </mat-form-field>
+    
 
     <mat-form-field appearance="outline">
       <mat-label>Famille</mat-label>
-      <mat-select [(value)]="selectedTypeRn" (selectionChange)="onTypeRnChange($event.value)">
-        <mat-option value="">(Toutes)</mat-option>
+      <mat-select [(value)]="selectedTypeRn" (selectionChange)="onTypeRnChange($event.value)" multiple>
         <mat-option value="RNN">RNN</mat-option>
         <mat-option value="RNR">RNR</mat-option>
         <mat-option value="RNC">RNC</mat-option>
@@ -74,11 +84,11 @@
     <!-- Ajout du filtre de région -->
     <mat-form-field appearance="outline">
       <mat-label>Région</mat-label>
-      <mat-select [(value)]="selectedRegion" (selectionChange)="onRegionChange($event.value)">
-        <mat-option value="">(Toutes)</mat-option>
+      <mat-select [(value)]="selectedRegion" (selectionChange)="onRegionChange($event.value)" multiple>
         <mat-option *ngFor="let region of regions" [value]="region">{{ region }}</mat-option>
       </mat-select>
     </mat-form-field>
+    
   </div>
 
   <!-- En-têtes des colonnes : Réserve, Code, Famille, Site INPG -->
@@ -95,10 +105,20 @@
     <mat-list-item *ngFor="let site of filteredEspaces">
       <mat-card class="espace-card">
         <mat-card-content class="site-row">
-          <span class="site-name">{{ site.nom }}</span>
+          <span class="site-name"  (click)="goToEspaceDetail(site.slug)">
+              <mat-card-content>
+                {{ site.nom }}
+              </mat-card-content>
+          </span>
           <span class="site-code">{{ site.code }}</span>
           <span class="site-type">{{ site.type_rn }}</span>
-          <span *ngIf="site.id_metier" class="site-metier">{{ site.id_metier }}</span>
+          <span *ngIf="site.id_metier" class="site-metier">
+            <ng-container *ngFor="let metier of site.id_metier">
+              <a [href]="metier.url" target="_blank" class="metier-link">{{ metier.id }}</a>
+              <span *ngIf="!isLastElement(site.id_metier, metier)">, </span>
+            </ng-container>
+          </span>
+          
           <!-- Affiche id_metier s'il existe -->
         </mat-card-content>
       </mat-card>

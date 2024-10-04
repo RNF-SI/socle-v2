@@ -8,7 +8,7 @@ export interface Photo {
     hasPatrimoine: boolean;
     code: string;
     type_rn: string;
-    id_metier?: string;  // Ajout de la propriété id_metier
+    id_metier?: { id: string, url: string }[];  // Met à jour ce champ
     total_sites_without_protection: number;
     id_site: Site;
     id: number;
