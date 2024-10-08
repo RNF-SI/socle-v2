@@ -27,6 +27,8 @@ export class EspaceDetailComponent implements OnInit {
   geologicalUnitsOptions: string[] = [];
   geologicalUnits: string[] = [];
 
+ 
+
   constructor(
     private route: ActivatedRoute,
     private siteService: SitesService,
@@ -46,6 +48,10 @@ export class EspaceDetailComponent implements OnInit {
           this.tInfosBaseSiteService.getSiteBySlug(slug).subscribe((data: string) => {
              this.tInfosBaseSite = data;  
              this.geologicalUnitsOptions = this.geologicalUnits;
+             
+             this.setPaleontologicalLabels();
+
+
               
           });
         }
@@ -57,13 +63,14 @@ export class EspaceDetailComponent implements OnInit {
    
 
  
-
   fetchPatrimoineGeologique(siteId: any): void {
     this.patrimoineGeologiqueService.getPatrimoineGeologique(siteId).subscribe(
       (data: any) => {
+        console.log('Fetched Geological Heritage Data:', data); // Log pour vérifier les données récupérées
         if (data && data.principal && data.protection) {
           this.principalHeritage = data.principal;
           this.protectionHeritage = data.protection;
+   
         } else {
           console.error('Unexpected data format:', data);
         }
@@ -73,6 +80,7 @@ export class EspaceDetailComponent implements OnInit {
       }
     );
   }
+  
 
   setGeologicalHeritages(): void {
     this.principalHeritage = this.patrimoineGeologique?.geologicalHeritages || [];
@@ -84,30 +92,35 @@ export class EspaceDetailComponent implements OnInit {
 
   
 
-   
-
-  setPaleontologicalLabels(patrimoineGeologique: any): void {
-    if (patrimoineGeologique?.contains_paleontological_heritage) {
-      if (patrimoineGeologique.contains_paleontological_heritage_vertebrates) {
-        this.paleontologicalLabels.push(this.getPaleontologicalLabel('vertebrates'));
+  setPaleontologicalLabels(): void {
+    this.paleontologicalLabels = []; // Réinitialiser les labels
+    
+    const heritage = this.tInfosBaseSite?.contains_paleontological_heritage;
+    console.log('Heritage data:', heritage); // Vérifiez les données récupérées
+    
+    if (heritage?.answer) {
+      if (heritage.vertebrates) {
+        this.paleontologicalLabels.push('Fossiles de vertébrés');
       }
-      if (patrimoineGeologique.contains_paleontological_heritage_invertebrates) {
-        this.paleontologicalLabels.push(this.getPaleontologicalLabel('invertebrates'));
+      if (heritage.invertebrates) {
+        this.paleontologicalLabels.push('Fossiles d\'invertébrés');
       }
-      if (patrimoineGeologique.contains_paleontological_heritage_plants) {
-        this.paleontologicalLabels.push(this.getPaleontologicalLabel('plants'));
+      if (heritage.plants) {
+        this.paleontologicalLabels.push('Fossiles de végétaux');
       }
-      if (patrimoineGeologique.contains_paleontological_heritage_trace_fossils) {
-        this.paleontologicalLabels.push(this.getPaleontologicalLabel('traceFossils'));
+      if (heritage.traceFossils) {
+        this.paleontologicalLabels.push('Traces fossiles');
       }
-      if (patrimoineGeologique.contains_paleontological_heritage_other) {
-        this.paleontologicalLabels.push(this.getPaleontologicalLabel('other'));
-        if (patrimoineGeologique.contains_paleontological_heritage_other_details) {
-          this.paleontologicalLabels.push(`Préciser : ${patrimoineGeologique.contains_paleontological_heritage_other_details}`);
-        }
+      if (heritage.other && heritage.otherDetails) {
+        this.paleontologicalLabels.push(`Autres: ${heritage.otherDetails}`);
       }
+      console.log('Paleontological Labels:', this.paleontologicalLabels); // Vérifier les labels générés
     }
   }
+  
+  
+  
+  
 
   setGeologicalInterests(patrimoineGeologique: any): void {
     const interests: GeologicalInterests = {
@@ -146,16 +159,7 @@ export class EspaceDetailComponent implements OnInit {
     return labels[key];
   }
 
-  getPaleontologicalLabel(key: string): string {
-    const labels: { [key: string]: string } = {
-      vertebrates: 'Vertébrés',
-      invertebrates: 'Invertébrés',
-      plants: 'Végétaux',
-      traceFossils: 'Traces fossiles',
-      other: 'Autres'
-    };
-    return labels[key];
-  }
+ 
 
   exportData() {
     const data = document.getElementById('export-content');

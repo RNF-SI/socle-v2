@@ -1,20 +1,8 @@
-.container-fluid {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .container-fluid div {
-    display: flex;
-    flex-direction: row;
+ 
+ 
+  .links-container  {
+    margin: 0 10px; /* Ajoute une marge de 10px entre les liens */
     justify-content: center;
-  }
-  
-  .container-fluid div h3 {
-    margin: 0 10px; /* Ajoute une marge de 10px entre les liens */
-  }
-  .links-container h3 {
-    margin: 0 10px; /* Ajoute une marge de 10px entre les liens */
   }
   
   .links-container h3 a {
@@ -22,6 +10,7 @@
     padding: 5px 10px; /* Ajoute un espacement à l'intérieur de l'élément <a> */
     border-radius: 5px; /* Ajoute des coins arrondis à l'élément <a> */
     transition: background-color 0.3s; /* Ajoute une transition pour une animation fluide */
+   
   }
   
   .links-container h3 a:active {
@@ -43,18 +32,69 @@
   .spacing {
     height: 20px; /* Ajustez cette valeur pour créer plus ou moins d'espace */
   }
-  .star-rating {
-    font-size: 24px; /* Taille des étoiles */
-    color: gold; /* Couleur des étoiles */
+  .map-section {
+    background-color: #999595; /* Gris clair pour le fond de la carte */
+    padding: 50px;
+    margin-bottom: 20px;
   }
   
-  /* Pour s'assurer que les étoiles inactives soient grises */
-  .star-rating .ngb-star {
-    color: lightgray;
+   
+ 
+  .map-section {
+    background-color: #e0e0e0; /* Couleur de fond gris clair */
+    padding: 70px;
+    margin-bottom: 20px;
+    width: 150%; /* Largeur de 100% pour occuper tout l'espace disponible */
+    max-width: 1200px; /* Optionnel : Limite la largeur maximale, ajustez selon vos besoins */
+    margin: 0 auto; /* Centre le rectangle si la largeur est inférieure à 100% */
   }
   
-  .star-rating .ngb-star.filled {
-    color: gold;
+   
+ 
+ 
+  .title-container {
+    display: flex;
+ 
+    margin-bottom: 10px;
   }
   
+  .heritage-icon {
+    width: 80px;
+    height: auto;
+    margin-right: 10px;
+     
+
+  }
+  
+  .heritage-title {
+    color: green;
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-top: 30px;
+  
+  }
+  
+  .heritage-content {
+    text-align: justify; /* Justifie le texte pour un alignement propre */
+    font-size: 1em;
+    line-height: 1.6;
+    margin-left: 90px;
+  
+  }
+  
+  .heritage-content p {
+    margin-bottom: 10px; /* Espace entre les paragraphes */
+ 
+  }
+  .heritage-content strong {
+    color: #097c03; /* Couleur verte pour les titres dans la section */
+   
+  }
+  
+  .subsection-title {
+    color: #097c03; /* Texte en vert pour les sous-sections */
+    font-weight: bold;
+    margin-top: 15px;
+ 
+  }
   

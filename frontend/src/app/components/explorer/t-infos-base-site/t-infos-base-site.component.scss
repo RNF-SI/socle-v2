@@ -79,14 +79,7 @@
     color: #0B885D; /* Couleur des étoiles */
   }
   
-  /* Pour s'assurer que les étoiles inactives soient grises */
-  .star-rating .ngb-star {
-    color: lightgray;
-  }
-  
-  .star-rating .ngb-star.filled {
-    color: #0B885D;
-  }
+ 
 
   .color-button .mat-radio-label-content {
     color: #0B885D; /* Couleur du texte */
@@ -123,7 +116,7 @@
   }
   
   .submit-button-container button {
-    background-color: #0B885D; /* Exemple de couleur verte */
+    background-color: #afb42b; /* Exemple de couleur verte */
     color: white; /* Couleur du texte en blanc */
     margin-right: 10px; /* Espace à droite du bouton, vous pouvez ajuster selon vos besoins */
   }

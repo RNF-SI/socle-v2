@@ -1,12 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NomenclaturesService } from 'src/app/services/nomenclatures.service';
-import { TInfosBaseSiteService } from 'src/app/services/t-infos-base-site.service';
-import { SitesService } from 'src/app/services/sites.service';
-import { PatrimoineGeologiqueService } from 'src/app/services/patrimoine-geologique.service';
 import { Nomenclature, NomenclatureType } from 'src/app/models/nomenclature.model';
 import { PatrimoineGeologique } from 'src/app/models/patrimoine-geologique.model';
+import { NomenclaturesService } from 'src/app/services/nomenclatures.service';
+import { PatrimoineGeologiqueService } from 'src/app/services/patrimoine-geologique.service';
+import { SitesService } from 'src/app/services/sites.service';
+import { TInfosBaseSiteService } from 'src/app/services/t-infos-base-site.service';
 import Swal from 'sweetalert2';
 
 
@@ -35,6 +35,7 @@ export class TInfosBaseSiteComponent implements OnInit {
   protectionHeritage: any[] = [];
   geologicalUnitsOptions: Nomenclature[] = [];
   substancesOptions: Nomenclature[] = [];
+  
    
 
   geologicalInterestOptions: string[] = [
@@ -77,7 +78,7 @@ export class TInfosBaseSiteComponent implements OnInit {
       quarry_extracted_materials: this.fb.array([]),
       mine_extracted_materials: this.fb.array([]),
      
-      reserve_created_on_geological_basis: [false, Validators.required],
+      reserve_created_on_geological_basis: [false],
       reserve_contains_geological_heritage_inpg: [false],
       geologicalHeritages: this.fb.array([]),
       protection_perimeter_contains_geological_heritage_inpg: [false],
@@ -199,6 +200,7 @@ export class TInfosBaseSiteComponent implements OnInit {
   }
   
   
+  
 
   
 
@@ -238,10 +240,9 @@ export class TInfosBaseSiteComponent implements OnInit {
           mine_fossiliferous_material: site.infos_base.mine_fossiliferous_material,
           reserve_has_geological_site_for_visitors: site.infos_base.reserve_has_geological_site_for_visitors,
           offers_geodiversity_activities: site.infos_base.offers_geodiversity_activities,
-          eres: site.eres,
-          systemes: site.ages.systemes,
-          series: site.ages.series,
-          etages: site.ages.etages
+          geologicalUnits: site.geologicalUnits, // Ajoutez cela si les valeurs sont bien renvoyées
+          
+
         });
 
         this.tInfosBaseSiteForm.get('main_geological_interests')?.patchValue({
@@ -451,7 +452,6 @@ export class TInfosBaseSiteComponent implements OnInit {
 
   onSubmit(): void {
     if (this.tInfosBaseSiteForm.valid) {
-      // Seulement ici, vous gérez les Swal pour la validation
       Swal.fire({
         position: "center",
         icon: "success",
@@ -459,7 +459,6 @@ export class TInfosBaseSiteComponent implements OnInit {
         showConfirmButton: false,
         timer: 1500
       }).then(() => {
-        // Deuxième alerte Swal
         Swal.fire({
           title: "Vous pouvez maintenant aller voir la synthèse ou remplir la fiche de détails.",
           showDenyButton: true,
@@ -468,12 +467,16 @@ export class TInfosBaseSiteComponent implements OnInit {
           denyButtonText: `Fiche details`
         }).then((result) => {
           if (result.isConfirmed) {
-            // Logique de soumission du formulaire
             const formData = this.tInfosBaseSiteForm.value;
             formData['id_site'] = this.id_site;
+            formData['geologicalUnits'] = this.tInfosBaseSiteForm.get('geologicalUnits')?.value;
+
   
+            // Vérifiez ici que `geologicalUnits` est bien dans `formData`
             this.tInfosBaseSiteService.updateSite(this.siteSlug!, formData).subscribe(
               (response: any) => {
+                // Mettez à jour le formulaire avec les données retournées après la mise à jour
+                this.tInfosBaseSiteForm.patchValue(response);
                 Swal.fire("Les données sont sauvegardées.", "", "success").then(() => {
                   this.router.navigate([`/site/${this.siteSlug}`]);
                 });
@@ -483,13 +486,12 @@ export class TInfosBaseSiteComponent implements OnInit {
               }
             );
           } else if (result.isDenied) {
-            // Action pour "Fiche details"
             Swal.fire("Allez remplir fiche details.", "", "success").then(() => {
               this.router.navigate([`/fiche-terrain/${this.siteSlug}`]);
             });
           }
         });
       });
-    }  
+    }
   }
 }  

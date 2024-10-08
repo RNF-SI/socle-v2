@@ -12,8 +12,6 @@ class TInfosBaseSite(db.Model):
     
     id_site = db.Column(db.Integer, db.ForeignKey('site.id_site'), primary_key=True, nullable=False)
     reserve_created_on_geological_basis = db.Column(db.Boolean, nullable=False)
-    #reserve_contains_geological_heritage_inpg = db.Column(db.Boolean)  
-   # reserve_contains_geological_heritage_other = db.Column(db.String)
     protection_perimeter_contains_geological_heritage_inpg = db.Column(db.Boolean)
     protection_perimeter_contains_geological_heritage_other = db.Column(db.String)
     main_geological_interests_stratigraphic = db.Column(db.Boolean)
@@ -36,9 +34,7 @@ class TInfosBaseSite(db.Model):
     contains_paleontological_heritage_other_details = db.Column(db.String)  
     reserve_has_geological_collections = db.Column(db.Boolean, nullable=False)
     reserve_has_exhibition = db.Column(db.Boolean, nullable=False)
-    #geological_age = db.Column(db.String)
-    #etage = db.Column(db.String)
-    #ere_periode_epoque = db.Column(db.String)
+    geological_units = db.Column(db.ARRAY(db.Integer), nullable=True)  # Ajoutez ce champ pour stocker les IDs des unités géologiques sélectionnées.
     reserve_contains_stratotype = db.Column(db.Boolean)
     stratotype_limit = db.Column(db.Boolean)   
     stratotype_limit_input = db.Column(db.String) 
