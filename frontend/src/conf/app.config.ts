@@ -7,44 +7,48 @@ export const AppConfig = {
     "creditHeaderImage": "Bouches de Bonifacio - © Olivier Bonnenfant, OEC",
     "menu": [
         {
-            "nom":"accueil", 
-            "classFa":"fas" as const,
-            "nomFa":"house" as const,
-            "lien":""
+            "nom": "accueil",
+            "classFa": "fas" as const,
+            "nomFa": "house" as const,
+            "lien": ""
         },
         {
-            "nom":"saisir", 
-            "classFa":"fas" as const,
-            "lien":"saisir"  // Pas d'icône ici
+            "nom": "saisir",
+            "classFa": "fas" as const,
+            "nomFa": "house" as const,
+            "lien": "saisir"  // Pas d'icône ici
         },
         {
-            "nom":"explorer", 
-            "classFa":"fas" as const,
-            "nomFa":"magnifying-glass" as const,  // Icône pour "explorer"
-            "lien":"explorer"
+            "nom": "explorer",
+            "classFa": "fas" as const,
+            "nomFa": "magnifying-glass" as const,  // Icône pour "explorer"
+            "lien": "explorer"
         },
         {
-            "nom":"A propos", 
-            "classFa":"fas" as const,
-            "lien":"A propos"  // Pas d'icône ici
+            "nom": "A propos",
+            "classFa": "fas" as const,
+            "nomFa": "house" as const,
+            "lien": "A propos"  // Pas d'icône ici
         },
         {
-            "nom":"Contacts", 
-            "classFa":"fas" as const,
-            "lien":"contacts"  // Pas d'icône ici
+            "nom": "Contacts",
+            "classFa": "fas" as const,
+            "nomFa": "house" as const,
+            "lien": "contacts"  // Pas d'icône ici
         },
         {
-            "nom":"aide", 
-            "classFa":"fas" as const,
-            "lien":"aide"  // Pas d'icône ici
+            "nom": "aide",
+            "classFa": "fas" as const,
+            "nomFa": "house" as const,
+            "lien": "aide"  // Pas d'icône ici
         }
     ],
     "menucompte": [
         {
-            "texte":"Déconnexion",
-            "classFa":"fas" as const,
-            "nomFa":"right-from-bracket" as const,
-            "lien":"logout"
+            "texte": "Déconnexion",
+            "classFa": "fas" as const,
+            "nomFa": "right-from-bracket" as const,
+            "lien": "logout"
         }
     ]
 }
