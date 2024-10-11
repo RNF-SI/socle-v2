@@ -3,6 +3,7 @@ export interface Photo {
   }
   
   export interface Site {
+    reserve_created_on_geological_basis?: boolean;  // Ajoute cette ligne
     region: string;
     has_patrimoine_geologique: any;
     hasPatrimoine: boolean;
@@ -12,7 +13,7 @@ export interface Photo {
     total_sites_without_protection: number;
     id_site: Site;
     id: number;
-    nom: string;
+     
     slug: string;
     photos: { url: string }[];
     last_modified: string;
@@ -23,6 +24,14 @@ export interface Photo {
     inpg: any;
     perimetre_protection: any;
     interet_geol_principal: any;
+    nom: string;
+    superficie: number;
+    sitesInpg: number;
+    geopatrimoineSites: number;
+    stratotypes: number;
+    terrainsAncien: string;
+    terrainsRecent: string;
+
    
   
   }

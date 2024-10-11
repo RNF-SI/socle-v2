@@ -1,57 +1,42 @@
  
  
   .links-container  {
-    margin: 0 10px; /* Ajoute une marge de 10px entre les liens */
+    margin: 0 10px;  
     justify-content: center;
   }
   
   .links-container h3 a {
-    display: inline-block; /* Permet de définir une largeur et une hauteur à l'élément <a> */
-    padding: 5px 10px; /* Ajoute un espacement à l'intérieur de l'élément <a> */
-    border-radius: 5px; /* Ajoute des coins arrondis à l'élément <a> */
-    transition: background-color 0.3s; /* Ajoute une transition pour une animation fluide */
+    display: inline-block;  
+    padding: 5px 10px;  
+    border-radius: 5px;  
+    transition: background-color 0.3s;  
    
   }
   
   .links-container h3 a:active {
-    background-color: rgb(193, 206, 7); /* Change la couleur de fond en vert lorsque le lien est cliqué */
-    color: white; /* Change la couleur du texte en blanc lorsque le lien est cliqué */
+    background-color: rgb(193, 206, 7);  
+    color: white;  
   }
 
-  .image-placeholder {
-    width: 100%;
-    height: 200px; /* Ajustez la hauteur selon vos besoins */
-    background-color: #f0f0f0; /* Couleur grise claire pour représenter l'espace de l'image */
-    border: 1px solid #ddd; /* Bordure légère pour l'espace de l'image */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px; /* Espace sous l'image */
-  }
-  
-  .spacing {
-    height: 20px; /* Ajustez cette valeur pour créer plus ou moins d'espace */
-  }
+ 
+ 
   .map-section {
-    background-color: #999595; /* Gris clair pour le fond de la carte */
+    background-color: #999595;  
     padding: 50px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
   }
   
    
  
   .map-section {
-    background-color: #e0e0e0; /* Couleur de fond gris clair */
+    background-color: #e0e0e0;  
     padding: 70px;
     margin-bottom: 20px;
-    width: 150%; /* Largeur de 100% pour occuper tout l'espace disponible */
-    max-width: 1200px; /* Optionnel : Limite la largeur maximale, ajustez selon vos besoins */
-    margin: 0 auto; /* Centre le rectangle si la largeur est inférieure à 100% */
+    width: 250%;  
+    max-width: 1200px;  
+    margin: 0 auto;  
   }
   
-   
- 
- 
   .title-container {
     display: flex;
  
@@ -73,9 +58,14 @@
     margin-top: 30px;
   
   }
+  .heritage-title1{
+    color: green;
+    font-size: 1.5em;
+    font-weight: bold;
+  }
   
   .heritage-content {
-    text-align: justify; /* Justifie le texte pour un alignement propre */
+    text-align: justify;  
     font-size: 1em;
     line-height: 1.6;
     margin-left: 90px;
@@ -83,18 +73,152 @@
   }
   
   .heritage-content p {
-    margin-bottom: 10px; /* Espace entre les paragraphes */
+    margin-bottom: 10px;  
  
   }
   .heritage-content strong {
-    color: #097c03; /* Couleur verte pour les titres dans la section */
+    color: #097c03;  
    
   }
-  
+
   .subsection-title {
-    color: #097c03; /* Texte en vert pour les sous-sections */
+    color: #097c03; 
     font-weight: bold;
     margin-top: 15px;
  
+ 
   }
+
+  .table-geologique {
+    width: 60%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    margin-left: 6%;
+
+  
+  }
+  
+  .table-geologique th {
+    background-color: #d7e9d7;
+    text-align: left;
+    padding: 10px;
+    font-size: 1.2em;
+    color: #5a9e58;
+    border-bottom: 2px solid #5a9e58;
+  }
+  
+  .table-geologique td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    vertical-align: top;
+  }
+  
+  .table-geologique td a {
+    color: #131414;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .table-geologique td a:hover {
+    text-decoration: underline;
+  }
+  
+  .table-geologique .no-data {
+    color: #999;
+    font-style: italic;
+  }
+  
+  .table-geologique tbody tr:nth-child(even) {
+    background-color: #f3f3f3;
+  }
+  
+  .table-geologique tbody tr:nth-child(odd) {
+    background-color: #fff;
+  }
+  
+  .table-geologique th:first-child,
+  .table-geologique td:first-child {
+    border-right: 1px solid #ddd;
+  }
+  
+  .table-geologique th,
+  .table-geologique td {
+    padding: 15px;
+  }
+  
+ 
+  .table-geologique .inpg-title {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #5a9e58;
+  }
+  
+  
+  @media (max-width: 768px) {
+    .table-geologique th, .table-geologique td {
+      padding: 8px;
+      font-size: 0.9em;
+    }
+  }
+  
+
+  .mineral-resources-section p {
+    font-size: 1.1em;
+    margin: 10px 0;
+    margin-left: 6%;
+  }
+  .collections-section p {
+    font-size: 1.1em;
+    margin: 10px 0;
+    margin-left: 6%;
+  }
+
+
+  .sensibilisation-section p {
+    font-size: 1.1em;
+    margin: 10px 0;
+    line-height: 1.5;
+    margin-left: 6%;
+  }
+
+  .details-summary {
+    display: flex;
+    justify-content: 5px;
+    margin: 20px 0;
+    justify-content: center;  
+
+
+  }
+  
+  .summary-row {
+    display: flex;
+    justify-content:  5px;
+    width: 50%;
+  }
+  
+  .summary-item {
+    text-align: center;
+    padding: 10px;
+  }
+  
+  .summary-label {
+    display: block;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #4CAF50;  
+  }
+  
+  .summary-value {
+    display: block;
+    font-size: 18px;
+    font-weight: bold;
+    color: #535252;  
+  }
+  
+  #export-content {
+    background-color: #FFFFFF;  
+  }
+  
+
   

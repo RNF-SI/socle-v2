@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { faArrowUpRightFromSquare, faKey, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { GeologicalInterests } from 'src/app/models/geological-interests.model';
+import { Nomenclature } from 'src/app/models/nomenclature.model';
 import { Site } from 'src/app/models/site.model';
 import { PatrimoineGeologiqueService } from 'src/app/services/patrimoine-geologique.service';
 import { SitesService } from 'src/app/services/sites.service';
@@ -26,8 +28,46 @@ export class EspaceDetailComponent implements OnInit {
   siteSlug: any;
   geologicalUnitsOptions: string[] = [];
   geologicalUnits: string[] = [];
+  tInfosBaseSiteForm: any;
+  faKey = faKey;
+  faUserPlus = faUserPlus;
+  faArrowUpRightFromSquare = faArrowUpRightFromSquare;
+  selectedSite: any = {};   
+  substancesOptions: Nomenclature[] = [];
 
+
+// Correct the type to be a single object instead of an array
  
+
+Applications = [
+  {
+    'nom': 'Aiguilles Rouges',
+    'superficie': '3276.00 ',
+    'sitesInpg': '2',
+    'autresSitesDeGeopatrimoine': '2',
+    'nombreDeStratotypes': '2',
+    'terrainsLesPlusAnciens': 'Bathonien',
+    'terrainsLesPlusRecents': 'Holocène'
+  },
+  {
+    'nom': 'Anciennes carrières de Cléty',
+    'superficie': '2050.00',
+    'sitesInpg': '3',
+    'autresSitesDeGeopatrimoine': '3',
+    'nombreDeStratotypes': '3',
+    'terrainsLesPlusAnciens': 'Albien',
+    'terrainsLesPlusRecents': 'Holocène'
+  },
+  {
+    'nom': 'Anciennes carrières d\'Orival',
+    'superficie': '1506.00',
+    'sitesInpg': '4',
+    'autresSitesDeGeopatrimoine': '4',
+    'nombreDeStratotypes': '4',
+    'terrainsLesPlusAnciens': 'Bathonien',
+    'terrainsLesPlusRecents': 'Holocène'
+  }
+];
 
   constructor(
     private route: ActivatedRoute,
@@ -45,14 +85,15 @@ export class EspaceDetailComponent implements OnInit {
         console.log('Site:', this.site);
 
         if (this.site) {
+           this.selectedSite = this.Applications.find(app => app.nom === this.site?.nom);
+        }
+        if (this.site) {
           this.tInfosBaseSiteService.getSiteBySlug(slug).subscribe((data: string) => {
              this.tInfosBaseSite = data;  
-             this.geologicalUnitsOptions = this.geologicalUnits;
+             this.geologicalUnits = this.tInfosBaseSite.geologicalUnits || [];  // Assurez-vous que les unités sont bien récupérées
              
              this.setPaleontologicalLabels();
 
-
-              
           });
         }
         this.fetchPatrimoineGeologique(this.site?.id_site);
@@ -61,8 +102,6 @@ export class EspaceDetailComponent implements OnInit {
  
   }
    
-
- 
   fetchPatrimoineGeologique(siteId: any): void {
     this.patrimoineGeologiqueService.getPatrimoineGeologique(siteId).subscribe(
       (data: any) => {
@@ -82,6 +121,7 @@ export class EspaceDetailComponent implements OnInit {
   }
   
 
+  // TODO : sdfsgfsdf
   setGeologicalHeritages(): void {
     this.principalHeritage = this.patrimoineGeologique?.geologicalHeritages || [];
   }
@@ -94,33 +134,28 @@ export class EspaceDetailComponent implements OnInit {
 
   setPaleontologicalLabels(): void {
     this.paleontologicalLabels = []; // Réinitialiser les labels
-    
-    const heritage = this.tInfosBaseSite?.contains_paleontological_heritage;
-    console.log('Heritage data:', heritage); // Vérifiez les données récupérées
-    
-    if (heritage?.answer) {
-      if (heritage.vertebrates) {
-        this.paleontologicalLabels.push('Fossiles de vertébrés');
+  
+    // On vérifie si la réponse à la question 5 est "Oui"
+    const heritage = this.tInfosBaseSiteForm.get('contains_paleontological_heritage');
+  
+    if (heritage?.get('answer')?.value === true) { // Vérifie si l'utilisateur a répondu "Oui"
+      if (heritage.get('vertebrates')?.value) {
+        this.paleontologicalLabels.push('Vertébrés');
       }
-      if (heritage.invertebrates) {
-        this.paleontologicalLabels.push('Fossiles d\'invertébrés');
+      if (heritage.get('invertebrates')?.value) {
+        this.paleontologicalLabels.push('Invertébrés');
       }
-      if (heritage.plants) {
-        this.paleontologicalLabels.push('Fossiles de végétaux');
+      if (heritage.get('plants')?.value) {
+        this.paleontologicalLabels.push('Végétaux');
       }
-      if (heritage.traceFossils) {
+      if (heritage.get('traceFossils')?.value) {
         this.paleontologicalLabels.push('Traces fossiles');
       }
-      if (heritage.other && heritage.otherDetails) {
-        this.paleontologicalLabels.push(`Autres: ${heritage.otherDetails}`);
-      }
-      console.log('Paleontological Labels:', this.paleontologicalLabels); // Vérifier les labels générés
+      
     }
+  
+    console.log('Paleontological Labels:', this.paleontologicalLabels);
   }
-  
-  
-  
-  
 
   setGeologicalInterests(patrimoineGeologique: any): void {
     const interests: GeologicalInterests = {
@@ -159,24 +194,34 @@ export class EspaceDetailComponent implements OnInit {
     return labels[key];
   }
 
- 
-
+  getSelectedSubstances(): Nomenclature[] {
+    const selectedMnemonics = this.tInfosBaseSiteForm.get('substance')?.value || [];
+    return this.substancesOptions.filter(substance => selectedMnemonics.includes(substance.mnemonique));
+  }
+  
   exportData() {
     const data = document.getElementById('export-content');
     if (data) {
       html2canvas(data).then(canvas => {
-        const imgWidth = 208;
-        const pageHeight = 295;
-        const imgHeight = canvas.height * imgWidth / canvas.width;
-        const heightLeft = imgHeight;
-
+        const imgWidth = 208;  
+        const pageHeight = 295;  
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;  
+        let heightLeft = imgHeight;
         const contentDataURL = canvas.toDataURL('image/png');
-        let pdf = new jsPDF('p', 'mm', 'a4'); // A4 size page of PDF
-        const position = 0;
+        let pdf = new jsPDF('p', 'mm', 'a4');  
+        let position = 0; 
         pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight);
-        pdf.save('site-details.pdf'); // Generated PDF
+        heightLeft -= pageHeight;
+        while (heightLeft > 0) {
+          position = heightLeft - imgHeight; 
+          pdf.addPage();
+          pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+        }
+        pdf.save('site-details.pdf');
       });
     }
   }
+  
 }
 
