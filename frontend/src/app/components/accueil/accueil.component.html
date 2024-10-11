@@ -53,7 +53,7 @@
       </div>
     </div>
      <!-- Section de la carte -->
-  
+
   </div>
 
   <div class="search-container">
@@ -79,9 +79,10 @@
         <mat-option value="">(Tous)</mat-option>
         <mat-option value="oui">Avec Patrimoine Géologique</mat-option>
         <mat-option value="non">Sans Patrimoine Géologique</mat-option>
+        <mat-option value="reserve_geologique">Réserve créée sur fondement de patrimoine géologique</mat-option> <!-- Nouvelle option -->
       </mat-select>
     </mat-form-field>
-
+    
     <!-- Ajout du filtre de région -->
     <mat-form-field appearance="outline">
       <mat-label>Région</mat-label>
@@ -89,7 +90,6 @@
         <mat-option *ngFor="let region of regions" [value]="region">{{ region }}</mat-option>
       </mat-select>
     </mat-form-field>
-    
   </div>
 
   <!-- En-têtes des colonnes : Réserve, Code, Famille, Site INPG -->
@@ -98,7 +98,6 @@
     <span class="header-item">Code</span>
     <span class="header-item">Famille</span>
     <span class="header-item">Site INPG</span>
-
   </div>
 
   <!-- Liste des sites avec les colonnes Code, Type_rn, Site INPG et Région -->
@@ -119,7 +118,6 @@
               <span *ngIf="!isLastElement(site.id_metier, metier)">, </span>
             </ng-container>
           </span>
-          
           <!-- Affiche id_metier s'il existe -->
         </mat-card-content>
       </mat-card>

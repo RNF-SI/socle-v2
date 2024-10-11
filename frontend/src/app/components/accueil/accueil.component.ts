@@ -13,18 +13,18 @@ export class AccueilComponent implements OnInit {
   totalStratotypes: number = 0;  
   totalInpgSites: number = 0;  
   inpgPercentage: number = 0;  
-  espaces: Site[] = []; // Liste complète des espaces/sites
-  filteredEspaces: Site[] = []; // Liste filtrée pour la recherche
+  espaces: Site[] = [];  
+  filteredEspaces: Site[] = [];  
   selectedTypeRn: string = '';
-  searchQuery: string = '';  // Stocke la requête de recherche
-  selectedCode: string = ''; // Stocke le code sélectionné
+  searchQuery: string = '';   
+  selectedCode: string = '';  
   selectedPatrimoine: string = ''; 
   regions: string[] = ['Normandie', 'Pays de la Loire', 'Corse', 'Provence-Alpes-Côte d\'Azur', 'Grand Est', 'Auvergne-Rhône-Alpes', 'Bretagne', 'Hauts-de-France', 'Occitanie', 'Nouvelle-Aquitaine', 'Bourgogne-Franche-Comté', 'Île-de-France', 'Guyane', 'La Réunion', 'Centre-Val de Loire', 'Guadeloupe', 'Martinique', 'Mayotte'];  // Liste des régions
-  selectedRegion: string = '';  // Stocke la région sélectionnée
+  selectedRegion: string = '';   
 
   constructor(
     private siteService: SitesService, 
-    private router: Router // Injection du Router ici
+    private router: Router  
   ) { }
 
   ngOnInit(): void {
@@ -99,25 +99,35 @@ export class AccueilComponent implements OnInit {
     // Fetch les sites avec le filtre patrimoine
     this.siteService.getFilteredSites(this.selectedPatrimoine).subscribe(
       sites => {
+        // Filtrage des sites qui n'incluent pas "perimetre protection"
         this.espaces = sites.filter(site => !site.nom.toLowerCase().includes('perimetre protection'));
-        
+  
         // Filtrage des sites INPG
         this.filteredEspaces = this.espaces.filter(site => {
           if (this.selectedPatrimoine === 'oui' && !site.id_metier) {
-            return true; // Affiche uniquement les sites avec patrimoine géologique sans site INPG
+            return true; // Sites avec patrimoine géologique et sans site INPG
           } else if (this.selectedPatrimoine === 'non' && !site.id_metier) {
-            return true; // Affiche uniquement les sites sans patrimoine géologique sans site INPG
+            return true; // Sites sans patrimoine géologique et sans site INPG
           } else if (this.selectedPatrimoine === '') {
             return true; // Affiche tous les sites sans filtrage
           }
-          return true; // Par défaut, garde les sites avec et sans INPG
+          return true;
         });
+  
+        // Ajout du filtrage pour la création de réserves sur le fondement du patrimoine géologique
+        if (this.selectedPatrimoine === 'reserve_geologique') {
+          this.filteredEspaces = this.espaces.filter(site => {
+            console.log(site.reserve_created_on_geological_basis); // Vérifie chaque valeur
+            return site.reserve_created_on_geological_basis === true;
+          });
+        }
       },
       error => {
         console.error('Error fetching filtered sites', error);
       }
     );
   }
+  
 
   onRegionChange(region: string): void {
     this.selectedRegion = region;
