@@ -138,28 +138,6 @@
       </div>
     </div>
 
-
-
-    <!-- Question 4 
-    <div class="form-group" formGroupName="main_geological_interests">
-      <label>
-        <h6>Quels sont les intérêts géologiques principaux de la réserve</h6>
-      </label>
-      <div>
-        <mat-checkbox formControlName="stratigraphic">Stratigraphique</mat-checkbox>
-        <mat-checkbox formControlName="paleontological">Paléontologique</mat-checkbox>
-        <mat-checkbox formControlName="sedimentological">Sédimentologique</mat-checkbox>
-        <mat-checkbox formControlName="geomorphological">Géomorphologique</mat-checkbox>
-        <mat-checkbox formControlName="mineral_resource">Ressource minérale</mat-checkbox>
-        <mat-checkbox formControlName="mineralogical">Minéralogique</mat-checkbox>
-        <mat-checkbox formControlName="metamorphism">Métamorphisme</mat-checkbox>
-        <mat-checkbox formControlName="volcanism">Volcanisme</mat-checkbox>
-        <mat-checkbox formControlName="plutonism">Plutonisme</mat-checkbox>
-        <mat-checkbox formControlName="hydrogeology">Hydrogéologie</mat-checkbox>
-        <mat-checkbox formControlName="tectonics">Tectonique</mat-checkbox>
-      </div>
-    </div>-->
-
     <!-- Question 5 -->
     <div class="form-group" formGroupName="contains_paleontological_heritage">
       <label>
@@ -218,48 +196,7 @@
         </mat-option>
       </mat-select>
     </mat-form-field>
-
-
-
-
-
-    <!-- Question 8 
-    <div class="form-group">
-      <label>
-        <h6>Âge des terrains à l’affleurement dans la réserve ?</h6>
-      </label>
-      <div class="stratigraphie">
-        <mat-form-field *ngIf="eres">
-          <mat-select placeholder={{eres.label|capitalize}} formControlName="eres" multiple (selectionChange)="onEresSelectionChange($event)">
-            <mat-option *ngFor="let nomenclature of eres.nomenclatures" [value]="nomenclature.id_nomenclature">
-              {{nomenclature.label|capitalize}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>   
-        <mat-form-field *ngIf="systemes && filteredSystemes && filteredSystemes.length > 0">
-          <mat-select placeholder={{systemes.label|capitalize}} formControlName="systemes" multiple (selectionChange)="onSystemesSelectionChange($event)">
-            <mat-option *ngFor="let nomenclature of filteredSystemes" [value]="nomenclature.id_nomenclature">
-              {{nomenclature.label|capitalize}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field> 
-        <mat-form-field *ngIf="series && filteredSeries && filteredSeries.length > 0">
-          <mat-select placeholder={{series.label|capitalize}} formControlName="series" multiple (selectionChange)="onSeriesSelectionChange($event)">
-            <mat-option *ngFor="let nomenclature of filteredSeries" [value]="nomenclature.id_nomenclature">
-              {{nomenclature.label|capitalize}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field> 
-        <mat-form-field *ngIf="etages && filteredEtages && filteredEtages.length > 0">
-          <mat-select placeholder={{etages.label|capitalize}} formControlName="etages" multiple>
-            <mat-option *ngFor="let nomenclature of filteredEtages" [value]="nomenclature.id_nomenclature">
-              {{nomenclature.label|capitalize}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>        
-      </div>
-    </div>-->
-
+ 
     <!-- Question 9 -->
     <div class="form-group">
       <label>
@@ -288,7 +225,6 @@
         </div>
       </div>
     </div>
-
     <!-- Question 10 -->
     <div class="form-group">
       <label>
@@ -307,7 +243,6 @@
         </div>
       </div>
     </div>
-
     <!-- Question 11 modifiée avec un container -->
     <div class="container">
       <div class="form-group">
@@ -356,9 +291,6 @@
         </div>
       </div>
     </div>
-
-
-
     <!-- Question 12 -->
     <div class="form-group">
       <label>
@@ -384,10 +316,8 @@
         </mat-radio-group>
       </div>
     </div>
-
     <div class="submit-button-container">
       <button mat-raised-button type="submit" [disabled]="tInfosBaseSiteForm.invalid">Soumettre</button>
     </div>
-
   </form>
 </div>

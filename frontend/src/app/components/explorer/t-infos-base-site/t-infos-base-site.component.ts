@@ -138,37 +138,12 @@ export class TInfosBaseSiteComponent implements OnInit {
     this.loadNomenclature();
     this.loadSubstances(); // Charger les substances ici
     this.fetchSitesWithProtection();
-    // Ajouter un champ par défaut pour la protection géologique dès l'initialisation
     this.addProtectionHeritage();
-
-    // Ajouter un champ par défaut pour les héritages géologiques dès l'initialisation
     this.addHeritage();
      
   }
 
-  //loadNomenclature(): void {
-    //this.nomenclaturesService.getNomenclaturesByTypeId(2).subscribe(
-      //(nomenclatures: any) => {
-       // this.eres = nomenclatures;
-      //}
-  //  );
-    //this.nomenclaturesService.getNomenclaturesByTypeId(3).subscribe(
-    //  (nomenclatures: any) => {
-       // this.systemes = nomenclatures;
-      //}
-   // );
-   // this.nomenclaturesService.getNomenclaturesByTypeId(4).subscribe(
-     // (nomenclatures: any) => {
-       // this.series = nomenclatures;
-     // }
-    //);
-    //this.nomenclaturesService.getNomenclaturesByTypeId(5).subscribe(
-      //(nomenclatures: any) => {
-        //this.etages = nomenclatures;
-      //}
-    //);
-    
-  //}
+ 
   loadNomenclature(): void {
     this.nomenclaturesService.getNomenclaturesByTypeId(6).subscribe(
       (response: any) => {
@@ -214,9 +189,7 @@ export class TInfosBaseSiteComponent implements OnInit {
           id_site: site.id_site,
           reserve_created_on_geological_basis: site.infos_base.reserve_created_on_geological_basis,
           reserve_contains_geological_heritage_inpg: site.reserve_contains_geological_heritage_inpg || site.inpg.length > 0,
-          //reserve_contains_geological_heritage_other: site.reserve_contains_geological_heritage_other,
           protection_perimeter_contains_geological_heritage_inpg: site.protection_perimeter_contains_geological_heritage_inpg || site.inpg.length > 0,
-          //protection_perimeter_contains_geological_heritage_other: site.infos_base.protection_perimeter_contains_geological_heritage_other,
           reserve_has_geological_collections: site.infos_base.reserve_has_geological_collections,
           reserve_has_exhibition: site.infos_base.reserve_has_exhibition,
           reserve_contains_stratotype: site.infos_base.reserve_contains_stratotype,
@@ -240,7 +213,7 @@ export class TInfosBaseSiteComponent implements OnInit {
           mine_fossiliferous_material: site.infos_base.mine_fossiliferous_material,
           reserve_has_geological_site_for_visitors: site.infos_base.reserve_has_geological_site_for_visitors,
           offers_geodiversity_activities: site.infos_base.offers_geodiversity_activities,
-          geologicalUnits: site.geologicalUnits, // Ajoutez cela si les valeurs sont bien renvoyées
+          geologicalUnits: site.geologicalUnits || []
           
 
         });
@@ -266,8 +239,7 @@ export class TInfosBaseSiteComponent implements OnInit {
           invertebrates: site.infos_base.contains_paleontological_heritage_invertebrates,
           plants: site.infos_base.contains_paleontological_heritage_plants,
           traceFossils: site.infos_base.contains_paleontological_heritage_trace_fossils,
-          other: site.infos_base.contains_paleontological_heritage_other,
-          otherDetails: site.infos_base.contains_paleontological_heritage_other_details
+         
         });
 
        
@@ -433,8 +405,8 @@ export class TInfosBaseSiteComponent implements OnInit {
   addQuarryExtractedMaterial(): void {
     this.quarryExtractedMaterials.push(
       this.fb.group({
-        substance: ['', Validators.required], // Assurez-vous que les champs nécessaires sont présents
-        fossiliferous: [false] // Vous pouvez ajouter d'autres contrôles de formulaire selon vos besoins
+        substance: ['', Validators.required],  
+        fossiliferous: [false]  
       })
     );
   }
@@ -470,12 +442,9 @@ export class TInfosBaseSiteComponent implements OnInit {
             const formData = this.tInfosBaseSiteForm.value;
             formData['id_site'] = this.id_site;
             formData['geologicalUnits'] = this.tInfosBaseSiteForm.get('geologicalUnits')?.value;
-
-  
-            // Vérifiez ici que `geologicalUnits` est bien dans `formData`
             this.tInfosBaseSiteService.updateSite(this.siteSlug!, formData).subscribe(
               (response: any) => {
-                // Mettez à jour le formulaire avec les données retournées après la mise à jour
+                 
                 this.tInfosBaseSiteForm.patchValue(response);
                 Swal.fire("Les données sont sauvegardées.", "", "success").then(() => {
                   this.router.navigate([`/site/${this.siteSlug}`]);
