@@ -13,12 +13,12 @@ bp = Blueprint('routes', __name__)
 
 logging.basicConfig(level=logging.DEBUG)
 
-@bp.route('/sites', methods=['GET'])
-def getSites():
-    sites = Site.query.all()
-    schema = SiteSchema(many=True)
-    siteObj = schema.dump(sites)
-    return jsonify(siteObj)
+# @bp.route('/sites', methods=['GET'])
+# def getSites():
+#     sites = Site.query.all()
+#     schema = SiteSchema(many=True)
+#     siteObj = schema.dump(sites)
+#     return jsonify(siteObj)
 
 @bp.route('/site/<slug>', methods=['GET'])
 def getSiteBySlug(slug):
@@ -85,7 +85,7 @@ def get_sites_by_type_rn_and_code():
     type_rn = request.args.get('type_rn')  # Récupère le type de RN depuis la requête
     code = request.args.get('code')  # Récupère le code depuis la requête
 
-    query = Site.query
+    query = Site.query.filter(Site.type_rn != 'PP')
     if type_rn:
         query = query.filter_by(type_rn=type_rn)
     if code:

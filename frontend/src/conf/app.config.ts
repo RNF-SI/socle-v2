@@ -15,26 +15,26 @@ export const AppConfig = {
         {
             "nom": "saisir",
             "classFa": "fas" as const,
-            "nomFa": "house" as const,
+            "nomFa": "pen" as const,
             "lien": "saisir"  // Pas d'icône ici
         },
 
         {
             "nom": "A propos",
             "classFa": "fas" as const,
-            "nomFa": "house" as const,
+            "nomFa": "circle-info" as const,
             "lien": "A propos"  // Pas d'icône ici
         },
         {
             "nom": "Contacts",
             "classFa": "fas" as const,
-            "nomFa": "house" as const,
+            "nomFa": "envelope" as const,
             "lien": "contacts"  // Pas d'icône ici
         },
         {
             "nom": "aide",
             "classFa": "fas" as const,
-            "nomFa": "house" as const,
+            "nomFa": "circle-question" as const,
             "lien": "aide"  // Pas d'icône ici
         }
     ],

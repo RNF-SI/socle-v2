@@ -12,6 +12,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
+import { MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginator';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -34,12 +35,12 @@ import { TInfosBaseSiteComponent } from './components/explorer/t-infos-base-site
 import { LiensComponent } from './components/liens/liens.component';
 import { SaisirComponent } from './components/saisir/saisir.component';
 import { HomeRnfModule } from './home-rnf/home-rnf.module';
+import { getFrenchPaginatorIntl } from './home-rnf/shared/french-paginator-intl';
 import { CapitalizePipe } from './pipes/capitalize.pipe';
 import { TInfosBaseSiteService } from './services/t-infos-base-site.service';
 
 
 
-  
 @NgModule({
   declarations: [
     AppComponent,
@@ -53,8 +54,6 @@ import { TInfosBaseSiteService } from './services/t-infos-base-site.service';
     CapitalizePipe,
     SaisirComponent,
     ContactsComponent
-     
-     
   ],
   imports: [
     BrowserModule,
@@ -78,23 +77,21 @@ import { TInfosBaseSiteService } from './services/t-infos-base-site.service';
     MatSlideToggleModule,
     MatFormFieldModule,
     ToastrModule.forRoot({
-      timeOut:15000
+      timeOut: 15000
     }),
     MatIconModule,
     NgbRatingModule,
     NgbModule,
-    MatTableModule, 
+    MatTableModule,
     BrowserAnimationsModule,
-    MatGridListModule
-
-    
-   
-
-  
-
+    MatGridListModule,
+    MatPaginatorModule
   ],
-  
-  providers: [TInfosBaseSiteService],
+
+  providers: [
+    TInfosBaseSiteService,
+    { provide: MatPaginatorIntl, useValue: getFrenchPaginatorIntl() }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

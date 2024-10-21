@@ -2,59 +2,31 @@
   <h3 class="main-title">Bienvenue sur la base de données géologiques de Réserves Naturelles de France !</h3>
   <h6 class="subtitle">Venez saisir et consulter les données géologiques associées aux réserves naturelles</h6>
   <br>
-  
-  <div class="chiffre-clé">
-    <div class="statistiques-item">
-      <img src="assets/images/symbol11_final.png" alt="Icône des réserves naturelles" class="statistiques-image">
-      <div class="text-container">
-        <span class="big-number">{{ totalSites }}</span>
-        <p>Nombre total de réserves naturelles, en France métropolitaine et ultramarine</p>
-      </div>
-    </div>
 
-    <div class="statistiques-item">
-      <div class="icon-text-container">
-        <div class="statistiques-image icon-container" style="position: relative;">
-          <div class="icon-background">
-            <img src="assets/images/symbol11_final.png" alt="Icon background" class="hexagon">
-          </div>
-          <div class="icon-fill" [ngStyle]="{'clip-path': getClipPath(inpgPercentage)}">
-            <img src="assets/images/symbol22_final.png" alt="Icon fill" class="hexagon">
+  <div class="row">
+    <div class="col-md-6">
+      <div *ngFor="let stat of stats" class="row d-flex align-items-center">
+        <div class="col-md-2 stat-logo d-flex justify-content-center">
+          <div>
+            <img [src]="stat.icon" class="statistiques-image">
           </div>
         </div>
-        <span class="big-number">{{ inpgPercentage.toFixed(0) }}% </span>
-        <div class="statistiques-texte">
-          <p>Soit la proportion des réserves naturelles qui sont connues pour abriter du patrimoine géologique</p>
+        <div class="col-md-3 stat-chiffre d-flex justify-content-center">
+          {{ stat.chiffre }}
+        </div>
+        <div class="col-md-7 stat-texte d-flex align-items-center">
+          {{ stat.texte }}
         </div>
       </div>
     </div>
-
-    <div class="statistiques-item">
-      <img src="assets/images/IconCG.png" alt="Icône des réserves naturelles" class="statistiques-image1">
-      <div class="text-container">
-        <span class="big-number">{{ totalStratotypes }}</span>
-        <p>C’est le nombre de réserves naturelles qui ont été créées en premier lieu pour protéger du patrimoine géologique </p>
-      </div>
+    <div class="col-md-6">
+      div de la map
     </div>
-
-    <div class="statistiques-item">
-      <img src="assets/images/INPG.png" alt="Icône de site INPG" class="statistiques-image">
-      <div class="text-container">
-        <span class="big-number">{{ totalInpgSites }}</span>
-        <p>Nombre de sites de l’Inventaire National du Patrimoine Géologique qui sont localisés au moins en partie en réserve naturelle</p>
-      </div>
-    </div>
-
-    <div class="statistiques-item">
-      <img src="assets/images/stratotype.png" alt="Icône de stratotypes" class="statistiques-image">
-      <div class="text-container">
-        <span class="big-number">{{ totalStratotypes }}</span>
-        <p>C’est le nombre de stratotypes protégés par des réserves naturelles, c’est-à-dire des affleurements de référence pour les géologues du monde entier</p>
-      </div>
-    </div>
-     <!-- Section de la carte -->
-
   </div>
+
+  <br>
+  <br>
+
 
   <div class="search-container">
     <!-- Filtres de recherche -->
@@ -62,7 +34,7 @@
       <mat-label>Rechercher réserve naturelle </mat-label>
       <input matInput (input)="handleSearch($event)" placeholder="Ex: Aiguilles Rouges ou RNN18">
     </mat-form-field>
-    
+
 
     <mat-form-field appearance="outline">
       <mat-label>Famille</mat-label>
@@ -79,10 +51,11 @@
         <mat-option value="">(Tous)</mat-option>
         <mat-option value="oui">Avec Patrimoine Géologique</mat-option>
         <mat-option value="non">Sans Patrimoine Géologique</mat-option>
-        <mat-option value="reserve_geologique">Réserve créée sur fondement de patrimoine géologique</mat-option> <!-- Nouvelle option -->
+        <mat-option value="reserve_geologique">Réserve créée sur fondement de patrimoine géologique</mat-option>
+        <!-- Nouvelle option -->
       </mat-select>
     </mat-form-field>
-    
+
     <!-- Ajout du filtre de région -->
     <mat-form-field appearance="outline">
       <mat-label>Région</mat-label>
@@ -93,22 +66,22 @@
   </div>
 
   <!-- En-têtes des colonnes : Réserve, Code, Famille, Site INPG -->
-  <div class="header-row">
+  <!-- <div class="header-row">
     <span class="header-item">Réserve</span>
     <span class="header-item">Code</span>
     <span class="header-item">Famille</span>
     <span class="header-item">Site INPG</span>
-  </div>
+  </div> -->
 
   <!-- Liste des sites avec les colonnes Code, Type_rn, Site INPG et Région -->
-  <mat-list>
+  <!-- <mat-list>
     <mat-list-item *ngFor="let site of filteredEspaces">
       <mat-card class="espace-card">
         <mat-card-content class="site-row">
-          <span class="site-name"  (click)="goToEspaceDetail(site.slug)">
-              <mat-card-content>
-                {{ site.nom }}
-              </mat-card-content>
+          <span class="site-name" (click)="goToEspaceDetail(site.slug)">
+            <mat-card-content>
+              {{ site.nom }}
+            </mat-card-content>
           </span>
           <span class="site-code">{{ site.code }}</span>
           <span class="site-type">{{ site.type_rn }}</span>
@@ -118,9 +91,49 @@
               <span *ngIf="!isLastElement(site.id_metier, metier)">, </span>
             </ng-container>
           </span>
-          <!-- Affiche id_metier s'il existe -->
-        </mat-card-content>
-      </mat-card>
-    </mat-list-item>
-  </mat-list>
+          Affiche id_metier s'il existe
+  </mat-card-content>
+  </mat-card>
+  </mat-list-item>
+  </mat-list> -->
+
+  <table mat-table [dataSource]="dataSource">
+
+    <!-- Position Column -->
+    <ng-container matColumnDef="nom">
+      <th mat-header-cell *matHeaderCellDef> Nom du site </th>
+      <td mat-cell *matCellDef="let element" (click)="onRowClick(element)"> {{element.nom}} </td>
+    </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="code">
+      <th mat-header-cell *matHeaderCellDef> Code RNF </th>
+      <td mat-cell *matCellDef="let element" (click)="onRowClick(element)"> {{element.code}} </td>
+    </ng-container>
+
+    <!-- Weight Column -->
+    <ng-container matColumnDef="type">
+      <th mat-header-cell *matHeaderCellDef> Type </th>
+      <td mat-cell *matCellDef="let element"> {{element.type_rn}} </td>
+    </ng-container>
+
+    <!-- Symbol Column -->
+    <ng-container matColumnDef="inpg">
+      <th mat-header-cell *matHeaderCellDef> Sites INPG </th>
+      <td mat-cell *matCellDef="let element">
+        <ng-container *ngFor="let inpg of element.inpg; let i = index">
+          <!-- Affiche un lien cliquable vers l'URL -->
+          <a [href]="inpg.url" target="_blank">{{ inpg.id_metier }}</a>
+          <!-- Ajoute un séparateur si ce n'est pas le dernier élément -->
+          <span *ngIf="i < element.inpg.length - 1">, </span>
+        </ng-container>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+  <mat-paginator [pageSizeOptions]="[10, 20, 50]" showFirstLastButtons aria-label="Select page of periodic elements">
+  </mat-paginator>
 </div>

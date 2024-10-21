@@ -93,7 +93,7 @@ class Site(db.Model):
     type_rn = db.Column(db.String(3), nullable=False)  # RNN, RNR, RNC etc.
     code = db.Column(db.String(10), nullable=True)  # Ajout du champ 'code'
     region = db.Column(db.String(100), nullable=False)  # Nouveau champ pour la région
-
+    creation_geol = db.Column(db.Boolean) # Ajout d'un champ pour définir si la réserve a été créée pour son patrimoine géologique
 
 
     perimetre_protection_site = db.relationship("Site", remote_side=[id_site])

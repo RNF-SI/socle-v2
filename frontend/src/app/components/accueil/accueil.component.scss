@@ -1,14 +1,16 @@
+@import 'src/styles/custom-theme.scss';
+
 .contenu {
   font-family: Century Gothic, sans-serif;
   margin-top: 20px;
   text-align: justify;
-  padding-left: 10%;  
+  padding-left: 10%;
   padding-right: 10%;
 }
 
 .main-title {
   text-align: center;
-  color: #097c03;
+  color: mat-color($custom-primary, 500);
   font-size: 28px;
   font-weight: bold;
 }
@@ -18,44 +20,42 @@
   color: #333;
   font-size: 16px;
   margin-top: 10px;
-  margin-bottom: 20px;  
+  margin-bottom: 20px;
 }
 
 .chiffre-clé {
-  margin: 0 auto;  
+  margin: 0 auto;
   text-align: justify;
   display: flex;
   flex-direction: column;
-  gap: 20px;  
+  gap: 20px;
   margin-bottom: 40px;
   justify-content: space-between;
 
 }
 
-  .statistiques-image {
-    width: 99px;  
-    height: 99px;
-    margin-right: 10px;  
-    
-  }
-  .statistiques-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px; /* Espace entre les blocs */
-  }
- 
+
+
+.statistiques-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  /* Espace entre les blocs */
+}
+
 .icon-container {
-    position: relative;
-    width: 99px;  
-    height: 105px;
-    margin-right: 10px;
-    margin-bottom: 10px;
+  position: relative;
+  width: 99px;
+  height: 105px;
+  margin-right: 10px;
+  margin-bottom: 10px;
 }
 
 .icon-text-container {
-    display: flex;
-    align-items: center;  
+  display: flex;
+  align-items: center;
 }
+
 .text-container {
   display: flex;
   align-items: center;
@@ -64,57 +64,54 @@
 
 
 .hexagon {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 .icon-background {
-    position: absolute;
-    top: 0;
-    left: -2px;  
-    width: 100%;
-    height: 100%;
+  position: absolute;
+  top: 0;
+  left: -2px;
+  width: 100%;
+  height: 100%;
 }
 
 .icon-fill {
-    position: absolute;
-    bottom: 0;  
-    left: -6.58px;  
-    width: 110%;  
-    height: 100%;  
-    overflow: hidden;
-    transform: rotate(0deg);  
+  position: absolute;
+  bottom: 0;
+  left: -6.58px;
+  width: 110%;
+  height: 100%;
+  overflow: hidden;
+  transform: rotate(0deg);
 }
 
- 
+
 p {
-  max-width: 400px; /* Limite la largeur du paragraphe */
+  max-width: 400px;
+  /* Limite la largeur du paragraphe */
   font-size: 16px;
   line-height: 1.5;
-  margin: 0; /* Supprime la marge pour un alignement optimal */
+  margin: 0;
+  /* Supprime la marge pour un alignement optimal */
   color: #333;
 }
- 
- 
+
+
 
 .big-number {
-    font-size: 50px;  
-    font-weight: bold;
-    color: #050505;
-    margin-bottom: 10px;
-    margin-right: 15px;
-}
-
-.map-card {
-  width: 100%;
-  height: 400px; /* Ajuste la hauteur de la carte */
+  font-size: 50px;
+  font-weight: bold;
+  color: #050505;
+  margin-bottom: 10px;
+  margin-right: 15px;
 }
 
 .site-container {
   position: relative;
   width: 100%;
-  height: 70vh; 
-  margin-bottom: 50px;  
+  height: 70vh;
+  margin-bottom: 50px;
 }
 
 .search-container {
@@ -122,16 +119,19 @@ p {
   flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 20px;
-  
+
 }
+
 .search-container mat-form-field:first-child {
-  height: 100%; /* Exemple de largeur dynamique */
+  height: 100%;
+  /* Exemple de largeur dynamique */
 }
 
 
 .header-row {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 2fr; /* Ajuste la proportion de chaque colonne */
+  grid-template-columns: 2fr 1fr 1fr 2fr;
+  /* Ajuste la proportion de chaque colonne */
   padding: 10px;
   font-weight: bold;
   background-color: #f5f5f5;
@@ -141,7 +141,8 @@ p {
 
 .site-row {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 2fr; /* Même proportion que l'en-tête */
+  grid-template-columns: 2fr 1fr 1fr 2fr;
+  /* Même proportion que l'en-tête */
   padding: 10px;
   border-bottom: 1px solid #ddd;
   align-items: center;
@@ -168,16 +169,50 @@ p {
 }
 
 .metier-link {
-  color:  #A1C376;
+  color: #A1C376;
 }
- 
+
 
 .statistiques-image1 {
-  width: 140px;  
+  width: 140px;
   height: 140px;
-  margin-left: -25px; /* Déplace l'image vers la gauche */
+  margin-left: -25px;
+  /* Déplace l'image vers la gauche */
 
 
 }
 
- 
+.stat-chiffre {
+  text-align: center;
+  font-size: 50px;
+  font-weight: bold;
+  color: #050505;
+}
+
+.statistiques-image {
+  width: 100%;
+  height: auto;
+}
+
+.mat-mdc-header-row {
+  background-color: mat-color($custom-primary, 100);
+}
+
+.mat-mdc-header-cell {
+  font-weight: bold;
+  color: white;
+  font-size: large
+}
+
+.mat-mdc-row:hover {
+  cursor: pointer;
+}
+
+a {
+  color: black;
+  text-decoration: none;
+}
+
+a:hover {
+  color: mat-color($custom-primary, 300);
+}
