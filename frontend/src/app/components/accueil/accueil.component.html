@@ -20,7 +20,7 @@
       </div>
     </div>
     <div class="col-md-6">
-      div de la map
+      <div id="map"></div>
     </div>
   </div>
 
@@ -64,38 +64,6 @@
       </mat-select>
     </mat-form-field>
   </div>
-
-  <!-- En-têtes des colonnes : Réserve, Code, Famille, Site INPG -->
-  <!-- <div class="header-row">
-    <span class="header-item">Réserve</span>
-    <span class="header-item">Code</span>
-    <span class="header-item">Famille</span>
-    <span class="header-item">Site INPG</span>
-  </div> -->
-
-  <!-- Liste des sites avec les colonnes Code, Type_rn, Site INPG et Région -->
-  <!-- <mat-list>
-    <mat-list-item *ngFor="let site of filteredEspaces">
-      <mat-card class="espace-card">
-        <mat-card-content class="site-row">
-          <span class="site-name" (click)="goToEspaceDetail(site.slug)">
-            <mat-card-content>
-              {{ site.nom }}
-            </mat-card-content>
-          </span>
-          <span class="site-code">{{ site.code }}</span>
-          <span class="site-type">{{ site.type_rn }}</span>
-          <span *ngIf="site.id_metier" class="site-metier">
-            <ng-container *ngFor="let metier of site.id_metier">
-              <a [href]="metier.url" target="_blank" class="metier-link">{{ metier.id }}</a>
-              <span *ngIf="!isLastElement(site.id_metier, metier)">, </span>
-            </ng-container>
-          </span>
-          Affiche id_metier s'il existe
-  </mat-card-content>
-  </mat-card>
-  </mat-list-item>
-  </mat-list> -->
 
   <table mat-table [dataSource]="dataSource">
 

@@ -216,3 +216,8 @@ a {
 a:hover {
   color: mat-color($custom-primary, 300);
 }
+
+#map {
+  height: 100%;
+  width: 100%;
+}

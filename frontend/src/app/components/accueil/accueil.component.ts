@@ -2,9 +2,10 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router'; // Importer le Router ici
+import * as L from 'leaflet';
+import 'proj4leaflet';
 import { SitesService } from 'src/app/services/sites.service';
 import { Site } from '../../models/site.model'; // Assurez-vous que le modèle Site est bien importé
-
 
 interface Stat {
   icon: string;
@@ -19,11 +20,6 @@ interface Stat {
   styleUrls: ['./accueil.component.scss']
 })
 export class AccueilComponent implements OnInit {
-  // totalSites: number = 0;
-  // totalStratotypes: number = 0;
-  // totalInpgSites: number = 0;
-  // inpgPercentage: number = 0;
-  // sitesAvecPatrimoine: number = 0;
   espaces: Site[] = [];
   filteredEspaces: Site[] = [];
   selectedTypeRn: string = '';
@@ -38,44 +34,50 @@ export class AccueilComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   dataSource = new MatTableDataSource();
 
+  private map: L.Map | undefined;
+
   constructor(
     private siteService: SitesService,
     private router: Router
   ) { }
 
   ngOnInit(): void {
-    // Fetch statistics
-    // this.siteService.getSiteCount().subscribe(response => {
-    //   this.totalSites = response.total_sites;
-    //   if (this.totalSites > 0 && this.totalInpgSites > 0) {
-    //     this.inpgPercentage = (this.totalSites / this.totalInpgSites) * 100;
-    //   }
-    // });
-
-    // this.siteService.getStratotypeCount().subscribe(response => {
-    //   this.totalStratotypes = response.total_stratotypes;
-    // });
-
-    // this.siteService.getInpgSiteCount().subscribe(response => {
-    //   this.totalInpgSites = response.total_inpg_sites;
-    //   if (this.totalSites > 0 && this.totalInpgSites > 0) {
-    //     this.inpgPercentage = (this.totalSites / this.totalInpgSites) * 100;
-    //   }
-    // });
-
-    // Fetch the list of sites (espaces) and filter out "perimetre protection"
     this.loadSites();
-
-    // this.siteService.getSitesWithInpg().subscribe(
-    //   sites => {
-    //     this.espaces = sites.filter(site => !site.nom.toLowerCase().includes('perimetre protection'));
-    //     this.filteredEspaces = this.espaces; // Initialement, les sites sont affichés sans filtre
-    //   },
-    //   error => {
-    //     console.error('Error fetching sites with INPG', error);
-    //   }
-    // );
+    this.initMap();
   }
+
+  private initMap(): void {
+
+    var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    });
+
+    var geologie = L.tileLayer.wms("https://geoservices.brgm.fr/geologie", {
+      layers: "GEOLOGIE",
+      format: "image/jpeg",
+      transparent: false,
+      version: "1.1.1",
+      maxZoom: 15,
+      tileSize: 256,
+      attribution: "&copy; BRGM",
+      updateWhenIdle: true,
+      detectRetina: true
+    });
+
+    this.map = L.map('map', {
+      center: [46.67164202069596, 2.443094759696],
+      zoom: 6,
+      layers: [osm]
+    });
+
+    var baseMaps = {
+      "OpenStreetMap": osm,
+      "Carte géologique": geologie
+    };
+    L.control.layers(baseMaps).addTo(this.map);
+  }
+
 
   loadSites(): void {
     this.siteService.getSites().subscribe(
@@ -211,16 +213,6 @@ export class AccueilComponent implements OnInit {
 
       return matchesTypeRn && matchesRegion && matchesSearch;
     });
-  }
-
-  isLastElement(array: any[], element: any): boolean {
-    return array.indexOf(element) === array.length - 1;
-  }
-
-
-  getClipPath(percentage: number): string {
-    const clipHeight = 100 - percentage;
-    return `inset(${clipHeight}% 0 0 0)`;
   }
 }
 
