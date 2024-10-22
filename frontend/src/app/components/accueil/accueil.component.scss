@@ -186,7 +186,7 @@ p {
   text-align: center;
   font-size: 50px;
   font-weight: bold;
-  color: #050505;
+  color: mat-color($custom-accent, 500);
 }
 
 .statistiques-image {

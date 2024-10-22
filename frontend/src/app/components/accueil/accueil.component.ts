@@ -3,9 +3,18 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router'; // Importer le Router ici
 import * as L from 'leaflet';
-import 'proj4leaflet';
+import 'Leaflet.Deflate';
 import { SitesService } from 'src/app/services/sites.service';
 import { Site } from '../../models/site.model'; // Assurez-vous que le modèle Site est bien importé
+
+
+// Correction du chemin pour les icônes Leaflet
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'assets/images/leaflet/marker-icon-2x.png',
+  iconUrl: 'assets/images/leaflet/marker-icon.png',
+  shadowUrl: 'assets/images/leaflet/marker-shadow.png',
+});
 
 interface Stat {
   icon: string;
@@ -35,6 +44,7 @@ export class AccueilComponent implements OnInit {
   dataSource = new MatTableDataSource();
 
   private map: L.Map | undefined;
+  geoJson: any;
 
   constructor(
     private siteService: SitesService,
@@ -44,6 +54,18 @@ export class AccueilComponent implements OnInit {
   ngOnInit(): void {
     this.loadSites();
     this.initMap();
+    setTimeout(() => {
+      this.map!.invalidateSize();
+    }, 0);
+  }
+
+  // Utiliser le hook AfterViewChecked pour invalider la taille de la carte après le retour sur la page
+  ngAfterViewChecked(): void {
+    setTimeout(() => {
+      if (this.map) {
+        this.map.invalidateSize(); // Forcer la mise à jour de la taille de la carte
+      }
+    }, 0);
   }
 
   private initMap(): void {
@@ -66,7 +88,7 @@ export class AccueilComponent implements OnInit {
     });
 
     this.map = L.map('map', {
-      center: [46.67164202069596, 2.443094759696],
+      center: [47.2, 2.5],
       zoom: 6,
       layers: [osm]
     });
@@ -76,6 +98,8 @@ export class AccueilComponent implements OnInit {
       "Carte géologique": geologie
     };
     L.control.layers(baseMaps).addTo(this.map);
+
+
   }
 
 
@@ -104,7 +128,7 @@ export class AccueilComponent implements OnInit {
           {
             icon: 'assets/images/symbol11_final.png',
             chiffre: totalSites,
-            texte: 'Nombre total de réserves naturelles, en France métropolitaine et ultramarine'
+            texte: 'C\'est le nombre total de réserves naturelles, en France métropolitaine et ultramarine'
           },
           {
             icon: 'assets/images/symbol11_prct.png',
@@ -120,7 +144,7 @@ export class AccueilComponent implements OnInit {
           {
             icon: 'assets/images/INPG.png',
             chiffre: totalInpgSites,
-            texte: 'Nombre de sites de l’Inventaire National du Patrimoine Géologique qui sont localisés au moins en partie en réserve naturelle'
+            texte: 'C\'est le nombre de sites de l’Inventaire National du Patrimoine Géologique qui sont localisés au moins en partie en réserve naturelle'
           },
           {
             icon: 'assets/images/stratotype.png',
@@ -129,6 +153,57 @@ export class AccueilComponent implements OnInit {
           }
         ]
 
+        var jsonFeatures: any[] = [];
+
+        this.filteredEspaces.forEach(function (element) {
+          if (element.geom) {
+            var feature = {
+              type: 'Feature',
+              properties: element,
+              geometry: {
+                type: 'MultiPolygon',
+                coordinates: element.geom.coordinates
+              }
+            };
+            jsonFeatures.push(feature);
+          }
+        });
+
+        this.geoJson = { type: 'FeatureCollection', features: jsonFeatures }
+
+        const deflateLayer = L.deflate({
+          minSize: 10, // Taille minimum avant que le polygone soit réduit à un point
+          markerOptions: {
+            radius: 8, // Taille des points
+            fillColor: "#FF7800",
+            color: "#000",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.8
+          },
+        }).addTo(this.map!);
+
+        L.geoJSON(this.geoJson, {
+          style: (feature) => ({
+            weight: 3,
+            opacity: 0.5,
+            color: '#008f68',
+            fillOpacity: 0.8,
+            fillColor: '#6DB65B'
+          }),
+          onEachFeature: (feature, layer) => {
+            // Crée le contenu du popup, par exemple avec une des propriétés de l'objet
+            const tooltipContent = feature.properties.nom
+            layer.bindTooltip(tooltipContent, {});
+            /// Redirection vers la page correspondante au clic
+            layer.on('click', () => {
+              if (feature.properties && feature.properties.slug) {
+                // Remplace 'site/' par ton URL de base si nécessaire
+                this.router.navigate(['/site', feature.properties.slug]);
+              }
+            });
+          }
+        }).addTo(deflateLayer);
       },
       error => {
         console.error('Error fetching sites', error);
