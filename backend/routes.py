@@ -5,9 +5,10 @@ import requests
 import json
 from app import app, db
 from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Nomenclature, BibNomenclatureType,Inpg, Site, cor_site_inpg
-from schemas import PatrimoineGeologiqueGestionnaireSchema, PerimetreProtectionSchema, TInfosBaseSiteSchema, SiteSchema, NomenclatureSchema, NomenclatureTypeSchema
+from schemas import PatrimoineGeologiqueGestionnaireSchema, PerimetreProtectionSchema, TInfosBaseSiteSchema, SiteSchema, NomenclatureSchema, NomenclatureTypeSchema, SiteSchemaSimple
 from pypnusershub import routes as fnauth
 import logging
+from sqlalchemy import func
 
 bp = Blueprint('routes', __name__)
 
@@ -94,6 +95,37 @@ def get_sites_by_type_rn_and_code():
     sites = query.all()  # Renvoie les sites filtrés par type_rn et/ou code
     schema = SiteSchema(many=True)
     return schema.jsonify(sites)
+
+@bp.route('/sites-simple', methods=['GET'])
+def get_sites_simple():
+
+    sites = Site.query.filter(Site.type_rn != 'PP').all()  # Renvoie les sites filtrés par type_rn et/ou code
+    schema = SiteSchemaSimple(many=True)
+    return schema.jsonify(sites)
+
+@bp.route('/sites-simple-centroides', methods=['GET'])
+def get_sites_simple_centroid():
+
+    sites = Site.query.filter(Site.perimetre_protection != True).all()  # Renvoie les sites filtrés par type_rn et/ou code
+    schema = SiteSchemaSimple(only=('id_site','nom','slug','type_rn','code','region','creation_geol','geom_point','inpg'),many=True)
+    return schema.jsonify(sites)
+
+@bp.route('/sites-dans-bbox', methods=['GET'])
+def get_sites_in_bbox():
+    # Récupère les coordonnées de la BBOX (bounding box) depuis les paramètres de requête
+    bbox = request.args.get('bbox')  # bbox peut être "xmin,ymin,xmax,ymax"
+    xmin, ymin, xmax, ymax = map(float, bbox.split(','))
+
+    # Utilisation des fonctions PostGIS avec SQLAlchemy
+    sites = Site.query.filter(
+        func.ST_Intersects(
+            Site.geom,
+            func.ST_MakeEnvelope(xmin, ymin, xmax, ymax, 4326)  # Remplacez 4326 par votre SRID
+        )
+    ).all()
+    schema = SiteSchemaSimple(only=('id_site','geom', 'nom','slug'),many=True)
+    return schema.jsonify(sites)
+
 
 @bp.route('/sites/patrimoine', methods=['GET'])
 def get_sites_patrimoine():

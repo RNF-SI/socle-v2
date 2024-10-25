@@ -89,12 +89,24 @@
     <ng-container matColumnDef="inpg">
       <th mat-header-cell *matHeaderCellDef> Sites INPG </th>
       <td mat-cell *matCellDef="let element">
-        <ng-container *ngFor="let inpg of element.inpg; let i = index">
-          <!-- Affiche un lien cliquable vers l'URL -->
-          <a [href]="inpg.url" target="_blank">{{ inpg.id_metier }}</a>
-          <!-- Ajoute un séparateur si ce n'est pas le dernier élément -->
-          <span *ngIf="i < element.inpg.length - 1">, </span>
+        <!-- Boucle sur les éléments non confidentiels -->
+        <ng-container *ngFor="let inpg of getNonConfidentialSites(element); let i = index">
+          <a [href]="'https://inpn.mnhn.fr/site/inpg/' + inpg.id_metier" target="_blank">{{ inpg.id_metier }}</a>
+          <!-- Ajoute un séparateur si ce n'est pas le dernier élément visible -->
+          <span *ngIf="i < getNonConfidentialSites(element).length - 1">, </span>
         </ng-container>
+
+        <!-- Affiche le nombre de sites confidentiels uniquement s'il y a des sites non confidentiels -->
+        <span *ngIf="getNonConfidentialSites(element).length > 0 && countConfidentialSites(element) > 0">
+          + {{ countConfidentialSites(element) }} {{ countConfidentialSites(element) === 1 ? 'site confidentiel' :
+          'sites confidentiels' }}
+        </span>
+
+        <!-- Affiche directement si tous les sites sont confidentiels (aucun site non confidentiel) -->
+        <span *ngIf="getNonConfidentialSites(element).length === 0 && countConfidentialSites(element) > 0">
+          {{ countConfidentialSites(element) === 1 ? '1 site confidentiel' : countConfidentialSites(element) +
+          ' sites confidentiels' }}
+        </span>
       </td>
     </ng-container>
 

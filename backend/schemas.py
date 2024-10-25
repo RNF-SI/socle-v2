@@ -52,6 +52,26 @@ class SiteSchema(ma.SQLAlchemyAutoSchema):
     ages = ma.Nested(lambda: NomenclatureSchema, many=True)
     perimetre_protection = ma.Nested(PerimetreProtectionSchema, many=False, attribute='perimetre_protection_site')
 
+class SiteSchemaSimple(ma.SQLAlchemyAutoSchema):
+    geom = fields.Method('wkt_to_geojson')
+    geom_point = fields.Method('wkt_to_geojson_point')  # Custom method for geom_point
+
+    def wkt_to_geojson(self, obj):
+        if obj.geom:
+            return shapely.geometry.mapping(to_shape(obj.geom))
+        else:
+            return None
+    def wkt_to_geojson_point(self, obj):
+        if obj.geom_point:
+            return shapely.geometry.mapping(to_shape(obj.geom_point))
+        else:
+            return None
+
+    class Meta:
+        model = Site 
+
+    inpg = ma.Nested(lambda: InpgSchema(only=("id_metier","lb_site", "niveau_de_diffusion")), many=True)
+
 class EntiteGeolSchema(ma.SQLAlchemyAutoSchema):
     geom = fields.Method('wkt_to_geojson')
 

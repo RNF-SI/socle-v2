@@ -147,12 +147,12 @@ class Inpg(db.Model):
     id_inpg = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
     id_metier = db.Column(db.String(7), nullable=True)
     lb_site = db.Column(db.String(254))
-    url = db.Column(db.String(254))
     nombre_etoiles = db.Column(db.Integer)
     phenomene_geologique = db.Column(db.String)
     interet_geol_principal = db.Column(db.String)
-    age_des_terrains_le_plus_recent = db.Column(db.String)
-    age_des_terrains_le_plus_ancien = db.Column(db.String)
+    # age_des_terrains_le_plus_recent = db.Column(db.String)
+    # age_des_terrains_le_plus_ancien = db.Column(db.String)
+    niveau_de_diffusion = db.Column(db.String)
     geom = db.Column(Geometry('MULTIPOLYGON', srid=4326), nullable=True)
     
 class PatrimoineGeologiqueGestionnaire(db.Model):

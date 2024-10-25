@@ -1,14 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { Router } from '@angular/router'; // Importer le Router ici
+import { Router } from '@angular/router';
 import * as L from 'leaflet';
 import 'Leaflet.Deflate';
 import { SitesService } from 'src/app/services/sites.service';
-import { Site } from '../../models/site.model'; // Assurez-vous que le modèle Site est bien importé
-
-
-// Correction du chemin pour les icônes Leaflet
+import { Site } from '../../models/site.model';
 
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'assets/images/leaflet/marker-icon-2x.png',
@@ -18,7 +15,7 @@ L.Icon.Default.mergeOptions({
 
 interface Stat {
   icon: string;
-  iconfill?: string; // `iconfill` est optionnel, donc on utilise `?`
+  iconfill?: string;
   chiffre: number | string;
   texte: string;
 }
@@ -35,7 +32,7 @@ export class AccueilComponent implements OnInit {
   searchQuery: string = '';
   selectedCode: string = '';
   selectedPatrimoine: string = '';
-  regions: string[] = ['Normandie', 'Pays de la Loire', 'Corse', 'Provence-Alpes-Côte d\'Azur', 'Grand Est', 'Auvergne-Rhône-Alpes', 'Bretagne', 'Hauts-de-France', 'Occitanie', 'Nouvelle-Aquitaine', 'Bourgogne-Franche-Comté', 'Île-de-France', 'Guyane', 'La Réunion', 'Centre-Val de Loire', 'Guadeloupe', 'Martinique', 'Mayotte'];  // Liste des régions
+  regions: string[] = ['Normandie', 'Pays de la Loire', 'Corse', 'Provence-Alpes-Côte d\'Azur', 'Grand Est', 'Auvergne-Rhône-Alpes', 'Bretagne', 'Hauts-de-France', 'Occitanie', 'Nouvelle-Aquitaine', 'Bourgogne-Franche-Comté', 'Île-de-France', 'Guyane', 'La Réunion', 'Centre-Val de Loire', 'Guadeloupe', 'Martinique', 'Mayotte'];
   selectedRegion: string = '';
   stats: Stat[] = [];
 
@@ -44,7 +41,10 @@ export class AccueilComponent implements OnInit {
   dataSource = new MatTableDataSource();
 
   private map: L.Map | undefined;
+  private centroidesLayer: L.LayerGroup | undefined;
+  private polygonesLayer: L.FeatureGroup = L.featureGroup();  // Utilisez FeatureGroup au lieu de LayerGroup
   geoJson: any;
+  accentColor: any;
 
   constructor(
     private siteService: SitesService,
@@ -52,7 +52,8 @@ export class AccueilComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.loadSites();
+
+    this.loadSitesCentroid();  // Charger les centroïdes et métadonnées au démarrage
     this.initMap();
     setTimeout(() => {
       this.map!.invalidateSize();
@@ -63,19 +64,18 @@ export class AccueilComponent implements OnInit {
   ngAfterViewChecked(): void {
     setTimeout(() => {
       if (this.map) {
-        this.map.invalidateSize(); // Forcer la mise à jour de la taille de la carte
+        this.map.invalidateSize();  // Forcer la mise à jour de la taille de la carte
       }
     }, 0);
   }
 
   private initMap(): void {
-
-    var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     });
 
-    var geologie = L.tileLayer.wms("https://geoservices.brgm.fr/geologie", {
+    const geologie = L.tileLayer.wms("https://geoservices.brgm.fr/geologie", {
       layers: "GEOLOGIE",
       format: "image/jpeg",
       transparent: false,
@@ -93,123 +93,158 @@ export class AccueilComponent implements OnInit {
       layers: [osm]
     });
 
-    var baseMaps = {
+    const baseMaps = {
       "OpenStreetMap": osm,
       "Carte géologique": geologie
     };
     L.control.layers(baseMaps).addTo(this.map);
 
-
+    // Gestion des événements de zoom et déplacement
+    this.map.on('zoomend moveend', () => {
+      const zoom = this.map?.getZoom();
+      if (zoom && zoom >= 11) {
+        this.loadPolygones();  // Charger les polygones au zoom >= 12
+        this.hideCentroides();  // Masquer les centroïdes
+      } else {
+        this.clearPolygones();  // Vider les polygones
+        this.showCentroides();  // Réafficher les centroïdes
+      }
+    });
   }
 
-
-  loadSites(): void {
-    this.siteService.getSites().subscribe(
-      data => {
-        console.log(data);
-
-        // Filtrage des sites
-        this.espaces = data;
+  // Charger les centroïdes (geom_point) et les informations des sites
+  loadSitesCentroid(): void {
+    this.siteService.getSitesCentroid().subscribe(
+      (sites: any[]) => {
+        this.espaces = sites;
         this.filteredEspaces = this.espaces;
         this.dataSource.data = this.filteredEspaces;
         this.dataSource.paginator = this.paginator;
 
-        // Nombre de sites
-        var totalSites = this.espaces.length;
-        // Nombre de sites INPG
-        var totalInpgSites = this.espaces.reduce((total, site) => total + (site.inpg ? site.inpg.length : 0), 0);
-        // Calculer le nombre de sites dont inpg.length > 0
-        var sitesAvecPatrimoine = this.espaces.filter(site => site.inpg && site.inpg.length > 0).length;
-        // Calculer le nombre de sites qui contiennent des stratotypes 
-        var sitesAvecStratotype = this.espaces.filter(site => site.infos_base && site.infos_base.reserve_contains_stratotype === true).length;
-        // Calculer le nombre de sites créé pour leur patrimoine geol 
-        var sitesCreationGeol = this.espaces.filter(site => site.creation_geol === true).length;
-        this.stats = [
-          {
-            icon: 'assets/images/symbol11_final.png',
-            chiffre: totalSites,
-            texte: 'C\'est le nombre total de réserves naturelles, en France métropolitaine et ultramarine'
-          },
-          {
-            icon: 'assets/images/symbol11_prct.png',
-            iconfill: 'assets/images/symbol22_final.png',
-            chiffre: (sitesAvecPatrimoine / totalSites * 100).toFixed(0) + '%',
-            texte: 'Soit la proportion des réserves naturelles qui sont connues pour abriter du patrimoine géologique'
-          },
-          {
-            icon: 'assets/images/IconCG.png',
-            chiffre: sitesCreationGeol,
-            texte: 'C\'est le nombre de réserves naturelles qui ont été créées en premier lieu pour protéger du patrimoine géologique'
-          },
-          {
-            icon: 'assets/images/INPG.png',
-            chiffre: totalInpgSites,
-            texte: 'C\'est le nombre de sites de l’Inventaire National du Patrimoine Géologique qui sont localisés au moins en partie en réserve naturelle'
-          },
-          {
-            icon: 'assets/images/stratotype.png',
-            chiffre: sitesAvecStratotype,
-            texte: 'C’est le nombre de stratotypes protégés par des réserves naturelles, c’est-à-dire des affleurements de référence pour les géologues du monde entier'
-          }
-        ]
-
-        var jsonFeatures: any[] = [];
-
-        this.filteredEspaces.forEach(function (element) {
-          if (element.geom) {
-            var feature = {
-              type: 'Feature',
-              properties: element,
-              geometry: {
-                type: 'MultiPolygon',
-                coordinates: element.geom.coordinates
-              }
-            };
-            jsonFeatures.push(feature);
-          }
+        // Créer le calque des centroïdes
+        this.centroidesLayer = L.layerGroup();
+        sites.forEach((site) => {
+          const point = L.geoJSON(site.geom_point, {
+            pointToLayer: (feature, latlng) => L.circleMarker(latlng, {
+              radius: 8,
+              opacity: 0.5,
+              color: '#008f68',
+              fillOpacity: 0.8,
+              fillColor: '#6DB65B'
+            }),
+            onEachFeature: (feature, layer) => {
+              // Crée le contenu du popup, par exemple avec une des propriétés de l'objet
+              const tooltipContent = site.nom
+              layer.bindTooltip(tooltipContent, {});
+              /// Redirection vers la page correspondante au clic
+              layer.on('click', () => {
+                if (site.slug) {
+                  // Remplace 'site/' par ton URL de base si nécessaire
+                  this.router.navigate(['/site', site.slug]);
+                }
+              });
+            }
+          });
+          this.centroidesLayer!.addLayer(point);
         });
+        this.centroidesLayer.addTo(this.map!);
 
-        this.geoJson = { type: 'FeatureCollection', features: jsonFeatures }
-
-        const deflateLayer = L.deflate({
-          minSize: 10, // Taille minimum avant que le polygone soit réduit à un point
-          markerOptions: {
-            radius: 8, // Taille des points
-            fillColor: "#FF7800",
-            color: "#000",
-            weight: 1,
-            opacity: 1,
-            fillOpacity: 0.8
-          },
-        }).addTo(this.map!);
-
-        L.geoJSON(this.geoJson, {
-          style: (feature) => ({
-            weight: 3,
-            opacity: 0.5,
-            color: '#008f68',
-            fillOpacity: 0.8,
-            fillColor: '#6DB65B'
-          }),
-          onEachFeature: (feature, layer) => {
-            // Crée le contenu du popup, par exemple avec une des propriétés de l'objet
-            const tooltipContent = feature.properties.nom
-            layer.bindTooltip(tooltipContent, {});
-            /// Redirection vers la page correspondante au clic
-            layer.on('click', () => {
-              if (feature.properties && feature.properties.slug) {
-                // Remplace 'site/' par ton URL de base si nécessaire
-                this.router.navigate(['/site', feature.properties.slug]);
-              }
-            });
-          }
-        }).addTo(deflateLayer);
+        // Calcul des statistiques
+        this.computeStats();
       },
       error => {
-        console.error('Error fetching sites', error);
+        console.error('Error fetching centroides and site data', error);
       }
     );
   }
+
+  // Charger les polygones dans la BBOX visible
+  loadPolygones(): void {
+    const bounds = this.map?.getBounds();
+    if (!bounds) return;
+
+    const bbox = `${bounds.getWest()},${bounds.getSouth()},${bounds.getEast()},${bounds.getNorth()}`;
+    this.siteService.getPolygones(bbox).subscribe(
+      (polygones: any[]) => {
+
+        // Si `polygonesLayer` n'est pas encore sur la carte, l'ajouter
+        if (!this.map?.hasLayer(this.polygonesLayer)) {
+          this.polygonesLayer.addTo(this.map!);
+        }
+
+        // Ajouter chaque polygone au FeatureGroup
+        polygones.forEach((polygone) => {
+          const polygon = L.geoJSON(polygone.geom, {
+            style: {
+              weight: 3,
+              opacity: 0.5,
+              color: '#008f68',
+              fillOpacity: 0.8,
+              fillColor: '#6DB65B'
+            },
+            onEachFeature: (feature, layer) => {
+              // Crée le contenu du popup, par exemple avec une des propriétés de l'objet
+              const tooltipContent = polygone.nom
+              layer.bindTooltip(tooltipContent, {});
+              /// Redirection vers la page correspondante au clic
+              layer.on('click', () => {
+                if (polygone.slug) {
+                  // Remplace 'site/' par ton URL de base si nécessaire
+                  this.router.navigate(['/site', polygone.slug]);
+                }
+              });
+            }
+          }).on('click', () => {
+            if (polygone.properties && polygone.properties.slug) {
+              this.router.navigate(['/site', polygone.properties.slug]);
+            }
+          });
+          this.polygonesLayer.addLayer(polygon);  // Ajoute le polygone au FeatureGroup
+        });
+      },
+      error => {
+        console.error('Error fetching polygones', error);
+      }
+    );
+  }
+
+  // Masquer les centroïdes
+  hideCentroides(): void {
+    if (this.centroidesLayer) {
+      this.map?.removeLayer(this.centroidesLayer);
+    }
+  }
+
+  // Réafficher les centroïdes
+  showCentroides(): void {
+    if (this.centroidesLayer) {
+      this.centroidesLayer.addTo(this.map!);
+    }
+  }
+
+  // Vider les polygones de la carte
+  clearPolygones(): void {
+    if (this.polygonesLayer) {
+      this.polygonesLayer.clearLayers();  // Efface tous les polygones à l’intérieur de `polygonesLayer`
+    }
+  }
+
+  computeStats(): void {
+    const totalSites = this.espaces.length;
+    const totalInpgSites = this.espaces.reduce((total, site) => total + (site.inpg ? site.inpg.length : 0), 0);
+    const sitesAvecPatrimoine = this.espaces.filter(site => site.inpg && site.inpg.length > 0).length;
+    const sitesAvecStratotype = this.espaces.filter(site => site.infos_base && site.infos_base.reserve_contains_stratotype === true).length;
+    const sitesCreationGeol = this.espaces.filter(site => site.creation_geol === true).length;
+    this.stats = [
+      { icon: 'assets/images/symbol11_final.png', chiffre: totalSites, texte: 'Nombre total de réserves' },
+      { icon: 'assets/images/symbol11_prct.png', chiffre: `${(sitesAvecPatrimoine / totalSites * 100).toFixed(0)}%`, texte: 'Proportion de réserves avec patrimoine géologique' },
+      { icon: 'assets/images/IconCG.png', chiffre: sitesCreationGeol, texte: 'Réserves créées pour protéger du patrimoine géologique' },
+      { icon: 'assets/images/INPG.png', chiffre: totalInpgSites, texte: 'Sites INPG localisés en réserve naturelle' },
+      { icon: 'assets/images/stratotype.png', chiffre: sitesAvecStratotype, texte: 'Nombre de stratotypes protégés' }
+    ];
+  }
+
+  // Autres méthodes pour filtrage et interactions utilisateur
 
   onRowClick(element: any): void {
     this.router.navigate(['/site', element.slug]);  // Utilisation du Router pour naviguer
@@ -237,27 +272,22 @@ export class AccueilComponent implements OnInit {
     // Fetch les sites avec le filtre patrimoine
     this.siteService.getFilteredSites(this.selectedPatrimoine).subscribe(
       sites => {
-        // Filtrage des sites qui n'incluent pas "perimetre protection"
         this.espaces = sites.filter(site => !site.nom.toLowerCase().includes('perimetre protection'));
 
-        // Filtrage des sites INPG
+        // Filtrer les sites INPG
         this.filteredEspaces = this.espaces.filter(site => {
           if (this.selectedPatrimoine === 'oui' && !site.id_metier) {
-            return true; // Sites avec patrimoine géologique et sans site INPG
+            return true;  // Sites avec patrimoine géologique et sans site INPG
           } else if (this.selectedPatrimoine === 'non' && !site.id_metier) {
-            return true; // Sites sans patrimoine géologique et sans site INPG
+            return true;  // Sites sans patrimoine géologique et sans site INPG
           } else if (this.selectedPatrimoine === '') {
-            return true; // Affiche tous les sites sans filtrage
+            return true;  // Affiche tous les sites sans filtrage
           }
           return true;
         });
 
-        // Ajout du filtrage pour la création de réserves sur le fondement du patrimoine géologique
         if (this.selectedPatrimoine === 'reserve_geologique') {
-          this.filteredEspaces = this.espaces.filter(site => {
-            console.log(site.reserve_created_on_geological_basis); // Vérifie chaque valeur
-            return site.reserve_created_on_geological_basis === true;
-          });
+          this.filteredEspaces = this.espaces.filter(site => site.reserve_created_on_geological_basis === true);
         }
       },
       error => {
@@ -265,7 +295,6 @@ export class AccueilComponent implements OnInit {
       }
     );
   }
-
 
   onRegionChange(region: string): void {
     this.selectedRegion = region;
@@ -289,5 +318,12 @@ export class AccueilComponent implements OnInit {
       return matchesTypeRn && matchesRegion && matchesSearch;
     });
   }
-}
 
+  getNonConfidentialSites(element: any): any[] {
+    return element.inpg.filter((inpg: any) => inpg.niveau_de_diffusion !== 'Confidentiel');
+  }
+
+  countConfidentialSites(element: any): number {
+    return element.inpg.filter((inpg: any) => inpg.niveau_de_diffusion === 'Confidentiel').length;
+  }
+}
