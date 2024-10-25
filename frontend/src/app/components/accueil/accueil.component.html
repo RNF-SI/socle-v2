@@ -46,13 +46,14 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>Patrimoine Géologique</mat-label>
+      <mat-label>Patrimoine géologique</mat-label>
       <mat-select [(value)]="selectedPatrimoine" (selectionChange)="onPatrimoineChange($event.value)">
-        <mat-option value="">(Tous)</mat-option>
-        <mat-option value="oui">Avec Patrimoine Géologique</mat-option>
-        <mat-option value="non">Sans Patrimoine Géologique</mat-option>
-        <mat-option value="reserve_geologique">Réserve créée sur fondement de patrimoine géologique</mat-option>
-        <!-- Nouvelle option -->
+        <mat-option *ngIf="selectedPatrimoine" (click)="clearPatrimoineSelection()" class="reset-option">
+          <span>Réinitialiser la sélection</span>
+        </mat-option>
+        <mat-option value="oui">Avec patrimoine géologique identifié</mat-option>
+        <mat-option value="non">Sans patrimoine géologique identifié</mat-option>
+        <mat-option value="reserve_geologique">Créée pour son patrimoine géologique</mat-option>
       </mat-select>
     </mat-form-field>
 

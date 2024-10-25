@@ -3,7 +3,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import * as L from 'leaflet';
-import 'Leaflet.Deflate';
+// import 'Leaflet.Deflate';
 import { SitesService } from 'src/app/services/sites.service';
 import { Site } from '../../models/site.model';
 
@@ -118,6 +118,8 @@ export class AccueilComponent implements OnInit {
       (sites: any[]) => {
         this.espaces = sites;
         this.filteredEspaces = this.espaces;
+        console.log(this.filteredEspaces);
+
         this.dataSource.data = this.filteredEspaces;
         this.dataSource.paginator = this.paginator;
 
@@ -268,32 +270,7 @@ export class AccueilComponent implements OnInit {
 
   onPatrimoineChange(patrimoine: string): void {
     this.selectedPatrimoine = patrimoine;
-
-    // Fetch les sites avec le filtre patrimoine
-    this.siteService.getFilteredSites(this.selectedPatrimoine).subscribe(
-      sites => {
-        this.espaces = sites.filter(site => !site.nom.toLowerCase().includes('perimetre protection'));
-
-        // Filtrer les sites INPG
-        this.filteredEspaces = this.espaces.filter(site => {
-          if (this.selectedPatrimoine === 'oui' && !site.id_metier) {
-            return true;  // Sites avec patrimoine géologique et sans site INPG
-          } else if (this.selectedPatrimoine === 'non' && !site.id_metier) {
-            return true;  // Sites sans patrimoine géologique et sans site INPG
-          } else if (this.selectedPatrimoine === '') {
-            return true;  // Affiche tous les sites sans filtrage
-          }
-          return true;
-        });
-
-        if (this.selectedPatrimoine === 'reserve_geologique') {
-          this.filteredEspaces = this.espaces.filter(site => site.reserve_created_on_geological_basis === true);
-        }
-      },
-      error => {
-        console.error('Error fetching filtered sites', error);
-      }
-    );
+    this.applyFilters();
   }
 
   onRegionChange(region: string): void {
@@ -315,9 +292,21 @@ export class AccueilComponent implements OnInit {
         ? site.nom.toLowerCase().includes(this.searchQuery) || site.code.toLowerCase().includes(this.searchQuery)
         : true;
 
-      return matchesTypeRn && matchesRegion && matchesSearch;
+      const matchesPatrimoine = this.selectedPatrimoine === 'oui'
+        ? (site.inpg && site.inpg.length > 0) || (site.patrimoines_geologiques && site.patrimoines_geologiques.length > 0)
+        : this.selectedPatrimoine === 'non'
+          ? (!site.inpg || site.inpg.length === 0) && (!site.patrimoines_geologiques || site.patrimoines_geologiques.length === 0)
+          : this.selectedPatrimoine === 'reserve_geologique'
+            ? site.creation_geol === true
+            : true;
+
+      return matchesTypeRn && matchesRegion && matchesSearch && matchesPatrimoine;
     });
+
+    this.dataSource.data = this.filteredEspaces;
+    this.dataSource.paginator = this.paginator;
   }
+
 
   getNonConfidentialSites(element: any): any[] {
     return element.inpg.filter((inpg: any) => inpg.niveau_de_diffusion !== 'Confidentiel');
@@ -325,5 +314,10 @@ export class AccueilComponent implements OnInit {
 
   countConfidentialSites(element: any): number {
     return element.inpg.filter((inpg: any) => inpg.niveau_de_diffusion === 'Confidentiel').length;
+  }
+
+  clearPatrimoineSelection(): void {
+    this.selectedPatrimoine = '';
+    this.onPatrimoineChange(this.selectedPatrimoine);
   }
 }

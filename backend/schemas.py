@@ -71,6 +71,7 @@ class SiteSchemaSimple(ma.SQLAlchemyAutoSchema):
         model = Site 
 
     inpg = ma.Nested(lambda: InpgSchema(only=("id_metier","lb_site", "niveau_de_diffusion")), many=True)
+    patrimoines_geologiques = ma.Nested(lambda: PatrimoineGeologiqueGestionnaireSchema(only=("lb",)), many=True)
 
 class EntiteGeolSchema(ma.SQLAlchemyAutoSchema):
     geom = fields.Method('wkt_to_geojson')
