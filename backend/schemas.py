@@ -20,6 +20,8 @@ class PerimetreProtectionSchema(ma.SQLAlchemyAutoSchema):
         model = Site
         exclude = ['geom_point']   
     inpg = ma.Nested(lambda: InpgSchema, many=True)
+    
+    patrimoines_geologiques = ma.Nested(lambda: PatrimoineGeologiqueGestionnaireSchema(only=("lb",)), many=True)
 
 
 
@@ -51,6 +53,7 @@ class SiteSchema(ma.SQLAlchemyAutoSchema):
     inpg = ma.Nested(lambda: InpgSchema, many=True)
     ages = ma.Nested(lambda: NomenclatureSchema, many=True)
     perimetre_protection = ma.Nested(PerimetreProtectionSchema, many=False, attribute='perimetre_protection_site')
+    patrimoines_geologiques = ma.Nested(lambda: PatrimoineGeologiqueGestionnaireSchema(only=("lb",)), many=True)
 
 class SiteSchemaSimple(ma.SQLAlchemyAutoSchema):
     geom = fields.Method('wkt_to_geojson')

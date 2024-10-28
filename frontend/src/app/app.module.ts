@@ -1,6 +1,7 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, registerLocaleData } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import localeFr from '@angular/common/locales/fr';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -38,6 +39,8 @@ import { HomeRnfModule } from './home-rnf/home-rnf.module';
 import { getFrenchPaginatorIntl } from './home-rnf/shared/french-paginator-intl';
 import { CapitalizePipe } from './pipes/capitalize.pipe';
 import { TInfosBaseSiteService } from './services/t-infos-base-site.service';
+
+registerLocaleData(localeFr, 'fr');
 
 
 
@@ -90,7 +93,8 @@ import { TInfosBaseSiteService } from './services/t-infos-base-site.service';
 
   providers: [
     TInfosBaseSiteService,
-    { provide: MatPaginatorIntl, useValue: getFrenchPaginatorIntl() }
+    { provide: MatPaginatorIntl, useValue: getFrenchPaginatorIntl() },
+    { provide: LOCALE_ID, useValue: 'fr' }
   ],
   bootstrap: [AppComponent]
 })

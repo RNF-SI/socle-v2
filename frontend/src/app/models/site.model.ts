@@ -35,6 +35,8 @@ export interface Site {
   infos_base: Infos_base;
   creation_geol: boolean;
   geom: any;
+  jonction_nom: any;
+  surf_off: any;
   // WTF : je ne comprend pas du tout ce modèle, il ne correspond pas du tout à sites...
 }
 

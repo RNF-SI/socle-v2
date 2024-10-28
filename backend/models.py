@@ -73,6 +73,7 @@ class Site(db.Model):
     perimetre_protection = db.Column(db.Boolean, default=False)  
     id_perimetre_protection = db.Column(db.Integer, db.ForeignKey('site.id_site'), nullable=True)  
     nom = db.Column(db.String(255), nullable=False)
+    jonction_nom =db.Column(db.String)
     altitude_max = db.Column(db.Float, nullable=True)
     altitude_min = db.Column(db.Float, nullable=True)
     bassin_hydro_general = db.Column(db.String(255), nullable=True)
@@ -87,6 +88,7 @@ class Site(db.Model):
     date_maj = db.Column(db.DateTime, nullable=False)
     utilisateur_ajout = db.Column(db.Integer, nullable=True)
     utilisateur_maj = db.Column(db.Integer, nullable=True)
+    surf_off = db.Column(db.Float)
 
     slug = db.Column(db.String(255), unique=True) 
 
