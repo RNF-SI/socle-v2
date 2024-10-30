@@ -45,7 +45,7 @@
     </div>
   </div>
   <!-- Section de la carte -->
-  <div id="map">
+  <div id="mapReserve">
   </div>
   <div id="legend" class="legend-container"></div>
   <!-- TODO: corriger codition de affichage des les trois phrase pour le patrimoine geologique   -->
@@ -56,10 +56,10 @@
     </div>
 
     <div class="heritage-content">
-      <p *ngIf="tInfosBaseSite?.reserve_created_on_geological_basis === true">
+      <p *ngIf="site.creation_geol === true">
         La réserve a été créée sur le fondement d’un patrimoine géologique.
       </p>
-      <div>
+      <div *ngIf="site.creation_geol != true">
         <div *ngIf="site.inpg && site.inpg.length > 0; else noInpgData">
           <p>La réserve abrite du patrimoine géologique, mais ce n’est pas ce dernier qui a motivé sa création.</p>
         </div>
@@ -69,33 +69,41 @@
       </div>
       <!-- TODO: tableu de corespendance  -->
       <p class="subsection-title">Ensemble géologique</p>
-      <p *ngIf="geologicalUnits.length > 0; else noGeologicalUnits">
-        {{ geologicalUnits.join(', ') }}
-      </p>
-      <ng-template #noGeologicalUnits>
-        <p>Aucun ensemble géologique sélectionné.</p>
-      </ng-template>
+      <div class="subsection-response">
+        <p *ngIf="geologicalUnits.length > 0; else noGeologicalUnits">
+          {{ geologicalUnits.join(', ') }}
+        </p>
+        <ng-template #noGeologicalUnits>
+          <p>Aucun ensemble géologique sélectionné.</p>
+        </ng-template>
+
+      </div>
 
       <div>
         <p class="subsection-title">Milieux souterrains d’intérêt patrimonial</p>
-        <span *ngIf="tInfosBaseSite?.contains_subterranean_habitats">
-          <div *ngIf="tInfosBaseSite?.subterranean_habitats_natural_cavities">
-            <p>Cavités naturelles</p>
-          </div>
-          <div *ngIf="tInfosBaseSite?.subterranean_habitats_anthropogenic_cavities">
-            <p>Cavités anthropiques</p>
-          </div>
-        </span>
-        <p *ngIf="!tInfosBaseSite?.contains_subterranean_habitats">
-          La réserve ne présente pas des milieux souterrains abritant un patrimoine naturel identifié, biologique
-          ou géologique.
-        </p>
+        <div class="subsection-response">
+          <span *ngIf="site.infos_base.contains_subterranean_habitats">
+            <div *ngIf="site.infos_base.subterranean_habitats_natural_cavities">
+              <p>Cavités naturelles</p>
+            </div>
+            <div *ngIf="site.infos_base.subterranean_habitats_anthropogenic_cavities">
+              <p>Cavités anthropiques</p>
+            </div>
+          </span>
+          <p *ngIf="site.infos_base.contains_subterranean_habitats === false">
+            La réserve ne présente pas de milieu souterrain abritant un patrimoine naturel identifié, biologique
+            ou géologique.
+          </p>
+          <p *ngIf="site.infos_base.contains_subterranean_habitats === null">
+            Information non renseignée.
+          </p>
+        </div>
       </div>
 
       <p class="subsection-title">Intérêts géologiques principaux</p>
-      <p *ngIf="site?.inpg?.length > 0; else noGeologicalInterests">
-        <ng-container *ngFor="let inpg of site.inpg">
-          <span>{{ inpg.interet_geol_principal }}</span><br />
+      <p *ngIf="uniqueInteretGeolPrincipal" class="subsection-response">
+        <ng-container *ngFor="let interet of uniqueInteretGeolPrincipal">
+          <span>{{ interet }}</span><br />
         </ng-container>
       </p>
       <ng-template #noGeologicalInterests>
@@ -103,36 +111,41 @@
       </ng-template>
 
       <p class="subsection-title">Stratotypes</p>
-      <div *ngIf="tInfosBaseSite?.reserve_contains_stratotype === true">
-        <p *ngIf="tInfosBaseSite?.stratotype_limit === true">
-          Stratotype de limite: {{ tInfosBaseSite?.stratotype_limit_input || 'Nom non précisé' }}
-        </p>
-        <p *ngIf="tInfosBaseSite?.stratotype_stage === true">
-          Stratotype d’étage: {{ tInfosBaseSite?.stratotype_stage_input || 'Nom non précisé' }}
+      <div class="subsection-response">
+        <div *ngIf="tInfosBaseSite?.reserve_contains_stratotype === true">
+          <p *ngIf="tInfosBaseSite?.stratotype_limit === true">
+            Stratotype de limite: {{ tInfosBaseSite?.stratotype_limit_input || 'Nom non précisé' }}
+          </p>
+          <p *ngIf="tInfosBaseSite?.stratotype_stage === true">
+            Stratotype d’étage: {{ tInfosBaseSite?.stratotype_stage_input || 'Nom non précisé' }}
+          </p>
+        </div>
+        <p *ngIf="tInfosBaseSite?.reserve_contains_stratotype === false">
+          Aucun stratotype identifié.
         </p>
       </div>
-      <p *ngIf="tInfosBaseSite?.reserve_contains_stratotype === false">
-        Aucun stratotype identifié.
-      </p>
       <div>
         <p class="subsection-title">Patrimoine paléontologique</p>
-        <span *ngIf="tInfosBaseSite?.contains_paleontological_heritage; else noPaleontologicalData">
-          <div *ngIf="tInfosBaseSite?.contains_paleontological_heritage_invertebrates">
-            <p>Invertébrés</p>
-          </div>
-          <div *ngIf="tInfosBaseSite?.contains_paleontological_heritage_vertebrates">
-            <p>Vertébrés</p>
-          </div>
-          <div *ngIf="tInfosBaseSite?.contains_paleontological_heritage_plants">
-            <p>Végétaux</p>
-          </div>
-          <div *ngIf="tInfosBaseSite?.contains_paleontological_heritage_trace_fossils">
-            <p>Traces fossiles</p>
-          </div>
-        </span>
-        <ng-template #noPaleontologicalData>
-          <p>Les terrains de la réserve ne renferment pas de patrimoine paléontologique.</p>
-        </ng-template>
+        <div class="subsection-response">
+          <span *ngIf="site.infos_base.contains_paleontological_heritage; else noPaleontologicalData">
+            <div *ngIf="site.infos_base.contains_paleontological_heritage_invertebrates">
+              <p>Invertébrés</p>
+            </div>
+            <div *ngIf="site.infos_base.contains_paleontological_heritage_vertebrates">
+              <p>Vertébrés</p>
+            </div>
+            <div *ngIf="site.infos_base.contains_paleontological_heritage_plants">
+              <p>Végétaux</p>
+            </div>
+            <div *ngIf="site.infos_base.contains_paleontological_heritage_trace_fossils">
+              <p>Traces fossiles</p>
+            </div>
+          </span>
+          <ng-template #noPaleontologicalData>
+            <p>Les terrains de la réserve ne renferment pas de patrimoine paléontologique.</p>
+          </ng-template>
+
+        </div>
       </div>
     </div>
   </div>
@@ -140,7 +153,7 @@
   <div class="geological-sites-section">
     <div class="title-container">
       <img src="assets/images/iconSynth.png" alt="Icone patrimoine" class="heritage-icon">
-      <h2 class="heritage-title">Sites géologiques</h2>
+      <h2 class="heritage-title">Sites d'intérêt géologique</h2>
     </div>
 
     <table class="table-geologique">

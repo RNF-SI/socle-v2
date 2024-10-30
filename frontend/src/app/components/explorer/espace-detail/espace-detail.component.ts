@@ -35,6 +35,7 @@ export class EspaceDetailComponent implements OnInit {
   faArrowUpRightFromSquare = faArrowUpRightFromSquare;
   selectedSite: any = {};
   substancesOptions: Nomenclature[] = [];
+  uniqueInteretGeolPrincipal = [];
 
   private map: L.Map | undefined;
   private layerControl = L.control.layers();
@@ -89,6 +90,11 @@ export class EspaceDetailComponent implements OnInit {
         this.site = site;
         console.log(this.site);
         setTimeout(() => (this.initMap(), this.addLayers(), this.zoomToExtent()), 1);
+        this.uniqueInteretGeolPrincipal = Array.from(
+          new Set(this.site.inpg.map((inpg: any) => inpg.interet_geol_principal))
+        );
+        console.log(this.uniqueInteretGeolPrincipal);
+
       })
     }
   }
@@ -111,7 +117,7 @@ export class EspaceDetailComponent implements OnInit {
       detectRetina: true
     });
 
-    this.map = L.map('map', {
+    this.map = L.map('mapReserve', {
       center: [47.2, 2.5],
       zoom: 6,
       layers: [geologie]

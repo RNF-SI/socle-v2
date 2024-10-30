@@ -20,7 +20,7 @@
 
 
 
-#map {
+#mapReserve {
   height: 400px;
 }
 
@@ -39,7 +39,7 @@
 }
 
 .heritage-title {
-  color: green;
+  color: mat-color($custom-primary, 500);
   font-size: 1.5em;
   font-weight: bold;
   margin-top: 30px;
@@ -47,7 +47,7 @@
 }
 
 .heritage-title1 {
-  color: green;
+  color: mat-color($custom-primary, 500);
   font-size: 1.5em;
   font-weight: bold;
 }
@@ -71,11 +71,13 @@
 }
 
 .subsection-title {
-  color: #097c03;
+  color: mat-color($custom-accent, 500);
   font-weight: bold;
   margin-top: 15px;
+}
 
-
+.subsection-response {
+  padding-left: 20px;
 }
 
 .table-geologique {

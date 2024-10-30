@@ -42,4 +42,12 @@ export interface Site {
 
 export interface Infos_base {
   reserve_contains_stratotype: boolean;
+  contains_subterranean_habitats: boolean;
+  subterranean_habitats_natural_cavities: boolean;
+  subterranean_habitats_anthropogenic_cavities: boolean;
+  contains_paleontological_heritage: boolean;
+  contains_paleontological_heritage_invertebrates: boolean;
+  contains_paleontological_heritage_vertebrates: boolean;
+  contains_paleontological_heritage_plants: boolean;
+  contains_paleontological_heritage_trace_fossils: boolean;
 }
