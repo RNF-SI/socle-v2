@@ -49,7 +49,7 @@
   </div>
   <div id="legend" class="legend-container"></div>
   <!-- TODO: corriger codition de affichage des les trois phrase pour le patrimoine geologique   -->
-  <div class="geological-heritage-section">
+  <div #infoBlock class="geological-heritage-section">
     <div class="title-container">
       <img src="assets/images/iconSynth.png" alt="Icone patrimoine" class="heritage-icon">
       <h2 class="heritage-title">Patrimoine géologique</h2>
@@ -150,74 +150,107 @@
     </div>
   </div>
 
-  <div class="geological-sites-section">
+  <div #infoBlock class="geological-sites-section">
     <div class="title-container">
       <img src="assets/images/iconSynth.png" alt="Icone patrimoine" class="heritage-icon">
       <h2 class="heritage-title">Sites d'intérêt géologique</h2>
     </div>
+    <div class="heritage-content">
 
-    <table class="table-geologique">
-      <thead>
-        <tr>
-          <th>Au sein de la réserve</th>
-          <th>Au sein du périmètre de protection</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>
-            <div *ngIf="site.inpg && site.inpg.length > 0; else noInpgData">
-              <div *ngFor="let inpg of site.inpg">
-                <a [href]="inpg.url" target="_blank">{{ inpg.lb_site }}</a>
-                {{ inpg.interet_geol_principal }}
-              </div>
-            </div>
-            <ng-template #noInpgData>
-              <div>Aucune données.</div>
+      <div class="subsection-title">
+        Sites INPG sur la réserve
+      </div>
+      <div class="subsection-response">
+        <div *ngIf="site.inpg && site.inpg.length > 0; else noInpgData">
+          <div *ngFor="let inpg of site.inpg">
+            <fa-icon [icon]="['fas', 'star']" size="2xs"></fa-icon>
+            <fa-icon *ngIf="inpg.nombre_etoiles > 1; else etoileVide2" [icon]="['fas', 'star']" size="2xs">
+            </fa-icon>
+            <ng-template #etoileVide2>
+              <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
             </ng-template>
-          </td>
-          <td>
-            <div *ngIf="site.perimetre_protection?.inpg && site.perimetre_protection.inpg.length > 0; else noDataINPG">
-              <div *ngFor="let inpg of site.perimetre_protection.inpg">
-                <a [href]="inpg.url" target="_blank">{{ inpg.lb_site }}</a>
-                {{ inpg.interet_geol_principal }}
-              </div>
-            </div>
-            <ng-template #noDataINPG>
-              <p>Aucune données.</p>
+            <fa-icon *ngIf="inpg.nombre_etoiles > 2; else etoileVide3" [icon]="['fas', 'star']" size="2xs">
+            </fa-icon>
+            <ng-template #etoileVide3>
+              <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
             </ng-template>
-          </td>
-          <!-- Deuxième partie pour les autres données -->
-        <tr>
-          <td>
-            <div *ngIf="principalHeritage && principalHeritage.length > 0; else noHeritageData">
-              <div *ngFor="let heritage of principalHeritage">
-                <a [href]="heritage.url" target="_blank">{{ heritage.lb }}</a>
-                {{ heritage.interet_geol_principal }} - {{ heritage.bibliographie }}
-              </div>
-            </div>
-            <ng-template #noHeritageData>
-              <div>Aucune données.</div>
-            </ng-template>
-          </td>
+            <a [href]="inpg.url" target="_blank">{{
+              inpg.lb_site }}</a>
+            {{ inpg.interet_geol_principal }}
+          </div>
+        </div>
+        <ng-template #noInpgData>
+          <div>Aucune données.</div>
+        </ng-template>
+      </div>
+      <div class="subsection-title">
+        Sites INPG sur le périmètre de protection
+      </div>
 
-          <td>
-            <div *ngIf="protectionHeritage && protectionHeritage.length > 0; else noDataHeritage">
-              <div *ngFor="let heritage of protectionHeritage">
-                <a [href]="heritage.url" target="_blank">{{ heritage.lb }}</a>
-                {{ heritage.interet_geol_principal }}
+      <table class="table-geologique">
+        <thead>
+          <tr>
+            <th>Au sein de la réserve</th>
+            <th>Au sein du périmètre de protection</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div *ngIf="site.inpg && site.inpg.length > 0; else noInpgData">
+                <div *ngFor="let inpg of site.inpg">
+                  <a [href]="inpg.url" target="_blank">{{ inpg.lb_site }}</a>
+                  {{ inpg.interet_geol_principal }}
+                </div>
               </div>
-            </div>
-            <ng-template #noDataHeritage>
-              <p>Aucune données.</p>
-            </ng-template>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+              <ng-template #noInpgData>
+                <div>Aucune données.</div>
+              </ng-template>
+            </td>
+            <td>
+              <div
+                *ngIf="site.perimetre_protection?.inpg && site.perimetre_protection.inpg.length > 0; else noDataINPG">
+                <div *ngFor="let inpg of site.perimetre_protection.inpg">
+                  <a [href]="inpg.url" target="_blank">{{ inpg.lb_site }}</a>
+                  {{ inpg.interet_geol_principal }}
+                </div>
+              </div>
+              <ng-template #noDataINPG>
+                <p>Aucune données.</p>
+              </ng-template>
+            </td>
+          <tr>
+            <td>
+              <div *ngIf="principalHeritage && principalHeritage.length > 0; else noHeritageData">
+                <div *ngFor="let heritage of principalHeritage">
+                  <a [href]="heritage.url" target="_blank">{{ heritage.lb }}</a>
+                  {{ heritage.interet_geol_principal }} - {{ heritage.bibliographie }}
+                </div>
+              </div>
+              <ng-template #noHeritageData>
+                <div>Aucune données.</div>
+              </ng-template>
+            </td>
+
+            <td>
+              <div *ngIf="protectionHeritage && protectionHeritage.length > 0; else noDataHeritage">
+                <div *ngFor="let heritage of protectionHeritage">
+                  <a [href]="heritage.url" target="_blank">{{ heritage.lb }}</a>
+                  {{ heritage.interet_geol_principal }}
+                </div>
+              </div>
+              <ng-template #noDataHeritage>
+                <p>Aucune données.</p>
+              </ng-template>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
   </div>
   <!-- TODO: ajouter de tableu de corespendance pour stocker de donner  -->
-  <div class="mineral-resources-section">
+  <div #infoBlock class="mineral-resources-section">
     <div class="title-container">
       <img src="assets/images/iconSynth.png" alt="Icone patrimoine" class="heritage-icon">
       <h2 class="heritage-title">Ressources minérales</h2>
@@ -250,7 +283,7 @@
         </div> -->
     </div>
   </div>
-  <div class="collections-section">
+  <div #infoBlock class="collections-section">
     <div class="title-container">
       <img src="assets/images/iconSynth.png" alt="Icone patrimoine" class="heritage-icon">
       <h2 class="heritage-title">Collections</h2>
@@ -262,7 +295,7 @@
       <p>La réserve ne dispose pas de collections géologiques propres</p>
     </div>
   </div>
-  <div class="sensibilisation-section">
+  <div #infoBlock class="sensibilisation-section">
     <div class="title-container">
       <img src="assets/images/iconSynth.png" alt="Icone patrimoine" class="heritage-icon">
       <h2 class="heritage-title">Sensibilisation</h2>
@@ -282,6 +315,20 @@
       <p>La réserve ne propose pas d’animation sur la thématique géodiversité / patrimoine géologique</p>
     </ng-template>
   </div>
+
+
+  <div class="row">
+    <!-- Colonne de gauche avec identifiant pour ciblage dans Renderer2 -->
+    <div id="left-column" class="col-md-6 d-flex flex-column"></div>
+
+    <!-- Colonne de droite avec identifiant pour ciblage dans Renderer2 -->
+    <div id="right-column" class="col-md-6 d-flex flex-column"></div>
+  </div>
+
+  <ng-template #template let-nativeElement>
+    <div [attr.class]="nativeElement.className" [innerHTML]="nativeElement.innerHTML"></div>
+  </ng-template>
+
   <mat-card-actions class="links-container">
     <a mat-button [routerLink]="['/fiche-terrain', site.slug]">Fiche détaillée</a>
     <a mat-button [routerLink]="['/t_infos_base_site', site.slug]">Mini-questionnaire</a>

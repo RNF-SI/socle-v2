@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, QueryList, Renderer2, ViewChildren } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { faArrowUpRightFromSquare, faKey, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import html2canvas from 'html2canvas';
@@ -41,6 +41,10 @@ export class EspaceDetailComponent implements OnInit {
   private layerControl = L.control.layers();
   private bounds = L.latLngBounds([]);
 
+  @ViewChildren('infoBlock') infoBlocks!: QueryList<ElementRef>;
+  isDistributed = false;  // Flag pour s'assurer que la distribution se fait une seule fois
+  leftColumn!: ElementRef;
+  rightColumn!: ElementRef;
 
   // Correct the type to be a single object instead of an array
 
@@ -76,6 +80,7 @@ export class EspaceDetailComponent implements OnInit {
   // ];
 
   constructor(
+    private renderer: Renderer2,
     private route: ActivatedRoute,
     private siteService: SitesService,
     private tInfosBaseSiteService: TInfosBaseSiteService,
@@ -93,9 +98,19 @@ export class EspaceDetailComponent implements OnInit {
         this.uniqueInteretGeolPrincipal = Array.from(
           new Set(this.site.inpg.map((inpg: any) => inpg.interet_geol_principal))
         );
-        console.log(this.uniqueInteretGeolPrincipal);
-
       })
+    }
+  }
+
+
+  ngAfterViewChecked(): void {
+    // Vérifie si `infoBlocks` est disponible et que la distribution n'a pas encore été faite
+    if (this.infoBlocks && this.infoBlocks.length > 0 && !this.isDistributed) {
+      this.isDistributed = true;  // Assure qu'on ne fait cela qu'une fois
+      // Cible les colonnes une fois la vue initialisée
+      this.leftColumn = this.renderer.selectRootElement('#left-column', true);
+      this.rightColumn = this.renderer.selectRootElement('#right-column', true);
+      this.distributeItems();
     }
   }
 
@@ -419,6 +434,41 @@ export class EspaceDetailComponent implements OnInit {
     // Ajouter l'élément de légende au conteneur
     legendContainer.appendChild(item);
   }
+
+  leftColumnItems: any[] = [];
+  rightColumnItems: any[] = [];
+
+  distributeItems(): void {
+    let leftHeight = 0;
+    let rightHeight = 0;
+    const blocksArray = this.infoBlocks.toArray(); // Conversion pour accéder à l'index du dernier élément
+
+    blocksArray.forEach((block: ElementRef, index: number) => {
+      const height = block.nativeElement.offsetHeight;
+
+      // Si c'est le dernier élément, applique une condition spéciale
+      if (index === blocksArray.length - 1) {
+        // Vérifie si placer le dernier élément dans `rightColumn` équilibre mieux les hauteurs
+        if (rightHeight + height <= leftHeight) {
+          this.renderer.appendChild(this.rightColumn, block.nativeElement);
+          rightHeight += height;
+        } else {
+          this.renderer.appendChild(this.leftColumn, block.nativeElement);
+          leftHeight += height;
+        }
+      } else {
+        // Logique normale pour les autres éléments
+        if (leftHeight <= rightHeight) {
+          this.renderer.appendChild(this.leftColumn, block.nativeElement);
+          leftHeight += height;
+        } else {
+          this.renderer.appendChild(this.rightColumn, block.nativeElement);
+          rightHeight += height;
+        }
+      }
+    });
+  }
+
 
 }
 
