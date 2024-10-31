@@ -4,6 +4,7 @@ import localeFr from '@angular/common/locales/fr';
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDividerModule } from '@angular/material/divider';
@@ -69,6 +70,7 @@ registerLocaleData(localeFr, 'fr');
     MatCheckboxModule,
     MatSelectModule,
     MatButtonModule,
+    MatButtonToggleModule,
     MatRadioModule,
     MatInputModule,
     MatListModule,

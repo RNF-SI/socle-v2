@@ -3,6 +3,7 @@
 .links-container {
   margin: 0 10px;
   justify-content: center;
+  text-align: center;
 }
 
 .links-container h3 a {
@@ -237,7 +238,7 @@
   flex-grow: 1;
 }
 
-fa-icon {
+.stats-container fa-icon {
   font-size: 36px;
   color: mat-color($custom-accent, 500);
 }
@@ -283,4 +284,26 @@ span.legend-item {
   text-decoration: none !important;
   color: mat-color($custom-primary, 500) !important;
   font-weight: bold !important;
+}
+
+
+
+.bouttons {
+  margin: 20px;
+  text-align: center;
+}
+
+.filled-toggle {
+  background-color: mat-color($custom-primary, 500);
+  color: white;
+}
+
+.sites-inpg fa-icon {
+  color: gold;
+}
+
+.sites-inpg a {
+  color: mat-color($custom-primary, 500);
+  text-decoration: none;
+  font-weight: bold;
 }

@@ -105,7 +105,8 @@ class Site(db.Model):
     inpg = db.relationship(
         'Inpg',
         secondary=cor_site_inpg,
-        passive_deletes=True
+        passive_deletes=True,
+        order_by="desc(Inpg.nombre_etoiles)"
     )
 
     ages = db.relationship(

@@ -155,7 +155,7 @@
       <img src="assets/images/iconSynth.png" alt="Icone patrimoine" class="heritage-icon">
       <h2 class="heritage-title">Sites d'intérêt géologique</h2>
     </div>
-    <div class="heritage-content">
+    <div class="heritage-content sites-inpg">
 
       <div class="subsection-title">
         Sites INPG sur la réserve
@@ -163,31 +163,122 @@
       <div class="subsection-response">
         <div *ngIf="site.inpg && site.inpg.length > 0; else noInpgData">
           <div *ngFor="let inpg of site.inpg">
-            <fa-icon [icon]="['fas', 'star']" size="2xs"></fa-icon>
-            <fa-icon *ngIf="inpg.nombre_etoiles > 1; else etoileVide2" [icon]="['fas', 'star']" size="2xs">
-            </fa-icon>
-            <ng-template #etoileVide2>
-              <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
-            </ng-template>
-            <fa-icon *ngIf="inpg.nombre_etoiles > 2; else etoileVide3" [icon]="['fas', 'star']" size="2xs">
-            </fa-icon>
-            <ng-template #etoileVide3>
-              <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
-            </ng-template>
-            <a [href]="inpg.url" target="_blank">{{
-              inpg.lb_site }}</a>
-            {{ inpg.interet_geol_principal }}
+            <div *ngIf="inpg.niveau_de_diffusion === 'Public'">
+              <fa-icon [icon]="['fas', 'star']" size="2xs"></fa-icon>
+              <fa-icon *ngIf="inpg.nombre_etoiles > 1; else etoileVide2" [icon]="['fas', 'star']" size="2xs">
+              </fa-icon>
+              <ng-template #etoileVide2>
+                <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
+              </ng-template>
+              <fa-icon *ngIf="inpg.nombre_etoiles > 2; else etoileVide3" [icon]="['fas', 'star']" size="2xs">
+              </fa-icon>
+              <ng-template #etoileVide3>
+                <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
+              </ng-template>
+              <a [href]="'https://inpn.mnhn.fr/site/inpg/' + inpg.id_metier" target="_blank"> {{
+                inpg.lb_site }}</a>
+              {{ inpg.interet_geol_principal }}
+            </div>
+          </div>
+          <div *ngIf="nbInpgConfidentielsReserve && !estConnecte()">
+            + {{nbInpgConfidentielsReserve}} site<span *ngIf="nbInpgConfidentielsReserve > 1">s</span> INPG
+            confidentiel<span *ngIf="nbInpgConfidentielsReserve > 1">s</span>
           </div>
         </div>
         <ng-template #noInpgData>
-          <div>Aucune données.</div>
+          <div>Aucun</div>
         </ng-template>
       </div>
-      <div class="subsection-title">
-        Sites INPG sur le périmètre de protection
+      <div *ngIf="nbInpgConfidentielsReserve > 0 && estConnecte()">
+        <div class="subsection-title">
+          Sites INPG confidentiels sur la réserve
+        </div>
+        <div class="subsection-response">
+          <div *ngIf="site.inpg && site.inpg.length > 0; else noInpgData">
+            <div *ngFor="let inpg of site.inpg">
+              <div *ngIf="inpg.niveau_de_diffusion === 'Confidentiel'">
+                <fa-icon [icon]="['fas', 'star']" size="2xs"></fa-icon>
+                <fa-icon *ngIf="inpg.nombre_etoiles > 1; else etoileVide2" [icon]="['fas', 'star']" size="2xs">
+                </fa-icon>
+                <ng-template #etoileVide2>
+                  <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
+                </ng-template>
+                <fa-icon *ngIf="inpg.nombre_etoiles > 2; else etoileVide3" [icon]="['fas', 'star']" size="2xs">
+                </fa-icon>
+                <ng-template #etoileVide3>
+                  <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
+                </ng-template>
+                <a [href]="'https://inpn.mnhn.fr/site/inpg/' + inpg.id_metier" target="_blank"> {{
+                  inpg.lb_site }}</a>
+                {{ inpg.interet_geol_principal }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="site.perimetre_protection">
+        <div class="subsection-title">
+          Sites INPG sur le périmètre de protection
+        </div>
+        <div class="subsection-response">
+          <div *ngIf="site.perimetre_protection.inpg && site.perimetre_protection.inpg.length > 0; else noInpgData">
+            <div *ngFor="let inpg of site.perimetre_protection.inpg">
+              <div *ngIf="inpg.niveau_de_diffusion === 'Public'">
+                <fa-icon [icon]="['fas', 'star']" size="2xs"></fa-icon>
+                <fa-icon *ngIf="inpg.nombre_etoiles > 1; else etoileVide2" [icon]="['fas', 'star']" size="2xs">
+                </fa-icon>
+                <ng-template #etoileVide2>
+                  <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
+                </ng-template>
+                <fa-icon *ngIf="inpg.nombre_etoiles > 2; else etoileVide3" [icon]="['fas', 'star']" size="2xs">
+                </fa-icon>
+                <ng-template #etoileVide3>
+                  <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
+                </ng-template>
+                <a [href]="inpg.url" target="_blank"> {{
+                  inpg.lb_site }}</a>
+                {{ inpg.interet_geol_principal }}
+              </div>
+            </div>
+            <div *ngIf="nbInpgConfidentielsPP && !estConnecte()">
+              + {{nbInpgConfidentielsPP}} site<span *ngIf="nbInpgConfidentielsPP > 1">s</span> INPG
+              confidentiel<span *ngIf="nbInpgConfidentielsPP > 1">s</span>
+            </div>
+          </div>
+          <ng-template #noInpgData>
+            <div>Aucun</div>
+          </ng-template>
+        </div>
+      </div>
+      <div *ngIf="nbInpgConfidentielsPP > 0 && estConnecte()">
+        <div class="subsection-title">
+          Sites INPG confidentiels sur le périmètre de protection
+        </div>
+        <div class="subsection-response">
+          <div *ngIf="site.perimetre_protection.inpg && site.perimetre_protection.inpg.length > 0; else noInpgData">
+            <div *ngFor="let inpg of site.perimetre_protection.inpg">
+              <div *ngIf="inpg.niveau_de_diffusion === 'Confidentiel'">
+                <fa-icon [icon]="['fas', 'star']" size="2xs"></fa-icon>
+                <fa-icon *ngIf="inpg.nombre_etoiles > 1; else etoileVide2" [icon]="['fas', 'star']" size="2xs">
+                </fa-icon>
+                <ng-template #etoileVide2>
+                  <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
+                </ng-template>
+                <fa-icon *ngIf="inpg.nombre_etoiles > 2; else etoileVide3" [icon]="['fas', 'star']" size="2xs">
+                </fa-icon>
+                <ng-template #etoileVide3>
+                  <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
+                </ng-template>
+                <a [href]="inpg.url" target="_blank"> {{
+                  inpg.lb_site }}</a>
+                {{ inpg.interet_geol_principal }}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <table class="table-geologique">
+      <!-- <table class="table-geologique">
         <thead>
           <tr>
             <th>Au sein de la réserve</th>
@@ -245,7 +336,7 @@
             </td>
           </tr>
         </tbody>
-      </table>
+      </table> -->
     </div>
 
   </div>
@@ -317,6 +408,7 @@
   </div>
 
 
+  <!-- colonnes prévues pour accueillir les infos des blocs suivant leur taille -->
   <div class="row">
     <!-- Colonne de gauche avec identifiant pour ciblage dans Renderer2 -->
     <div id="left-column" class="col-md-6 d-flex flex-column"></div>
@@ -329,9 +421,20 @@
     <div [attr.class]="nativeElement.className" [innerHTML]="nativeElement.innerHTML"></div>
   </ng-template>
 
-  <mat-card-actions class="links-container">
+  <!-- <mat-card-actions class="links-container">
     <a mat-button [routerLink]="['/fiche-terrain', site.slug]">Fiche détaillée</a>
-    <a mat-button [routerLink]="['/t_infos_base_site', site.slug]">Mini-questionnaire</a>
-    <button mat-button (click)="exportData()">Exporter</button>
-  </mat-card-actions>
+    <a mat-button [routerLink]="['/t_infos_base_site', site.slug]">Editer les informations</a>
+    <button mat-button (click)="exportData()">Exporter la fiche</button>
+  </mat-card-actions> -->
+
+</div>
+<div *ngIf="site" class="bouttons">
+  <mat-button-toggle-group>
+    <mat-button-toggle [routerLink]="['/t_infos_base_site', site.slug]" class="filled-toggle">
+      <fa-icon [icon]="['fas', 'edit']"></fa-icon> Editer les informations
+    </mat-button-toggle>
+    <mat-button-toggle (click)="exportData()" class="filled-toggle">
+      <fa-icon [icon]="['fas', 'download']"></fa-icon> Exporter la fiche
+    </mat-button-toggle>
+  </mat-button-toggle-group>
 </div>

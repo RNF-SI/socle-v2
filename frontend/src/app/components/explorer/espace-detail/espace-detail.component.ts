@@ -4,6 +4,7 @@ import { faArrowUpRightFromSquare, faKey, faUserPlus } from '@fortawesome/free-s
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import * as L from 'leaflet';
+import { AuthService } from 'src/app/home-rnf/services/auth-service.service';
 import { GeologicalInterests } from 'src/app/models/geological-interests.model';
 import { Nomenclature } from 'src/app/models/nomenclature.model';
 import { Site } from 'src/app/models/site.model';
@@ -46,6 +47,9 @@ export class EspaceDetailComponent implements OnInit {
   leftColumn!: ElementRef;
   rightColumn!: ElementRef;
 
+  nbInpgConfidentielsReserve: number = 0;
+  nbInpgConfidentielsPP: number = 0;
+
   // Correct the type to be a single object instead of an array
 
 
@@ -84,10 +88,21 @@ export class EspaceDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private siteService: SitesService,
     private tInfosBaseSiteService: TInfosBaseSiteService,
-    private patrimoineGeologiqueService: PatrimoineGeologiqueService
+    private patrimoineGeologiqueService: PatrimoineGeologiqueService,
+    private authService: AuthService
   ) { }
 
+  estConnecte() {
+    if (this.authService.authenticated) {
+      // logged in so return true
+      return true;
+    }
+    else return false
+  }
+
   ngOnInit(): void {
+    console.log(this.estConnecte());
+
     const slug = this.route.snapshot.paramMap.get('slug');
 
     if (slug) {
@@ -98,6 +113,8 @@ export class EspaceDetailComponent implements OnInit {
         this.uniqueInteretGeolPrincipal = Array.from(
           new Set(this.site.inpg.map((inpg: any) => inpg.interet_geol_principal))
         );
+        this.nbInpgConfidentielsReserve = this.site.inpg.filter((inpg: { niveau_de_diffusion: string; }) => inpg.niveau_de_diffusion === 'Confidentiel').length;
+        this.nbInpgConfidentielsPP = this.site.perimetre_protection.inpg.filter((inpg: { niveau_de_diffusion: string; }) => inpg.niveau_de_diffusion === 'Confidentiel').length;
       })
     }
   }
