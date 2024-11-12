@@ -1,3 +1,14 @@
+<div *ngIf="site" class="bouttons">
+  <mat-button-toggle-group>
+    <mat-button-toggle [routerLink]="['/t_infos_base_site', site.slug]" class="filled-toggle">
+      <fa-icon [icon]="['fas', 'edit']"></fa-icon> Editer les informations
+    </mat-button-toggle>
+    <mat-button-toggle (click)="exportData()" class="filled-toggle">
+      <fa-icon [icon]="['fas', 'download']"></fa-icon> Exporter la fiche
+    </mat-button-toggle>
+  </mat-button-toggle-group>
+</div>
+
 <div *ngIf="site" id="export-content" class="contenu">
 
   <h2>Réserve Naturelle
@@ -426,7 +437,7 @@
     <a mat-button [routerLink]="['/t_infos_base_site', site.slug]">Editer les informations</a>
     <button mat-button (click)="exportData()">Exporter la fiche</button>
   </mat-card-actions> -->
-
+  <br>
 </div>
 <div *ngIf="site" class="bouttons">
   <mat-button-toggle-group>

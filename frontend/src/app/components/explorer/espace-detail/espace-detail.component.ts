@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, QueryList, Renderer2, ViewChildren } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { faArrowUpRightFromSquare, faKey, faUserPlus } from '@fortawesome/free-solid-svg-icons';
-import html2canvas from 'html2canvas';
+import { toPng } from 'html-to-image';
 import jsPDF from 'jspdf';
 import * as L from 'leaflet';
 import { AuthService } from 'src/app/home-rnf/services/auth-service.service';
@@ -49,6 +49,9 @@ export class EspaceDetailComponent implements OnInit {
 
   nbInpgConfidentielsReserve: number = 0;
   nbInpgConfidentielsPP: number = 0;
+
+  private osm: L.TileLayer | undefined;
+  private geologie: L.TileLayer.WMS | undefined;
 
   // Correct the type to be a single object instead of an array
 
@@ -132,12 +135,12 @@ export class EspaceDetailComponent implements OnInit {
   }
 
   private initMap(): void {
-    const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    this.osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     });
 
-    const geologie = L.tileLayer.wms("https://geoservices.brgm.fr/geologie", {
+    this.geologie = L.tileLayer.wms("https://geoservices.brgm.fr/geologie", {
       layers: "GEOLOGIE",
       format: "image/jpeg",
       transparent: false,
@@ -152,15 +155,26 @@ export class EspaceDetailComponent implements OnInit {
     this.map = L.map('mapReserve', {
       center: [47.2, 2.5],
       zoom: 6,
-      layers: [geologie]
+      layers: [this.geologie]
     });
 
     const baseMaps = {
-      "OpenStreetMap": osm,
-      "Carte géologique": geologie
+      "OpenStreetMap": this.osm,
+      "Carte géologique": this.geologie
     };
     this.layerControl = L.control.layers(baseMaps)
     this.layerControl.addTo(this.map);
+
+    const leafletLayerControl = document.querySelector('.leaflet-control-layers');
+
+    if (leafletLayerControl) {
+      console.log('bibi');
+
+
+      leafletLayerControl.classList.add('hidden')
+
+    };
+
   }
 
   private addLayers(): void {
@@ -408,27 +422,71 @@ export class EspaceDetailComponent implements OnInit {
 
   exportData() {
     const data = document.getElementById('export-content');
-    if (data) {
-      html2canvas(data).then(canvas => {
-        const imgWidth = 208;
-        const pageHeight = 295;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        let heightLeft = imgHeight;
-        const contentDataURL = canvas.toDataURL('image/png');
-        let pdf = new jsPDF('p', 'mm', 'a4');
-        let position = 0;
-        pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-        while (heightLeft > 0) {
-          position = heightLeft - imgHeight;
-          pdf.addPage();
-          pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
+    const map = this.map;
+
+    if (data && map) {
+      // Cacher les contrôles de zoom et de couches en appliquant `display: none` directement
+      const layerControl = document.querySelector('.leaflet-control-layers');
+      const zoomControl = document.querySelector('.leaflet-control-zoom');
+      if (layerControl) (layerControl as HTMLElement).style.display = 'none';
+      if (zoomControl) (zoomControl as HTMLElement).style.display = 'none';
+
+      // Sauvegarder la couche de fond actuelle (osm ou geologie)
+      let currentBaseLayer: L.Layer | null | undefined = null;
+      map.eachLayer(layer => {
+        if (layer === this.osm || layer === this.geologie) {
+          currentBaseLayer = layer;
         }
-        pdf.save('site-details.pdf');
       });
+
+      // Activer temporairement la couche OpenStreetMap pour l'export
+      if (currentBaseLayer !== this.osm) {
+        map.removeLayer(currentBaseLayer!);
+        this.osm?.addTo(map);
+      }
+
+      // Forcer le rechargement des tuiles pour garantir que la couche OSM est bien chargée
+      map.invalidateSize();
+
+      // Attendre un moment pour s'assurer que tout est bien chargé avant l'exportation
+      setTimeout(() => {
+        toPng(data).then((dataUrl) => {
+          const imgWidth = 208;
+          const marginTop = 10;  // Marge en haut de la page
+          const marginBottom = 10;  // Marge en bas de la page
+          const img = new Image();
+          img.src = dataUrl;
+          img.onload = () => {
+            const imgHeight = (img.height * imgWidth) / img.width;
+
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            let position = marginTop;
+
+            pdf.addImage(dataUrl, 'PNG', 0, position, imgWidth, imgHeight);
+            pdf.save('site-details.pdf');
+          };
+        }).catch((error) => {
+          console.error("Erreur lors de l'exportation :", error);
+        }).finally(() => {
+          // Rétablir la couche de fond initiale
+          if (currentBaseLayer && currentBaseLayer !== this.osm) {
+            map.removeLayer(this.osm!);
+            currentBaseLayer.addTo(map);
+          }
+
+          // Réafficher les contrôles de zoom et de sélection de couche
+          if (layerControl) (layerControl as HTMLElement).style.display = '';
+          if (zoomControl) (zoomControl as HTMLElement).style.display = '';
+        });
+      }, 2000);
     }
   }
+
+
+
+
+
+
 
   hexToRGBA(hex: string, opacity: number): string {
     const bigint = parseInt(hex.slice(1), 16);

@@ -307,3 +307,12 @@ span.legend-item {
   text-decoration: none;
   font-weight: bold;
 }
+
+.hidden {
+  display: none !important;
+}
+
+.mat-button-toggle-checked {
+  color: white !important;
+  /* Remplacez #ff5722 par la couleur souhaitée */
+}
