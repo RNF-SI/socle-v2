@@ -104,20 +104,19 @@ export class EspaceDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log(this.estConnecte());
-
     const slug = this.route.snapshot.paramMap.get('slug');
 
     if (slug) {
       this.siteService.getSiteBySlug(slug).subscribe((site: Site) => {
         this.site = site;
-        console.log(this.site);
         setTimeout(() => (this.initMap(), this.addLayers(), this.zoomToExtent()), 1);
         this.uniqueInteretGeolPrincipal = Array.from(
           new Set(this.site.inpg.map((inpg: any) => inpg.interet_geol_principal))
         );
         this.nbInpgConfidentielsReserve = this.site.inpg.filter((inpg: { niveau_de_diffusion: string; }) => inpg.niveau_de_diffusion === 'Confidentiel').length;
-        this.nbInpgConfidentielsPP = this.site.perimetre_protection.inpg.filter((inpg: { niveau_de_diffusion: string; }) => inpg.niveau_de_diffusion === 'Confidentiel').length;
+        if (this.site.perimetre_protection) {
+          this.nbInpgConfidentielsPP = this.site.perimetre_protection.inpg.filter((inpg: { niveau_de_diffusion: string; }) => inpg.niveau_de_diffusion === 'Confidentiel').length;
+        }
       })
     }
   }
@@ -164,17 +163,6 @@ export class EspaceDetailComponent implements OnInit {
     };
     this.layerControl = L.control.layers(baseMaps)
     this.layerControl.addTo(this.map);
-
-    const leafletLayerControl = document.querySelector('.leaflet-control-layers');
-
-    if (leafletLayerControl) {
-      console.log('bibi');
-
-
-      leafletLayerControl.classList.add('hidden')
-
-    };
-
   }
 
   private addLayers(): void {
@@ -326,7 +314,6 @@ export class EspaceDetailComponent implements OnInit {
   fetchPatrimoineGeologique(siteId: any): void {
     this.patrimoineGeologiqueService.getPatrimoineGeologique(siteId).subscribe(
       (data: any) => {
-        console.log('Fetched Geological Heritage Data:', data); // Log pour vérifier les données récupérées
         if (data && data.principal && data.protection) {
           this.principalHeritage = data.principal;
           this.protectionHeritage = data.protection;
@@ -374,8 +361,6 @@ export class EspaceDetailComponent implements OnInit {
       }
 
     }
-
-    console.log('Paleontological Labels:', this.paleontologicalLabels);
   }
 
   setGeologicalInterests(patrimoineGeologique: any): void {
