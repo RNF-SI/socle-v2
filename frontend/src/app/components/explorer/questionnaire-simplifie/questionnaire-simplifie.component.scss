@@ -174,3 +174,14 @@
   text-decoration: none;
   font-weight: bold;
 }
+
+.search-input::placeholder {
+  color: #999;
+  /* Couleur du placeholder */
+  font-style: italic;
+  opacity: 1;
+}
+
+.substanceField {
+  margin-right: 5px;
+}

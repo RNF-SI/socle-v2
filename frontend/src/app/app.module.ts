@@ -2,7 +2,7 @@ import { CommonModule, registerLocaleData } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import localeFr from '@angular/common/locales/fr';
 import { LOCALE_ID, NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
@@ -65,6 +65,7 @@ registerLocaleData(localeFr, 'fr');
     RouterModule,
     HomeRnfModule,
     HttpClientModule,
+    FormsModule,
     ReactiveFormsModule,
     MatInputModule,
     MatCheckboxModule,

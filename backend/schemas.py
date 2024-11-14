@@ -5,7 +5,7 @@ import shapely
 
 
 from app import ma
-from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Inpg, Nomenclature, BibNomenclatureType
+from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Inpg, Nomenclature, BibNomenclatureType, CorSiteSubstance
 
 
 class PerimetreProtectionSchema(ma.SQLAlchemyAutoSchema):
@@ -54,6 +54,7 @@ class SiteSchema(ma.SQLAlchemyAutoSchema):
     ages = ma.Nested(lambda: NomenclatureSchema, many=True)
     perimetre_protection = ma.Nested(PerimetreProtectionSchema, many=False, attribute='perimetre_protection_site')
     patrimoines_geologiques = ma.Nested(lambda: PatrimoineGeologiqueGestionnaireSchema(only=("lb",)), many=True)
+    substances = ma.Nested(lambda:CorSiteSubstanceSchema, many = True)
 
 class SiteSchemaSimple(ma.SQLAlchemyAutoSchema):
     geom = fields.Method('wkt_to_geojson')
@@ -134,3 +135,9 @@ class PatrimoineGeologiqueGestionnaireSchema(ma.SQLAlchemyAutoSchema):
         include_fk = True
      
 
+class CorSiteSubstanceSchema(ma.SQLAlchemyAutoSchema) :
+    class Meta:
+        model = CorSiteSubstance
+        load_relationships = True
+
+    substance = ma.Nested(lambda:NomenclatureSchema)   

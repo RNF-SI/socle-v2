@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Nomenclature, NomenclatureType } from 'src/app/models/nomenclature.model';
 import { PatrimoineGeologique } from 'src/app/models/patrimoine-geologique.model';
@@ -35,6 +35,8 @@ export class QuestionnaireSimplifieComponent implements OnInit {
   protectionHeritage: any[] = [];
   geologicalUnitsOptions: Nomenclature[] = [];
   substancesOptions: Nomenclature[] = [];
+  filteredSubstancesOptions: Nomenclature[] = [];
+  searchSubstanceTerm = new FormControl('');
   showInpg: boolean = false;
   showPpInpg: boolean = false;
 
@@ -138,9 +140,12 @@ export class QuestionnaireSimplifieComponent implements OnInit {
     this.siteSlug = this.route.snapshot.paramMap.get('slug')!;
     this.fetchSiteDetails(this.siteSlug);
     this.loadNomenclature();
-    this.loadSubstances(); // Charger les substances ici
     // this.ajouterPatrimoineGeolPP();
     // this.ajouterPatrimoineGeol();
+    // Surveiller les changements du champ de recherche pour filtrer les substances
+    this.searchSubstanceTerm.valueChanges.subscribe((searchTerm: string | null) => {
+      this.filterSubstances(searchTerm);
+    });
   }
 
 
@@ -157,13 +162,11 @@ export class QuestionnaireSimplifieComponent implements OnInit {
         console.error('Error fetching geological units', error);
       }
     );
-  }
-
-  loadSubstances(): void {
     this.nomenclaturesService.getNomenclaturesByTypeId(7).subscribe(
       (response: any) => {
         if (response && Array.isArray(response.nomenclatures)) {
           this.substancesOptions = response.nomenclatures;
+          this.filteredSubstancesOptions = this.substancesOptions;
         } else {
           console.error('Expected nomenclatures to be an array, but got:', response);
         }
@@ -173,11 +176,6 @@ export class QuestionnaireSimplifieComponent implements OnInit {
       }
     );
   }
-
-
-
-
-
 
   fetchSiteDetails(slug: string): void {
     this.siteService.getSiteBySlug(slug).subscribe(
@@ -196,8 +194,8 @@ export class QuestionnaireSimplifieComponent implements OnInit {
         this.tInfosBaseSiteForm.patchValue({
           id_site: site.id_site,
           reserve_created_on_geological_basis: site.creation_geol,
-          reserve_contains_geological_heritage_inpg: site.reserve_contains_geological_heritage_inpg || site.inpg.length > 0,
-          protection_perimeter_contains_geological_heritage_inpg: site.protection_perimeter_contains_geological_heritage_inpg || site.inpg.length > 0,
+          // reserve_contains_geological_heritage_inpg: site.reserve_contains_geological_heritage_inpg || site.inpg.length > 0,
+          // protection_perimeter_contains_geological_heritage_inpg: site.protection_perimeter_contains_geological_heritage_inpg || site.inpg.length > 0,
           reserve_has_geological_collections: site.infos_base.reserve_has_geological_collections,
           reserve_has_exhibition: site.infos_base.reserve_has_exhibition,
           reserve_contains_stratotype: site.infos_base.reserve_contains_stratotype,
@@ -210,7 +208,7 @@ export class QuestionnaireSimplifieComponent implements OnInit {
           subterranean_habitats_natural_cavities: site.infos_base.subterranean_habitats_natural_cavities,
           subterranean_habitats_anthropogenic_cavities: site.infos_base.subterranean_habitats_anthropogenic_cavities,
           does_not_contain_subterranean_habitats: site.infos_base.does_not_contain_subterranean_habitats,
-          associated_with_mineral_resources: site.infos_base.associated_with_mineral_resources,
+          associated_with_mineral_resources: site.infos_base.mineral_resources_old_quarry || site.infos_base.mineral_resources_active_quarry || site.infos_base.mineral_resources_old_mine || site.infos_base.mineral_resources_active_mine,
           mineral_resources_old_quarry: site.infos_base.mineral_resources_old_quarry,
           mineral_resources_active_quarry: site.infos_base.mineral_resources_active_quarry,
           quarry_extracted_material: site.infos_base.quarry_extracted_material,
@@ -221,7 +219,7 @@ export class QuestionnaireSimplifieComponent implements OnInit {
           mine_fossiliferous_material: site.infos_base.mine_fossiliferous_material,
           reserve_has_geological_site_for_visitors: site.infos_base.reserve_has_geological_site_for_visitors,
           offers_geodiversity_activities: site.infos_base.offers_geodiversity_activities,
-          geologicalUnits: site.geologicalUnits || []
+          geologicalUnits: site.infos_base.geological_units
 
 
         });
@@ -249,6 +247,8 @@ export class QuestionnaireSimplifieComponent implements OnInit {
           traceFossils: site.infos_base.contains_paleontological_heritage_trace_fossils,
 
         });
+
+        this.patchSubstances();
       },
       error => {
         console.error('Error fetching site details', error);
@@ -320,6 +320,10 @@ export class QuestionnaireSimplifieComponent implements OnInit {
     this.geologicalHeritages.removeAt(index);
   }
 
+  removeSubstance(index: number): void {
+    this.quarryExtractedMaterials.removeAt(index);
+  }
+
   removeProtectionHeritage(index: number): void {
     this.protectionGeologicalHeritages.removeAt(index);
   }
@@ -370,11 +374,7 @@ export class QuestionnaireSimplifieComponent implements OnInit {
     return this.tInfosBaseSiteForm.get('quarry_extracted_materials') as FormArray;
   }
 
-  get mineExtractedMaterials(): FormArray {
-    return this.tInfosBaseSiteForm.get('mine_extracted_materials') as FormArray;
-  }
-
-  addQuarryExtractedMaterial(): void {
+  addExtractedMaterial(): void {
     this.quarryExtractedMaterials.push(
       this.fb.group({
         substance: ['', Validators.required],
@@ -382,17 +382,6 @@ export class QuestionnaireSimplifieComponent implements OnInit {
       })
     );
   }
-
-
-  addMineExtractedMaterial(): void {
-    this.mineExtractedMaterials.push(
-      this.fb.group({
-        substance: [''],
-        fossiliferous: [false]
-      })
-    );
-  }
-
 
   onSubmit(): void {
     if (this.tInfosBaseSiteForm.valid) {
@@ -443,4 +432,31 @@ export class QuestionnaireSimplifieComponent implements OnInit {
   changePpInpgView() {
     this.showPpInpg = !this.showPpInpg
   }
-}  
+
+  patchSubstances(): void {
+    const substances = this.site.substances || [];
+    const quarryMaterialsArray = this.quarryExtractedMaterials;
+
+    // Reset the array to avoid duplication
+    quarryMaterialsArray.clear();
+
+    substances.forEach((item: any) => {
+      quarryMaterialsArray.push(
+        this.fb.group({
+          substance: [item.substance.mnemonique, Validators.required],
+          fossiliferous: [item.fossilifere]
+        })
+      );
+    });
+  }
+
+  filterSubstances(searchTerm: string | null): void {
+    const term = (searchTerm || '').toLowerCase(); // Utilise une chaîne vide si searchTerm est null
+    this.filteredSubstancesOptions = this.substancesOptions.filter(substance =>
+      substance.label.toLowerCase().includes(term)
+    );
+  }
+
+
+}
+

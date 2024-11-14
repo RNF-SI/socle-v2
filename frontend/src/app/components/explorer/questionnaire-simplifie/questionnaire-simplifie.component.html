@@ -111,7 +111,7 @@
         </div>
       </div>
       <br>
-      <div *ngIf="tInfosBaseSiteForm.get('protection_perimeter_contains_geological_heritage_inpg')?.value">
+      <div>
         <div formArrayName="protection_geologicalHeritages"
           *ngFor="let heritage of protectionGeologicalHeritages.controls; let i = index">
           <div [formGroupName]="i" class="heritage-entry">
@@ -201,10 +201,10 @@
     <!--question remplace  la question 8-1 -->
     <div class="form-group">
       <label>
-        <h6>A quel ensemble géologique la réserve naturelle ?</h6>
+        <h6>A quel ensemble géologique la réserve naturelle est-elle associée ?</h6>
       </label>
     </div>
-    <mat-form-field appearance="fill" class="full-width">
+    <mat-form-field appearance="fill">
       <mat-label>Sélectionner les ensembles géologiques</mat-label>
       <mat-select formControlName="geologicalUnits" multiple>
         <mat-option *ngFor="let unit of geologicalUnitsOptions" [value]="unit.id_nomenclature">
@@ -262,48 +262,62 @@
       </div>
     </div>
     <!-- Question 11 modifiée avec un container -->
-    <div class="container">
-      <div class="form-group">
-        <label>
-          <h6>La réserve est associée à une exploitation de ressources minérales.</h6>
-        </label>
-        <div>
-          <mat-radio-group formControlName="associated_with_mineral_resources">
-            <mat-radio-button [value]="true">Oui</mat-radio-button>
-            <mat-radio-button [value]="false">Non</mat-radio-button>
-          </mat-radio-group>
-          <div *ngIf="tInfosBaseSiteForm.get('associated_with_mineral_resources')?.value">
-            <div>
-              <mat-checkbox formControlName="mineral_resources_old_quarry">Ancienne carrière</mat-checkbox>
-              <mat-checkbox formControlName="mineral_resources_active_quarry">Carrière en activité</mat-checkbox>
-              <mat-checkbox formControlName="mineral_resources_old_mine">Ancienne mine</mat-checkbox>
-              <mat-checkbox formControlName="mineral_resources_active_mine">Mine en activité</mat-checkbox>
-            </div>
-            <div
-              *ngIf="tInfosBaseSiteForm.get('mineral_resources_active_quarry')?.value || tInfosBaseSiteForm.get('mineral_resources_old_quarry')?.value">
-              <div formArrayName="quarry_extracted_materials">
-                <div *ngFor="let material of quarryExtractedMaterials.controls; let i = index" [formGroupName]="i">
-                  <label> Préciser la substance exploitée </label>
-
-                  <mat-form-field appearance="fill">
-                    <mat-select formControlName="substance" multiple>
-                      <mat-option *ngFor="let substance of substancesOptions" [value]="substance.mnemonique">
-                        {{ substance.label }}
-                      </mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                  <label>Préciser si le matériau est fossilifère</label>
-                  <mat-radio-group formControlName="fossiliferous">
-                    <mat-radio-button [value]="true">Oui</mat-radio-button>
-                    <mat-radio-button [value]="false">Non</mat-radio-button>
-                  </mat-radio-group>
-                </div>
-              </div>
-              <div class="button-container">
-                <button mat-raised-button color="primary" (click)="addQuarryExtractedMaterial()" class="custom-button">
-                  Ajouter substance exploitée
+    <div class="form-group">
+      <label>
+        <h6>La réserve est-elle associée à une exploitation de ressources minérales ?</h6>
+      </label>
+      <div>
+        <mat-radio-group formControlName="associated_with_mineral_resources">
+          <mat-radio-button [value]="true">Oui</mat-radio-button>
+          <mat-radio-button [value]="false">Non</mat-radio-button>
+        </mat-radio-group>
+        <div *ngIf="tInfosBaseSiteForm.get('associated_with_mineral_resources')?.value">
+          <div>
+            <mat-checkbox formControlName="mineral_resources_old_quarry">Ancienne carrière</mat-checkbox>
+            <mat-checkbox formControlName="mineral_resources_active_quarry">Carrière en activité</mat-checkbox>
+            <mat-checkbox formControlName="mineral_resources_old_mine">Ancienne mine</mat-checkbox>
+            <mat-checkbox formControlName="mineral_resources_active_mine">Mine en activité</mat-checkbox>
+          </div>
+          <div>
+            <h6 *ngIf="quarryExtractedMaterials.controls.length > 0">Substances exploitées :</h6>
+            <div formArrayName="quarry_extracted_materials">
+              <div *ngFor="let material of quarryExtractedMaterials.controls; let i = index" [formGroupName]="i">
+                <button mat-icon-button class="remove-button" (click)="removeSubstance(i)">
+                  <mat-icon>delete</mat-icon>
                 </button>
+                <!-- <mat-form-field appearance="fill">
+                  <mat-select formControlName="substance">
+                    <mat-option *ngFor="let substance of substancesOptions" [value]="substance.mnemonique">
+                      {{ substance.label }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field> -->
+                <mat-form-field appearance="fill" class="substanceField">
+                  <mat-select formControlName="substance">
+                    <!-- Champ de recherche dans le menu déroulant -->
+                    <mat-option>
+                      <input type="text" placeholder="Rechercher..." [formControl]="searchSubstanceTerm"
+                        (click)="$event.stopPropagation()" matInput class="search-input" />
+                    </mat-option>
+
+                    <!-- Liste des options filtrées -->
+                    <mat-option *ngFor="let substance of filteredSubstancesOptions" [value]="substance.mnemonique">
+                      {{ substance.label }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <label> Le matériau est-il fossilifère ? </label>
+                <mat-radio-group formControlName="fossiliferous">
+                  <mat-radio-button [value]="true">Oui</mat-radio-button>
+                  <mat-radio-button [value]="false">Non</mat-radio-button>
+                </mat-radio-group>
               </div>
+            </div>
+            <div class="button-container">
+              <button mat-raised-button color="primary" (click)="addExtractedMaterial()">
+                Ajouter une substance exploitée
+              </button>
             </div>
           </div>
         </div>
@@ -335,7 +349,8 @@
       </div>
     </div>
     <div class="submit-button-container">
-      <button mat-raised-button type="submit" [disabled]="tInfosBaseSiteForm.invalid">Soumettre</button>
+      <button mat-raised-button type="submit" [disabled]="tInfosBaseSiteForm.invalid">Enregistrer les
+        modifications</button>
     </div>
   </form>
 </div>

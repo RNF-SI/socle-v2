@@ -11,9 +11,9 @@ class TInfosBaseSite(db.Model):
     __tablename__ = 't_infos_base_site'
     
     id_site = db.Column(db.Integer, db.ForeignKey('site.id_site'), primary_key=True, nullable=False)
-    reserve_created_on_geological_basis = db.Column(db.Boolean, nullable=False)
-    protection_perimeter_contains_geological_heritage_inpg = db.Column(db.Boolean)
-    protection_perimeter_contains_geological_heritage_other = db.Column(db.String)
+    # reserve_created_on_geological_basis = db.Column(db.Boolean, nullable=False)
+    # protection_perimeter_contains_geological_heritage_inpg = db.Column(db.Boolean)
+    # protection_perimeter_contains_geological_heritage_other = db.Column(db.String)
     main_geological_interests_stratigraphic = db.Column(db.Boolean)
     main_geological_interests_paleontological = db.Column(db.Boolean)
     main_geological_interests_sedimentological = db.Column(db.Boolean)
@@ -25,6 +25,7 @@ class TInfosBaseSite(db.Model):
     main_geological_interests_plutonism = db.Column(db.Boolean)
     main_geological_interests_hydrogeology = db.Column(db.Boolean)
     main_geological_interests_tectonics = db.Column(db.Boolean)
+    # TODO : Ces derniers champs sont-ils nécessaires ?
     contains_paleontological_heritage = db.Column(db.Boolean)
     contains_paleontological_heritage_vertebrates = db.Column(db.Boolean)
     contains_paleontological_heritage_invertebrates = db.Column(db.Boolean)
@@ -32,17 +33,21 @@ class TInfosBaseSite(db.Model):
     contains_paleontological_heritage_trace_fossils = db.Column(db.Boolean)
     contains_paleontological_heritage_other = db.Column(db.Boolean)
     contains_paleontological_heritage_other_details = db.Column(db.String)  
-    reserve_has_geological_collections = db.Column(db.Boolean, nullable=False)
-    reserve_has_exhibition = db.Column(db.Boolean, nullable=False)
-    geological_units = db.Column(db.ARRAY(db.Integer), nullable=True)  # Ajoutez ce champ pour stocker les IDs des unités géologiques sélectionnées.
+    # TODO : Pas utilisé dans l'app, utile ?
+    reserve_has_geological_collections = db.Column(db.Boolean)
+    reserve_has_exhibition = db.Column(db.Boolean)
+    geological_units = db.Column(db.ARRAY(db.Integer))  # Ajoutez ce champ pour stocker les IDs des unités géologiques sélectionnées.
+    # TODO : voir si c'est le plus adapté, ou peut être une table de correspondance serait mieux
     reserve_contains_stratotype = db.Column(db.Boolean)
     stratotype_limit = db.Column(db.Boolean)   
     stratotype_limit_input = db.Column(db.String) 
     stratotype_stage = db.Column(db.Boolean)   
     stratotype_stage_input = db.Column(db.String)   
+    # TODO : tous les champs des stratotypes sont inutiles à priori si on passe par une table de correspondance
     contains_subterranean_habitats = db.Column(db.Boolean)
     subterranean_habitats_natural_cavities = db.Column(db.Boolean)
     subterranean_habitats_anthropogenic_cavities = db.Column(db.Boolean)
+    # TODO : ça sert à rien si les enfant sont true alors le parent est true et inversement
     associated_with_mineral_resources = db.Column(db.Boolean)
     mineral_resources_old_quarry = db.Column(db.Boolean)
     mineral_resources_active_quarry = db.Column(db.Boolean)
@@ -54,7 +59,7 @@ class TInfosBaseSite(db.Model):
     mine_fossiliferous_material = db.Column(db.Boolean)
     reserve_has_geological_site_for_visitors = db.Column(db.Boolean)
     offers_geodiversity_activities = db.Column(db.Boolean)
-    slug = db.Column(db.String(255), unique=True)
+    # slug = db.Column(db.String(255), unique=True)
 
 cor_site_inpg = db.Table('cor_site_inpg',
     db.Column('site_id', db.Integer, db.ForeignKey('site.id_site', ondelete="CASCADE")),
@@ -117,6 +122,7 @@ class Site(db.Model):
 
     patrimoines_geologiques = db.relationship('PatrimoineGeologiqueGestionnaire', backref='site', passive_deletes=True)
     
+    substances = db.relationship("CorSiteSubstance")
 
 
 class EntiteGeol(db.Model):
@@ -170,9 +176,6 @@ class PatrimoineGeologiqueGestionnaire(db.Model):
     age_des_terrains_le_plus_ancien = db.Column(db.String)
     bibliographie = db.Column(db.Text)   
     
-
- 
-    
 class Nomenclature(db.Model):
     __tablename__ = 't_nomenclatures'
 
@@ -197,3 +200,13 @@ class BibNomenclatureType(db.Model):
     statut = db.Column(db.String)
 
     nomenclatures = db.relationship("Nomenclature", foreign_keys=Nomenclature.id_type)
+
+class CorSiteSubstance(db.Model):
+    __tablename__= 'cor_site_substance'
+
+    site_id = db.Column(db.Integer, db.ForeignKey('site.id_site', ondelete='CASCADE'), primary_key= True)
+    substance_id = db.Column(db.Integer, db.ForeignKey('t_nomenclatures.id_nomenclature'), primary_key= True)
+    fossilifere = db.Column(db.Boolean)
+
+    site = db.relationship("Site", back_populates="substances")
+    substance = db.relationship("Nomenclature")
