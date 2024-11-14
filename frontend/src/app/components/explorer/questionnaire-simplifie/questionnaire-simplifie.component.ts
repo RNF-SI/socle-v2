@@ -11,11 +11,11 @@ import Swal from 'sweetalert2';
 
 
 @Component({
-  selector: 'app-t-infos-base-site',
-  templateUrl: './t-infos-base-site.component.html',
-  styleUrls: ['./t-infos-base-site.component.scss']
+  selector: 'app-questionnaire-simplifie',
+  templateUrl: './questionnaire-simplifie.component.html',
+  styleUrls: ['./questionnaire-simplifie.component.scss']
 })
-export class TInfosBaseSiteComponent implements OnInit {
+export class QuestionnaireSimplifieComponent implements OnInit {
   tInfosBaseSiteForm: FormGroup;
   @Input() siteSlug: string | undefined;
   id_site: any;
@@ -35,8 +35,10 @@ export class TInfosBaseSiteComponent implements OnInit {
   protectionHeritage: any[] = [];
   geologicalUnitsOptions: Nomenclature[] = [];
   substancesOptions: Nomenclature[] = [];
-  
-   
+  showInpg: boolean = false;
+  showPpInpg: boolean = false;
+
+
 
   geologicalInterestOptions: string[] = [
     'Paléontologie',
@@ -55,9 +57,9 @@ export class TInfosBaseSiteComponent implements OnInit {
     'Minéralogie',
     'Collection'
   ]
-  
 
- 
+
+
   constructor(
     private fb: FormBuilder,
     private tInfosBaseSiteService: TInfosBaseSiteService,
@@ -77,7 +79,7 @@ export class TInfosBaseSiteComponent implements OnInit {
       mineral_resources_active_mine: [false],
       quarry_extracted_materials: this.fb.array([]),
       mine_extracted_materials: this.fb.array([]),
-     
+
       reserve_created_on_geological_basis: [false],
       reserve_contains_geological_heritage_inpg: [false],
       geologicalHeritages: this.fb.array([]),
@@ -137,13 +139,11 @@ export class TInfosBaseSiteComponent implements OnInit {
     this.fetchSiteDetails(this.siteSlug);
     this.loadNomenclature();
     this.loadSubstances(); // Charger les substances ici
-    this.fetchSitesWithProtection();
-    this.addProtectionHeritage();
-    this.addHeritage();
-     
+    // this.ajouterPatrimoineGeolPP();
+    // this.ajouterPatrimoineGeol();
   }
 
- 
+
   loadNomenclature(): void {
     this.nomenclaturesService.getNomenclaturesByTypeId(6).subscribe(
       (response: any) => {
@@ -153,7 +153,7 @@ export class TInfosBaseSiteComponent implements OnInit {
           console.error('Expected nomenclatures to be an array, but got:', response);
         }
       },
-      (      error: any) => {
+      (error: any) => {
         console.error('Error fetching geological units', error);
       }
     );
@@ -168,26 +168,34 @@ export class TInfosBaseSiteComponent implements OnInit {
           console.error('Expected nomenclatures to be an array, but got:', response);
         }
       },
-      (      error: any) => {
+      (error: any) => {
         console.error('Error fetching substances', error);
       }
     );
   }
-  
-  
-  
 
-  
+
+
+
+
 
   fetchSiteDetails(slug: string): void {
     this.siteService.getSiteBySlug(slug).subscribe(
       (site: any) => {
         this.site = site;
+        console.log(this.site);
+        if (this.site.inpg.length < 6) {
+          this.showInpg = true
+        }
+        if (this.site.perimetre_protection && this.site.perimetre_protection.inpg.length < 6) {
+          this.showPpInpg = true
+        }
+
         this.id_site = site.id_site;
 
         this.tInfosBaseSiteForm.patchValue({
           id_site: site.id_site,
-          reserve_created_on_geological_basis: site.infos_base.reserve_created_on_geological_basis,
+          reserve_created_on_geological_basis: site.creation_geol,
           reserve_contains_geological_heritage_inpg: site.reserve_contains_geological_heritage_inpg || site.inpg.length > 0,
           protection_perimeter_contains_geological_heritage_inpg: site.protection_perimeter_contains_geological_heritage_inpg || site.inpg.length > 0,
           reserve_has_geological_collections: site.infos_base.reserve_has_geological_collections,
@@ -214,7 +222,7 @@ export class TInfosBaseSiteComponent implements OnInit {
           reserve_has_geological_site_for_visitors: site.infos_base.reserve_has_geological_site_for_visitors,
           offers_geodiversity_activities: site.infos_base.offers_geodiversity_activities,
           geologicalUnits: site.geologicalUnits || []
-          
+
 
         });
 
@@ -239,16 +247,8 @@ export class TInfosBaseSiteComponent implements OnInit {
           invertebrates: site.infos_base.contains_paleontological_heritage_invertebrates,
           plants: site.infos_base.contains_paleontological_heritage_plants,
           traceFossils: site.infos_base.contains_paleontological_heritage_trace_fossils,
-         
+
         });
-
-       
-
-        site.ages.forEach((element: any) => {
-          console.log(element);
-        });
-
-        this.fetchPatrimoineGeologique();
       },
       error => {
         console.error('Error fetching site details', error);
@@ -256,34 +256,6 @@ export class TInfosBaseSiteComponent implements OnInit {
     );
   }
 
-  fetchSitesWithProtection(): void {
-    this.siteService.getSitesWithProtection().subscribe(
-      (sites: any[]) => {
-        this.sitesWithProtection = sites;
-      },
-      error => {
-        console.error('Error fetching sites with protection', error);
-      }
-    );
-  }
-
-  fetchPatrimoineGeologique(): void {
-    this.patrimoineGeologiqueService.getPatrimoineGeologique(this.id_site).subscribe(
-      (data: any) => {
-        if (data && data.principal && data.protection) {
-          this.principalHeritage = data.principal;
-          this.protectionHeritage = data.protection;
-          this.populateGeologicalHeritages(this.principalHeritage);
-          this.populateProtectionGeologicalHeritages(this.protectionHeritage);
-        } else {
-          console.error('Unexpected data format:', data);
-        }
-      },
-      (error: any) => {
-        console.error('Error fetching geological heritage data', error);
-      }
-    );
-  }
 
   get geologicalHeritages(): FormArray {
     return this.tInfosBaseSiteForm.get('geologicalHeritages') as FormArray;
@@ -321,7 +293,7 @@ export class TInfosBaseSiteComponent implements OnInit {
     });
   }
 
-  addHeritage(): void {
+  ajouterPatrimoineGeol(): void {
     this.geologicalHeritages.push(this.fb.group({
       lb: ['', Validators.required],
       nombre_etoiles: [0, Validators.required],
@@ -332,7 +304,7 @@ export class TInfosBaseSiteComponent implements OnInit {
     }));
   }
 
-  addProtectionHeritage(): void {
+  ajouterPatrimoineGeolPP(): void {
     this.protectionGeologicalHeritages.push(this.fb.group({
       lb: ['', Validators.required],
       nombre_etoiles: [0, Validators.required],
@@ -342,7 +314,7 @@ export class TInfosBaseSiteComponent implements OnInit {
       bibliographie: ['', Validators.required]
     }));
   }
-  
+
 
   removeHeritage(index: number): void {
     this.geologicalHeritages.removeAt(index);
@@ -397,21 +369,21 @@ export class TInfosBaseSiteComponent implements OnInit {
   get quarryExtractedMaterials(): FormArray {
     return this.tInfosBaseSiteForm.get('quarry_extracted_materials') as FormArray;
   }
-  
+
   get mineExtractedMaterials(): FormArray {
     return this.tInfosBaseSiteForm.get('mine_extracted_materials') as FormArray;
   }
-  
+
   addQuarryExtractedMaterial(): void {
     this.quarryExtractedMaterials.push(
       this.fb.group({
-        substance: ['', Validators.required],  
-        fossiliferous: [false]  
+        substance: ['', Validators.required],
+        fossiliferous: [false]
       })
     );
   }
-  
-  
+
+
   addMineExtractedMaterial(): void {
     this.mineExtractedMaterials.push(
       this.fb.group({
@@ -420,7 +392,7 @@ export class TInfosBaseSiteComponent implements OnInit {
       })
     );
   }
-  
+
 
   onSubmit(): void {
     if (this.tInfosBaseSiteForm.valid) {
@@ -444,7 +416,7 @@ export class TInfosBaseSiteComponent implements OnInit {
             formData['geologicalUnits'] = this.tInfosBaseSiteForm.get('geologicalUnits')?.value;
             this.tInfosBaseSiteService.updateSite(this.siteSlug!, formData).subscribe(
               (response: any) => {
-                 
+
                 this.tInfosBaseSiteForm.patchValue(response);
                 Swal.fire("Les données sont sauvegardées.", "", "success").then(() => {
                   this.router.navigate([`/site/${this.siteSlug}`]);
@@ -462,5 +434,13 @@ export class TInfosBaseSiteComponent implements OnInit {
         });
       });
     }
+  }
+
+  changeInpgView() {
+    this.showInpg = !this.showInpg
+  }
+
+  changePpInpgView() {
+    this.showPpInpg = !this.showPpInpg
   }
 }  

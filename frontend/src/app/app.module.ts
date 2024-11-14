@@ -33,7 +33,7 @@ import { ContactsComponent } from './components/contacts/contacts.component';
 import { EspaceDetailComponent } from './components/explorer/espace-detail/espace-detail.component';
 import { ExplorerComponent } from './components/explorer/explorer.component';
 import { FicheTerrainComponent } from './components/explorer/fiche-terrain/fiche-terrain.component';
-import { TInfosBaseSiteComponent } from './components/explorer/t-infos-base-site/t-infos-base-site.component';
+import { QuestionnaireSimplifieComponent } from './components/explorer/questionnaire-simplifie/questionnaire-simplifie.component';
 import { LiensComponent } from './components/liens/liens.component';
 import { SaisirComponent } from './components/saisir/saisir.component';
 import { HomeRnfModule } from './home-rnf/home-rnf.module';
@@ -54,7 +54,7 @@ registerLocaleData(localeFr, 'fr');
     ExplorerComponent,
     EspaceDetailComponent,
     FicheTerrainComponent,
-    TInfosBaseSiteComponent,
+    QuestionnaireSimplifieComponent,
     CapitalizePipe,
     SaisirComponent,
     ContactsComponent

@@ -1,6 +1,6 @@
 <div *ngIf="site" class="bouttons">
   <mat-button-toggle-group>
-    <mat-button-toggle [routerLink]="['/t_infos_base_site', site.slug]" class="filled-toggle">
+    <mat-button-toggle [routerLink]="['/questionnaire-simplifie', site.slug]" class="filled-toggle">
       <fa-icon [icon]="['fas', 'edit']"></fa-icon> Editer les informations
     </mat-button-toggle>
     <mat-button-toggle (click)="exportData()" class="filled-toggle">
@@ -59,7 +59,6 @@
   <div id="mapReserve">
   </div>
   <div id="legend" class="legend-container"></div>
-  <!-- TODO: corriger codition de affichage des les trois phrase pour le patrimoine geologique   -->
   <div #infoBlock class="geological-heritage-section">
     <div class="title-container">
       <img src="assets/images/iconSynth.png" alt="Icone patrimoine" class="heritage-icon">
@@ -441,7 +440,7 @@
 </div>
 <div *ngIf="site" class="bouttons">
   <mat-button-toggle-group>
-    <mat-button-toggle [routerLink]="['/t_infos_base_site', site.slug]" class="filled-toggle">
+    <mat-button-toggle [routerLink]="['/questionnaire-simplifie', site.slug]" class="filled-toggle">
       <fa-icon [icon]="['fas', 'edit']"></fa-icon> Editer les informations
     </mat-button-toggle>
     <mat-button-toggle (click)="exportData()" class="filled-toggle">

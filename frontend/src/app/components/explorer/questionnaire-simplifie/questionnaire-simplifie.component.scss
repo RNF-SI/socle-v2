@@ -1,0 +1,176 @@
+@import 'src/styles/custom-theme.scss';
+
+.container {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+
+
+}
+
+
+
+
+
+.mat-form-field {
+  width: 100%;
+
+}
+
+
+
+
+// .heritage-entry {
+//   display: flex;
+//   align-items: center;
+//   margin-bottom: 10px;
+// }
+
+// .heritage-entry mat-form-field {
+//   flex: 1;
+//   margin-right: 10px;
+// }
+
+.add-button {
+  background-color: #0B885D;
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 15px auto;
+  /* Center the button */
+}
+
+.heritage-entry {
+  display: grid;
+  grid-template-columns: auto 1fr 1fr 1fr 1fr;
+  gap: 4px;
+  /* Réduit l'espace entre les champs */
+  align-items: center;
+  padding: 0;
+  /* Supprime les marges internes éventuelles */
+}
+
+.remove-button {
+  grid-row: span 2;
+  /* Place le bouton au centre verticalement des deux lignes */
+  justify-self: center;
+  color: mat-color($custom-accent, 500);
+  ;
+}
+
+.mat-form-field {
+  margin: 0;
+  /* Supprime les marges autour des champs Material */
+}
+
+.bibliographie-field {
+  grid-column: 2 / span 4;
+  /* Étend le champ "Bibliographie" sur quatre colonnes */
+}
+
+.bibliographie-field {
+  // margin: 20px auto;
+  /* Center the field */
+  display: block;
+  width: 100%;
+  /* Adjust width as needed */
+}
+
+.stratigraphie {
+  display: flex;
+  justify-content: center;
+  /* Centre les éléments horizontalement */
+  flex-wrap: wrap;
+  /* Permet de passer à la ligne si les éléments dépassent */
+  gap: 16px;
+  /* Espace entre les éléments */
+  margin-top: 16px;
+}
+
+.stratigraphie mat-form-field {
+  flex: 1;
+  /* Permet de répartir les éléments également */
+  min-width: 200px;
+  /* Largeur minimale pour chaque élément */
+}
+
+.star-rating {
+  font-size: 24px;
+  /* Taille des étoiles */
+  color: #0B885D;
+  /* Couleur des étoiles */
+}
+
+
+
+.color-button .mat-radio-label-content {
+  color: #0B885D;
+  /* Couleur du texte */
+}
+
+.color-button .mat-radio-outer-circle,
+.color-button .mat-radio-inner-circle {
+  border-color: #0B885D;
+  /* Couleur du cercle extérieur */
+}
+
+.color-button.mat-radio-checked .mat-radio-outer-circle {
+  background-color: #0B885D;
+  /* Couleur du cercle intérieur quand coché */
+}
+
+.color-button.mat-radio-checked .mat-radio-inner-circle {
+  background-color: #0B885D;
+  /* Couleur de l'intérieur du bouton radio quand coché */
+}
+
+.button-container {
+  margin-left: 20px;
+  /* Optionnel : ajustez l'espace au-dessus du bouton */
+}
+
+.custom-button {
+  background-color: #0B885D !important;
+  color: white;
+  /* Pour le texte en blanc */
+}
+
+.submit-button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}
+
+.submit-button-container button {
+  background-color: #afb42b;
+  /* Exemple de couleur verte */
+  color: white;
+  /* Couleur du texte en blanc */
+  margin-right: 10px;
+  /* Espace à droite du bouton, vous pouvez ajuster selon vos besoins */
+}
+
+.full-width {
+  width: 100%;
+  /* Assure que le champ prend toute la largeur disponible */
+  min-width: 300px;
+  /* Ou une autre largeur minimale adaptée */
+}
+
+.sites-inpg fa-icon {
+  color: gold;
+}
+
+.sites-inpg a {
+  color: mat-color($custom-primary, 500);
+  text-decoration: none;
+  font-weight: bold;
+}

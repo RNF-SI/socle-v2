@@ -118,7 +118,6 @@ export class AccueilComponent implements OnInit {
       (sites: any[]) => {
         this.espaces = sites;
         this.filteredEspaces = this.espaces;
-        console.log(this.filteredEspaces);
 
         this.dataSource.data = this.filteredEspaces;
         this.dataSource.paginator = this.paginator;
@@ -240,7 +239,7 @@ export class AccueilComponent implements OnInit {
     this.stats = [
       { icon: 'assets/images/symbol11_final.png', chiffre: totalSites, texte: 'Nombre total de réserves' },
       { icon: 'assets/images/symbol11_prct.png', chiffre: `${(sitesAvecPatrimoine / totalSites * 100).toFixed(0)}%`, texte: 'Proportion de réserves avec patrimoine géologique' },
-      { icon: 'assets/images/IconCG.png', chiffre: sitesCreationGeol, texte: 'Réserves créées pour protéger du patrimoine géologique' },
+      { icon: 'assets/images/iconSynth.png', chiffre: sitesCreationGeol, texte: 'Réserves créées pour protéger du patrimoine géologique' },
       { icon: 'assets/images/INPG.png', chiffre: totalInpgSites, texte: 'Sites INPG localisés en réserve naturelle' },
       { icon: 'assets/images/stratotype.png', chiffre: sitesAvecStratotype, texte: 'Nombre de stratotypes protégés' }
     ];
