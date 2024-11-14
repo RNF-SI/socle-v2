@@ -21,7 +21,7 @@ class PerimetreProtectionSchema(ma.SQLAlchemyAutoSchema):
         exclude = ['geom_point']   
     inpg = ma.Nested(lambda: InpgSchema, many=True)
     
-    patrimoines_geologiques = ma.Nested(lambda: PatrimoineGeologiqueGestionnaireSchema(only=("lb",)), many=True)
+    patrimoines_geologiques = ma.Nested(lambda: PatrimoineGeologiqueGestionnaireSchema, many=True)
 
 
 
@@ -53,7 +53,7 @@ class SiteSchema(ma.SQLAlchemyAutoSchema):
     inpg = ma.Nested(lambda: InpgSchema, many=True)
     ages = ma.Nested(lambda: NomenclatureSchema, many=True)
     perimetre_protection = ma.Nested(PerimetreProtectionSchema, many=False, attribute='perimetre_protection_site')
-    patrimoines_geologiques = ma.Nested(lambda: PatrimoineGeologiqueGestionnaireSchema(only=("lb",)), many=True)
+    patrimoines_geologiques = ma.Nested(lambda: PatrimoineGeologiqueGestionnaireSchema, many=True)
     substances = ma.Nested(lambda:CorSiteSubstanceSchema, many = True)
 
 class SiteSchemaSimple(ma.SQLAlchemyAutoSchema):

@@ -249,6 +249,10 @@ export class QuestionnaireSimplifieComponent implements OnInit {
         });
 
         this.patchSubstances();
+        this.populateGeologicalHeritages(site.patrimoines_geologiques)
+        if (site.perimetre_protection) {
+          this.populateProtectionGeologicalHeritages(site.perimetre_protection.patrimoines_geologiques)
+        }
       },
       error => {
         console.error('Error fetching site details', error);

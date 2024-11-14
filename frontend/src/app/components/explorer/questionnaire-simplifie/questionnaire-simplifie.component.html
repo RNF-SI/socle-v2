@@ -18,10 +18,10 @@
     </div>
 
     <div class="form-group sites-inpg">
-      <h5>Patrimoine géologique</h5>
+      <h6>Patrimoine géologique</h6>
       <div>
         <h6 *ngIf="site.inpg.length > 0">La réserve abrite {{site.inpg.length}} site<span
-            *ngIf="site.inpg.length > 1">s</span> INPG. <a (click)="changeInpgView()" *ngIf="site.inpg.length > 5"><span
+            *ngIf="site.inpg.length > 1">s</span> INPG <a (click)="changeInpgView()" *ngIf="site.inpg.length > 5"><span
               *ngIf="!showInpg">Afficher</span><span *ngIf="showInpg">Masquer</span> les sites</a></h6>
         <h6 *ngIf="site.inpg.length == 0">La réserve n'abrite aucun site INPG</h6>
         <div *ngIf="site.inpg && site.inpg.length > 0 && showInpg">
@@ -43,6 +43,10 @@
           </div>
         </div>
         <br>
+        <h6 *ngIf="geologicalHeritages.controls.length > 0">Autre<span
+            *ngIf="geologicalHeritages.controls.length > 1">s</span> patrimoine<span
+            *ngIf="geologicalHeritages.controls.length > 1">s</span> géologique<span
+            *ngIf="geologicalHeritages.controls.length > 1">s</span> sur la réserve : </h6>
         <div formArrayName="geologicalHeritages" *ngFor="let heritage of geologicalHeritages.controls; let i = index">
           <div [formGroupName]="i" class="heritage-entry">
             <button mat-icon-button class="remove-button" (click)="removeHeritage(i)">
@@ -88,7 +92,7 @@
     <div class="form-group sites-inpg" *ngIf="site.perimetre_protection">
       <h6 *ngIf="site.perimetre_protection.inpg.length > 0">Le périmètre de protection de la réserve abrite
         {{site.perimetre_protection.inpg.length}} site<span *ngIf="site.perimetre_protection.inpg.length > 1">s</span>
-        INPG. <a (click)="changePpInpgView()" *ngIf="site.perimetre_protection.inpg.length > 5"><span
+        INPG <a (click)="changePpInpgView()" *ngIf="site.perimetre_protection.inpg.length > 5"><span
             *ngIf="!showPpInpg">Afficher</span><span *ngIf="showPpInpg">Masquer</span> les sites</a></h6>
       <h6 *ngIf="site.perimetre_protection.inpg.length == 0">Le périmètre de protection de la réserve n'abrite aucun
         site INPG</h6>
@@ -111,6 +115,11 @@
         </div>
       </div>
       <br>
+      <h6 *ngIf="protectionGeologicalHeritages.controls.length > 0">Autre<span
+          *ngIf="protectionGeologicalHeritages.controls.length > 1">s</span> patrimoine<span
+          *ngIf="protectionGeologicalHeritages.controls.length > 1">s</span> géologique<span
+          *ngIf="protectionGeologicalHeritages.controls.length > 1">s</span> sur le périmètre de protection de la
+        réserve : </h6>
       <div>
         <div formArrayName="protection_geologicalHeritages"
           *ngFor="let heritage of protectionGeologicalHeritages.controls; let i = index">
@@ -201,10 +210,10 @@
     <!--question remplace  la question 8-1 -->
     <div class="form-group">
       <label>
-        <h6>A quel ensemble géologique la réserve naturelle est-elle associée ?</h6>
+        <h6>A quel(s) ensemble(s) géologique(s) la réserve naturelle est-elle associée ?</h6>
       </label>
     </div>
-    <mat-form-field appearance="fill">
+    <mat-form-field appearance="fill" class="ensemble-geol">
       <mat-label>Sélectionner les ensembles géologiques</mat-label>
       <mat-select formControlName="geologicalUnits" multiple>
         <mat-option *ngFor="let unit of geologicalUnitsOptions" [value]="unit.id_nomenclature">
