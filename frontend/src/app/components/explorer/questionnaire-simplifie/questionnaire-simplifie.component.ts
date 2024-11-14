@@ -74,7 +74,7 @@ export class QuestionnaireSimplifieComponent implements OnInit {
     this.tInfosBaseSiteForm = this.fb.group({
       id_site: [''],
       geologicalUnits: [], // Gère les ensembles géologiques sélectionnés
-      associated_with_mineral_resources: [false, Validators.required],
+      associated_with_mineral_resources: [false],
       mineral_resources_old_quarry: [false],
       mineral_resources_active_quarry: [false],
       mineral_resources_old_mine: [false],
@@ -111,8 +111,8 @@ export class QuestionnaireSimplifieComponent implements OnInit {
         other: [false],
         otherDetails: ['']
       }),
-      reserve_has_geological_collections: [false, Validators.required],
-      reserve_has_exhibition: [false, Validators.required],
+      reserve_has_geological_collections: [false],
+      reserve_has_exhibition: [false],
       reserve_contains_stratotype: [false],
       stratotype_limit: [false],
       stratotype_limit_input: [''],
@@ -274,7 +274,7 @@ export class QuestionnaireSimplifieComponent implements OnInit {
     data.forEach((heritage: PatrimoineGeologique) => {
       heritageArray.push(this.fb.group({
         lb: [heritage.lb, Validators.required],
-        nombre_etoiles: [heritage.nombre_etoiles, Validators.required],
+        nombre_etoiles: [heritage.nombre_etoiles],
         interet_geol_principal: [heritage.interet_geol_principal, Validators.required],
         age_des_terrains_le_plus_recent: [heritage.age_des_terrains_le_plus_recent],
         age_des_terrains_le_plus_ancien: [heritage.age_des_terrains_le_plus_ancien],
@@ -288,7 +288,7 @@ export class QuestionnaireSimplifieComponent implements OnInit {
     data.forEach((heritage: PatrimoineGeologique) => {
       heritageArray.push(this.fb.group({
         lb: [heritage.lb, Validators.required],
-        nombre_etoiles: [heritage.nombre_etoiles, Validators.required],
+        nombre_etoiles: [heritage.nombre_etoiles],
         interet_geol_principal: [heritage.interet_geol_principal, Validators.required],
         age_des_terrains_le_plus_recent: [heritage.age_des_terrains_le_plus_recent],
         age_des_terrains_le_plus_ancien: [heritage.age_des_terrains_le_plus_ancien],
@@ -300,7 +300,7 @@ export class QuestionnaireSimplifieComponent implements OnInit {
   ajouterPatrimoineGeol(): void {
     this.geologicalHeritages.push(this.fb.group({
       lb: ['', Validators.required],
-      nombre_etoiles: [0, Validators.required],
+      nombre_etoiles: [0],
       interet_geol_principal: ['', Validators.required],
       age_des_terrains_le_plus_recent: [''],
       age_des_terrains_le_plus_ancien: [''],
@@ -311,7 +311,7 @@ export class QuestionnaireSimplifieComponent implements OnInit {
   ajouterPatrimoineGeolPP(): void {
     this.protectionGeologicalHeritages.push(this.fb.group({
       lb: ['', Validators.required],
-      nombre_etoiles: [0, Validators.required],
+      nombre_etoiles: [0],
       interet_geol_principal: ['', Validators.required],
       age_des_terrains_le_plus_recent: [''],
       age_des_terrains_le_plus_ancien: [''],

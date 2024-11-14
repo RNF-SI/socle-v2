@@ -284,73 +284,67 @@ def update_t_infos_base_site(slug):
         data = request.get_json()
         print('Received data:', data)  # Ajoutez ceci pour vérifier les données reçues
 
-        t_infos_base_site = TInfosBaseSite.query.filter_by(slug=slug).first()
-        if not t_infos_base_site:
-            return jsonify({'message': 'TInfosBaseSite non trouvée'}), 404
-
-        site = Site.query.filter_by(id_site=t_infos_base_site.id_site).first()
+        site = Site.query.filter_by(slug=slug).first()
         if not site:
             return jsonify({'message': 'Site non trouvé'}), 404
 
         # Mise à jour des champs
-        t_infos_base_site.reserve_created_on_geological_basis = data.get('reserve_created_on_geological_basis', t_infos_base_site.reserve_created_on_geological_basis)
-        t_infos_base_site.protection_perimeter_contains_geological_heritage_inpg = data.get('protection_perimeter_contains_geological_heritage_inpg', t_infos_base_site.protection_perimeter_contains_geological_heritage_inpg)
-        t_infos_base_site.protection_perimeter_contains_geological_heritage_other = data.get('protection_perimeter_contains_geological_heritage_other', t_infos_base_site.protection_perimeter_contains_geological_heritage_other)
+        site.creation_geol = data.get('reserve_created_on_geological_basis')
 
         main_geological_interests = data.get('main_geological_interests', {})
-        t_infos_base_site.main_geological_interests_stratigraphic = main_geological_interests.get('stratigraphic', t_infos_base_site.main_geological_interests_stratigraphic)
-        t_infos_base_site.main_geological_interests_paleontological = main_geological_interests.get('paleontological', t_infos_base_site.main_geological_interests_paleontological)
-        t_infos_base_site.main_geological_interests_sedimentological = main_geological_interests.get('sedimentological', t_infos_base_site.main_geological_interests_sedimentological)
-        t_infos_base_site.main_geological_interests_geomorphological = main_geological_interests.get('geomorphological', t_infos_base_site.main_geological_interests_geomorphological)
-        t_infos_base_site.main_geological_interests_mineral_resource = main_geological_interests.get('mineral_resource', t_infos_base_site.main_geological_interests_mineral_resource)
-        t_infos_base_site.main_geological_interests_mineralogical = main_geological_interests.get('mineralogical', t_infos_base_site.main_geological_interests_mineralogical)
-        t_infos_base_site.main_geological_interests_metamorphism = main_geological_interests.get('metamorphism', t_infos_base_site.main_geological_interests_metamorphism)
-        t_infos_base_site.main_geological_interests_volcanism = main_geological_interests.get('volcanism', t_infos_base_site.main_geological_interests_volcanism)
-        t_infos_base_site.main_geological_interests_plutonism = main_geological_interests.get('plutonism', t_infos_base_site.main_geological_interests_plutonism)
-        t_infos_base_site.main_geological_interests_hydrogeology = main_geological_interests.get('hydrogeology', t_infos_base_site.main_geological_interests_hydrogeology)
-        t_infos_base_site.main_geological_interests_tectonics = main_geological_interests.get('tectonics', t_infos_base_site.main_geological_interests_tectonics)
+        site.infos_base.main_geological_interests_stratigraphic = main_geological_interests.get('stratigraphic', site.infos_base.main_geological_interests_stratigraphic)
+        site.infos_base.main_geological_interests_paleontological = main_geological_interests.get('paleontological', site.infos_base.main_geological_interests_paleontological)
+        site.infos_base.main_geological_interests_sedimentological = main_geological_interests.get('sedimentological', site.infos_base.main_geological_interests_sedimentological)
+        site.infos_base.main_geological_interests_geomorphological = main_geological_interests.get('geomorphological', site.infos_base.main_geological_interests_geomorphological)
+        site.infos_base.main_geological_interests_mineral_resource = main_geological_interests.get('mineral_resource', site.infos_base.main_geological_interests_mineral_resource)
+        site.infos_base.main_geological_interests_mineralogical = main_geological_interests.get('mineralogical', site.infos_base.main_geological_interests_mineralogical)
+        site.infos_base.main_geological_interests_metamorphism = main_geological_interests.get('metamorphism', site.infos_base.main_geological_interests_metamorphism)
+        site.infos_base.main_geological_interests_volcanism = main_geological_interests.get('volcanism', site.infos_base.main_geological_interests_volcanism)
+        site.infos_base.main_geological_interests_plutonism = main_geological_interests.get('plutonism', site.infos_base.main_geological_interests_plutonism)
+        site.infos_base.main_geological_interests_hydrogeology = main_geological_interests.get('hydrogeology', site.infos_base.main_geological_interests_hydrogeology)
+        site.infos_base.main_geological_interests_tectonics = main_geological_interests.get('tectonics', site.infos_base.main_geological_interests_tectonics)
 
         contains_paleontological_heritage = data.get('contains_paleontological_heritage', {})
-        t_infos_base_site.contains_paleontological_heritage = contains_paleontological_heritage.get('answer', t_infos_base_site.contains_paleontological_heritage)
-        t_infos_base_site.contains_paleontological_heritage_vertebrates = contains_paleontological_heritage.get('vertebrates', t_infos_base_site.contains_paleontological_heritage_vertebrates)
-        t_infos_base_site.contains_paleontological_heritage_invertebrates = contains_paleontological_heritage.get('invertebrates', t_infos_base_site.contains_paleontological_heritage_invertebrates)
-        t_infos_base_site.contains_paleontological_heritage_plants = contains_paleontological_heritage.get('plants', t_infos_base_site.contains_paleontological_heritage_plants)
-        t_infos_base_site.contains_paleontological_heritage_trace_fossils = contains_paleontological_heritage.get('traceFossils', t_infos_base_site.contains_paleontological_heritage_trace_fossils)
-        t_infos_base_site.contains_paleontological_heritage_other = contains_paleontological_heritage.get('other', t_infos_base_site.contains_paleontological_heritage_other)
-        t_infos_base_site.contains_paleontological_heritage_other_details = contains_paleontological_heritage.get('otherDetails', t_infos_base_site.contains_paleontological_heritage_other_details)
+        site.infos_base.contains_paleontological_heritage = contains_paleontological_heritage.get('answer', site.infos_base.contains_paleontological_heritage)
+        site.infos_base.contains_paleontological_heritage_vertebrates = contains_paleontological_heritage.get('vertebrates', site.infos_base.contains_paleontological_heritage_vertebrates)
+        site.infos_base.contains_paleontological_heritage_invertebrates = contains_paleontological_heritage.get('invertebrates', site.infos_base.contains_paleontological_heritage_invertebrates)
+        site.infos_base.contains_paleontological_heritage_plants = contains_paleontological_heritage.get('plants', site.infos_base.contains_paleontological_heritage_plants)
+        site.infos_base.contains_paleontological_heritage_trace_fossils = contains_paleontological_heritage.get('traceFossils', site.infos_base.contains_paleontological_heritage_trace_fossils)
+        site.infos_base.contains_paleontological_heritage_other = contains_paleontological_heritage.get('other', site.infos_base.contains_paleontological_heritage_other)
+        site.infos_base.contains_paleontological_heritage_other_details = contains_paleontological_heritage.get('otherDetails', site.infos_base.contains_paleontological_heritage_other_details)
 
-        t_infos_base_site.reserve_has_geological_collections = data.get('reserve_has_geological_collections', t_infos_base_site.reserve_has_geological_collections)
-        t_infos_base_site.reserve_has_exhibition = data.get('reserve_has_exhibition', t_infos_base_site.reserve_has_exhibition)
-        t_infos_base_site.reserve_contains_stratotype = data.get('reserve_contains_stratotype', t_infos_base_site.reserve_contains_stratotype)
-        t_infos_base_site.stratotype_limit = data.get('stratotype_limit', t_infos_base_site.stratotype_limit)
-        t_infos_base_site.stratotype_limit_input = data.get('stratotype_limit_input', t_infos_base_site.stratotype_limit_input)
-        t_infos_base_site.stratotype_stage = data.get('stratotype_stage', t_infos_base_site.stratotype_stage)
-        t_infos_base_site.stratotype_stage_input = data.get('stratotype_stage_input', t_infos_base_site.stratotype_stage_input)
-        t_infos_base_site.contains_subterranean_habitats = data.get('contains_subterranean_habitats', t_infos_base_site.contains_subterranean_habitats)
-        t_infos_base_site.subterranean_habitats_natural_cavities = data.get('subterranean_habitats_natural_cavities', t_infos_base_site.subterranean_habitats_natural_cavities)
-        t_infos_base_site.subterranean_habitats_anthropogenic_cavities = data.get('subterranean_habitats_anthropogenic_cavities', t_infos_base_site.subterranean_habitats_anthropogenic_cavities)
-        t_infos_base_site.associated_with_mineral_resources = data.get('associated_with_mineral_resources', t_infos_base_site.associated_with_mineral_resources)
-        t_infos_base_site.mineral_resources_old_quarry = data.get('mineral_resources_old_quarry', t_infos_base_site.mineral_resources_old_quarry)
-        t_infos_base_site.mineral_resources_active_quarry = data.get('mineral_resources_active_quarry', t_infos_base_site.mineral_resources_active_quarry)
-        t_infos_base_site.quarry_extracted_material = data.get('quarry_extracted_material', t_infos_base_site.quarry_extracted_material)
-        t_infos_base_site.quarry_fossiliferous_material = data.get('quarry_fossiliferous_material', t_infos_base_site.quarry_fossiliferous_material)
-        t_infos_base_site.mineral_resources_old_mine = data.get('mineral_resources_old_mine', t_infos_base_site.mineral_resources_old_mine)
-        t_infos_base_site.mineral_resources_active_mine = data.get('mineral_resources_active_mine', t_infos_base_site.mineral_resources_active_mine)
-        t_infos_base_site.mine_extracted_material = data.get('mine_extracted_material', t_infos_base_site.mine_extracted_material)
-        t_infos_base_site.mine_fossiliferous_material = data.get('mine_fossiliferous_material', t_infos_base_site.mine_fossiliferous_material)
-        t_infos_base_site.reserve_has_geological_site_for_visitors = data.get('reserve_has_geological_site_for_visitors', t_infos_base_site.reserve_has_geological_site_for_visitors)
-        t_infos_base_site.offers_geodiversity_activities = data.get('offers_geodiversity_activities', t_infos_base_site.offers_geodiversity_activities)
+        site.infos_base.reserve_has_geological_collections = data.get('reserve_has_geological_collections', site.infos_base.reserve_has_geological_collections)
+        site.infos_base.reserve_has_exhibition = data.get('reserve_has_exhibition', site.infos_base.reserve_has_exhibition)
+        site.infos_base.reserve_contains_stratotype = data.get('reserve_contains_stratotype', site.infos_base.reserve_contains_stratotype)
+        site.infos_base.stratotype_limit = data.get('stratotype_limit', site.infos_base.stratotype_limit)
+        site.infos_base.stratotype_limit_input = data.get('stratotype_limit_input', site.infos_base.stratotype_limit_input)
+        site.infos_base.stratotype_stage = data.get('stratotype_stage', site.infos_base.stratotype_stage)
+        site.infos_base.stratotype_stage_input = data.get('stratotype_stage_input', site.infos_base.stratotype_stage_input)
+        site.infos_base.contains_subterranean_habitats = data.get('contains_subterranean_habitats', site.infos_base.contains_subterranean_habitats)
+        site.infos_base.subterranean_habitats_natural_cavities = data.get('subterranean_habitats_natural_cavities', site.infos_base.subterranean_habitats_natural_cavities)
+        site.infos_base.subterranean_habitats_anthropogenic_cavities = data.get('subterranean_habitats_anthropogenic_cavities', site.infos_base.subterranean_habitats_anthropogenic_cavities)
+        site.infos_base.associated_with_mineral_resources = data.get('associated_with_mineral_resources', site.infos_base.associated_with_mineral_resources)
+        site.infos_base.mineral_resources_old_quarry = data.get('mineral_resources_old_quarry', site.infos_base.mineral_resources_old_quarry)
+        site.infos_base.mineral_resources_active_quarry = data.get('mineral_resources_active_quarry', site.infos_base.mineral_resources_active_quarry)
+        site.infos_base.quarry_extracted_material = data.get('quarry_extracted_material', site.infos_base.quarry_extracted_material)
+        site.infos_base.quarry_fossiliferous_material = data.get('quarry_fossiliferous_material', site.infos_base.quarry_fossiliferous_material)
+        site.infos_base.mineral_resources_old_mine = data.get('mineral_resources_old_mine', site.infos_base.mineral_resources_old_mine)
+        site.infos_base.mineral_resources_active_mine = data.get('mineral_resources_active_mine', site.infos_base.mineral_resources_active_mine)
+        site.infos_base.mine_extracted_material = data.get('mine_extracted_material', site.infos_base.mine_extracted_material)
+        site.infos_base.mine_fossiliferous_material = data.get('mine_fossiliferous_material', site.infos_base.mine_fossiliferous_material)
+        site.infos_base.reserve_has_geological_site_for_visitors = data.get('reserve_has_geological_site_for_visitors', site.infos_base.reserve_has_geological_site_for_visitors)
+        site.infos_base.offers_geodiversity_activities = data.get('offers_geodiversity_activities', site.infos_base.offers_geodiversity_activities)
 
-        nouveaux_ages_dict = []
-        if 'eres' in data and data['eres'] is not None:
-            for age in data['eres']:
-                nomenclature = Nomenclature.query.filter_by(id_nomenclature=age).first()
-                if nomenclature not in site.ages:
-                    site.ages.append(nomenclature)
-                nouveaux_ages_dict.append(nomenclature)
-        for age in site.ages:
-            if age not in nouveaux_ages_dict:
-                site.ages.remove(age)
+        # nouveaux_ages_dict = []
+        # if 'eres' in data and data['eres'] is not None:
+        #     for age in data['eres']:
+        #         nomenclature = Nomenclature.query.filter_by(id_nomenclature=age).first()
+        #         if nomenclature not in site.ages:
+        #             site.ages.append(nomenclature)
+        #         nouveaux_ages_dict.append(nomenclature)
+        # for age in site.ages:
+        #     if age not in nouveaux_ages_dict:
+        #         site.ages.remove(age)
 
         # Mise à jour des patrimoines géologiques principal
         if 'geologicalHeritages' in data and data['geologicalHeritages'] is not None:
