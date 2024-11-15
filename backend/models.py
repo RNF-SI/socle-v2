@@ -31,7 +31,7 @@ class TInfosBaseSite(db.Model):
     contains_paleontological_heritage_invertebrates = db.Column(db.Boolean)
     contains_paleontological_heritage_plants = db.Column(db.Boolean)
     contains_paleontological_heritage_trace_fossils = db.Column(db.Boolean)
-    contains_paleontological_heritage_other = db.Column(db.Boolean)
+    # contains_paleontological_heritage_other = db.Column(db.Boolean)
     contains_paleontological_heritage_other_details = db.Column(db.String)  
     # TODO : Pas utilisé dans l'app, utile ?
     reserve_has_geological_collections = db.Column(db.Boolean)

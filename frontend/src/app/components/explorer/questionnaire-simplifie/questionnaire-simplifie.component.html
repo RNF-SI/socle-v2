@@ -177,7 +177,13 @@
           <mat-checkbox formControlName="invertebrates">Invertébrés</mat-checkbox>
           <mat-checkbox formControlName="plants">Végétaux</mat-checkbox>
           <mat-checkbox formControlName="traceFossils">Traces fossiles</mat-checkbox>
+          <mat-checkbox formControlName="other">Autre</mat-checkbox>
         </div>
+        <mat-form-field appearance="fill"
+          *ngIf="tInfosBaseSiteForm.get('contains_paleontological_heritage')?.get('other')?.value">
+          <mat-label>Préciser le autre</mat-label>
+          <input matInput formControlName="otherDetails">
+        </mat-form-field>
       </div>
     </div>
 

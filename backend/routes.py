@@ -310,7 +310,7 @@ def update_t_infos_base_site(slug):
         site.infos_base.contains_paleontological_heritage_invertebrates = contains_paleontological_heritage.get('invertebrates', site.infos_base.contains_paleontological_heritage_invertebrates)
         site.infos_base.contains_paleontological_heritage_plants = contains_paleontological_heritage.get('plants', site.infos_base.contains_paleontological_heritage_plants)
         site.infos_base.contains_paleontological_heritage_trace_fossils = contains_paleontological_heritage.get('traceFossils', site.infos_base.contains_paleontological_heritage_trace_fossils)
-        site.infos_base.contains_paleontological_heritage_other = contains_paleontological_heritage.get('other', site.infos_base.contains_paleontological_heritage_other)
+        # site.infos_base.contains_paleontological_heritage_other = contains_paleontological_heritage.get('other', site.infos_base.contains_paleontological_heritage_other)
         site.infos_base.contains_paleontological_heritage_other_details = contains_paleontological_heritage.get('otherDetails', site.infos_base.contains_paleontological_heritage_other_details)
 
         site.infos_base.reserve_has_geological_collections = data.get('reserve_has_geological_collections', site.infos_base.reserve_has_geological_collections)

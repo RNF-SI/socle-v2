@@ -269,6 +269,8 @@ export class QuestionnaireSimplifieComponent implements OnInit {
           invertebrates: site.infos_base.contains_paleontological_heritage_invertebrates,
           plants: site.infos_base.contains_paleontological_heritage_plants,
           traceFossils: site.infos_base.contains_paleontological_heritage_trace_fossils,
+          other: site.infos_base.contains_paleontological_heritage_other_details,
+          otherDetails: site.infos_base.contains_paleontological_heritage_other_details
 
         });
 
