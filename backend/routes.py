@@ -305,7 +305,7 @@ def update_t_infos_base_site(slug):
         site.infos_base.main_geological_interests_tectonics = main_geological_interests.get('tectonics', site.infos_base.main_geological_interests_tectonics)
 
         contains_paleontological_heritage = data.get('contains_paleontological_heritage', {})
-        site.infos_base.contains_paleontological_heritage = contains_paleontological_heritage.get('answer', site.infos_base.contains_paleontological_heritage)
+        # site.infos_base.contains_paleontological_heritage = contains_paleontological_heritage.get('answer', site.infos_base.contains_paleontological_heritage)
         site.infos_base.contains_paleontological_heritage_vertebrates = contains_paleontological_heritage.get('vertebrates', site.infos_base.contains_paleontological_heritage_vertebrates)
         site.infos_base.contains_paleontological_heritage_invertebrates = contains_paleontological_heritage.get('invertebrates', site.infos_base.contains_paleontological_heritage_invertebrates)
         site.infos_base.contains_paleontological_heritage_plants = contains_paleontological_heritage.get('plants', site.infos_base.contains_paleontological_heritage_plants)
@@ -334,6 +334,7 @@ def update_t_infos_base_site(slug):
         site.infos_base.mine_fossiliferous_material = data.get('mine_fossiliferous_material', site.infos_base.mine_fossiliferous_material)
         site.infos_base.reserve_has_geological_site_for_visitors = data.get('reserve_has_geological_site_for_visitors', site.infos_base.reserve_has_geological_site_for_visitors)
         site.infos_base.offers_geodiversity_activities = data.get('offers_geodiversity_activities', site.infos_base.offers_geodiversity_activities)
+        site.infos_base.geological_units = data.get('geologicalUnits', site.infos_base.geological_units)
 
         # nouveaux_ages_dict = []
         # if 'eres' in data and data['eres'] is not None:
@@ -348,6 +349,18 @@ def update_t_infos_base_site(slug):
 
         # Mise à jour des patrimoines géologiques principal
         if 'geologicalHeritages' in data and data['geologicalHeritages'] is not None:
+            # Récupérer tous les éléments existants pour le site
+            existing_heritages = PatrimoineGeologiqueGestionnaire.query.filter_by(id_site=site.id_site).all()
+            
+            # Créer un ensemble des identifiants 'lb' dans les données fournies
+            provided_lb_set = {heritage_data['lb'] for heritage_data in data['geologicalHeritages']}
+            
+            # Supprimer les éléments qui ne sont pas dans les données fournies
+            for heritage in existing_heritages:
+                if heritage.lb not in provided_lb_set:
+                    db.session.delete(heritage)
+
+            # Ajouter ou mettre à jour les éléments existants
             for heritage_data in data['geologicalHeritages']:
                 heritage = PatrimoineGeologiqueGestionnaire.query.filter_by(id_site=site.id_site, lb=heritage_data['lb']).first()
                 if not heritage:
@@ -355,7 +368,6 @@ def update_t_infos_base_site(slug):
                         id_site=site.id_site,
                         lb=heritage_data['lb'],
                         interet_geol_principal=heritage_data['interet_geol_principal'],
-                        nombre_etoiles=heritage_data['nombre_etoiles'],
                         age_des_terrains_le_plus_recent=heritage_data['age_des_terrains_le_plus_recent'],
                         age_des_terrains_le_plus_ancien=heritage_data['age_des_terrains_le_plus_ancien'],
                         bibliographie=heritage_data.get('bibliographie', '')
@@ -363,21 +375,35 @@ def update_t_infos_base_site(slug):
                     db.session.add(heritage)
                 else:
                     heritage.interet_geol_principal = heritage_data['interet_geol_principal']
-                    heritage.nombre_etoiles = heritage_data['nombre_etoiles']
                     heritage.age_des_terrains_le_plus_recent = heritage_data['age_des_terrains_le_plus_recent']
                     heritage.age_des_terrains_le_plus_ancien = heritage_data['age_des_terrains_le_plus_ancien']
                     heritage.bibliographie = heritage_data.get('bibliographie', '')
 
+
         # Mise à jour des patrimoines géologiques de protection
-        if 'protectionGeologicalHeritages' in data and data['protectionGeologicalHeritages'] is not None:
-            for heritage_data in data['protectionGeologicalHeritages']:
-                heritage = PatrimoineGeologiqueGestionnaire.query.filter_by(id_site=site.id_site, lb=heritage_data['lb']).first()
+        if site.id_perimetre_protection is not None and 'protection_geologicalHeritages' in data and data['protection_geologicalHeritages'] is not None:
+            # Récupérer tous les patrimoines géologiques existants pour le périmètre de protection du site
+            existing_heritages = PatrimoineGeologiqueGestionnaire.query.filter_by(id_site=site.id_perimetre_protection).all()
+            
+            # Créer un ensemble des identifiants 'lb' dans les données fournies
+            provided_lb_set = {heritage_data['lb'] for heritage_data in data['protection_geologicalHeritages']}
+            
+            # Supprimer les patrimoines qui ne sont plus présents dans les données fournies
+            for heritage in existing_heritages:
+                if heritage.lb not in provided_lb_set:
+                    db.session.delete(heritage)
+            
+            # Ajouter ou mettre à jour les patrimoines existants
+            for heritage_data in data['protection_geologicalHeritages']:
+                heritage = PatrimoineGeologiqueGestionnaire.query.filter_by(
+                    id_site=site.id_perimetre_protection, 
+                    lb=heritage_data['lb']
+                ).first()
                 if not heritage:
                     heritage = PatrimoineGeologiqueGestionnaire(
-                        id_site=site.id_site,
+                        id_site=site.id_perimetre_protection,
                         lb=heritage_data['lb'],
                         interet_geol_principal=heritage_data['interet_geol_principal'],
-                        nombre_etoiles=heritage_data['nombre_etoiles'],
                         age_des_terrains_le_plus_recent=heritage_data['age_des_terrains_le_plus_recent'],
                         age_des_terrains_le_plus_ancien=heritage_data['age_des_terrains_le_plus_ancien'],
                         bibliographie=heritage_data.get('bibliographie', '')
@@ -385,7 +411,6 @@ def update_t_infos_base_site(slug):
                     db.session.add(heritage)
                 else:
                     heritage.interet_geol_principal = heritage_data['interet_geol_principal']
-                    heritage.nombre_etoiles = heritage_data['nombre_etoiles']
                     heritage.age_des_terrains_le_plus_recent = heritage_data['age_des_terrains_le_plus_recent']
                     heritage.age_des_terrains_le_plus_ancien = heritage_data['age_des_terrains_le_plus_ancien']
                     heritage.bibliographie = heritage_data.get('bibliographie', '')

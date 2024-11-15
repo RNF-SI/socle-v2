@@ -239,8 +239,8 @@ export class QuestionnaireSimplifieComponent implements OnInit {
         });
 
         this.tInfosBaseSiteForm.get('contains_paleontological_heritage')?.patchValue({
-          answer: site.infos_base.contains_paleontological_heritage,
-          no_answer: !site.infos_base.contains_paleontological_heritage,
+          answer: site.infos_base.contains_paleontological_heritage_vertebrates || site.infos_base.contains_paleontological_heritage_invertebrates || site.infos_base.contains_paleontological_heritage_plants || site.infos_base.contains_paleontological_heritage_trace_fossils,
+          // no_answer: !site.infos_base.contains_paleontological_heritage,
           vertebrates: site.infos_base.contains_paleontological_heritage_vertebrates,
           invertebrates: site.infos_base.contains_paleontological_heritage_invertebrates,
           plants: site.infos_base.contains_paleontological_heritage_plants,

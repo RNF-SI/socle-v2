@@ -26,7 +26,7 @@ class TInfosBaseSite(db.Model):
     main_geological_interests_hydrogeology = db.Column(db.Boolean)
     main_geological_interests_tectonics = db.Column(db.Boolean)
     # TODO : Ces derniers champs sont-ils nécessaires ?
-    contains_paleontological_heritage = db.Column(db.Boolean)
+    # contains_paleontological_heritage = db.Column(db.Boolean)
     contains_paleontological_heritage_vertebrates = db.Column(db.Boolean)
     contains_paleontological_heritage_invertebrates = db.Column(db.Boolean)
     contains_paleontological_heritage_plants = db.Column(db.Boolean)
