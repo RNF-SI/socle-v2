@@ -291,19 +291,6 @@ def update_t_infos_base_site(slug):
         # Mise à jour des champs
         site.creation_geol = data.get('reserve_created_on_geological_basis')
 
-        main_geological_interests = data.get('main_geological_interests', {})
-        site.infos_base.main_geological_interests_stratigraphic = main_geological_interests.get('stratigraphic', site.infos_base.main_geological_interests_stratigraphic)
-        site.infos_base.main_geological_interests_paleontological = main_geological_interests.get('paleontological', site.infos_base.main_geological_interests_paleontological)
-        site.infos_base.main_geological_interests_sedimentological = main_geological_interests.get('sedimentological', site.infos_base.main_geological_interests_sedimentological)
-        site.infos_base.main_geological_interests_geomorphological = main_geological_interests.get('geomorphological', site.infos_base.main_geological_interests_geomorphological)
-        site.infos_base.main_geological_interests_mineral_resource = main_geological_interests.get('mineral_resource', site.infos_base.main_geological_interests_mineral_resource)
-        site.infos_base.main_geological_interests_mineralogical = main_geological_interests.get('mineralogical', site.infos_base.main_geological_interests_mineralogical)
-        site.infos_base.main_geological_interests_metamorphism = main_geological_interests.get('metamorphism', site.infos_base.main_geological_interests_metamorphism)
-        site.infos_base.main_geological_interests_volcanism = main_geological_interests.get('volcanism', site.infos_base.main_geological_interests_volcanism)
-        site.infos_base.main_geological_interests_plutonism = main_geological_interests.get('plutonism', site.infos_base.main_geological_interests_plutonism)
-        site.infos_base.main_geological_interests_hydrogeology = main_geological_interests.get('hydrogeology', site.infos_base.main_geological_interests_hydrogeology)
-        site.infos_base.main_geological_interests_tectonics = main_geological_interests.get('tectonics', site.infos_base.main_geological_interests_tectonics)
-
         contains_paleontological_heritage = data.get('contains_paleontological_heritage', {})
         # site.infos_base.contains_paleontological_heritage = contains_paleontological_heritage.get('answer', site.infos_base.contains_paleontological_heritage)
         site.infos_base.contains_paleontological_heritage_vertebrates = contains_paleontological_heritage.get('vertebrates', site.infos_base.contains_paleontological_heritage_vertebrates)
@@ -335,7 +322,7 @@ def update_t_infos_base_site(slug):
         site.infos_base.reserve_has_geological_site_for_visitors = data.get('reserve_has_geological_site_for_visitors', site.infos_base.reserve_has_geological_site_for_visitors)
         site.infos_base.offers_geodiversity_activities = data.get('offers_geodiversity_activities', site.infos_base.offers_geodiversity_activities)
         site.infos_base.geological_units = data.get('geologicalUnits', site.infos_base.geological_units)
-
+        site.infos_base.geological_units_other = data.get('geologicalUnitsOtherText', site.infos_base.geological_units_other)
         # nouveaux_ages_dict = []
         # if 'eres' in data and data['eres'] is not None:
         #     for age in data['eres']:

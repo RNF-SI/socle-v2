@@ -181,7 +181,7 @@
         </div>
         <mat-form-field appearance="fill"
           *ngIf="tInfosBaseSiteForm.get('contains_paleontological_heritage')?.get('other')?.value">
-          <mat-label>Préciser le autre</mat-label>
+          <mat-label>Précisez</mat-label>
           <input matInput formControlName="otherDetails">
         </mat-form-field>
       </div>
@@ -219,21 +219,26 @@
         <h6>A quel(s) ensemble(s) géologique(s) la réserve naturelle est-elle associée ?</h6>
       </label>
     </div>
-    <!-- <mat-form-field appearance="fill" class="ensemble-geol">
-      <mat-label>Sélectionner les ensembles géologiques</mat-label>
-      <mat-select formControlName="geologicalUnits" multiple>
-        <mat-option *ngFor="let unit of geologicalUnitsOptions" [value]="unit.id_nomenclature">
-          {{ unit.label }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field> -->
     <div formArrayName="geologicalUnits" class="checkbox-geologicalUnits">
       <div *ngFor="let unit of geologicalUnitsOptions; let i = index">
         <mat-checkbox [formControlName]="i">
           {{ unit.label }}
         </mat-checkbox>
       </div>
+      <div>
+        <mat-checkbox *ngIf="tInfosBaseSiteForm.get('geologicalUnitsOther')"
+          [formControl]="getFormControl('geologicalUnitsOther')">
+          Autre
+        </mat-checkbox>
+      </div>
     </div>
+    <div *ngIf="tInfosBaseSiteForm.get('geologicalUnitsOther')?.value">
+      <mat-form-field appearance="fill">
+        <mat-label>Précisez</mat-label>
+        <input matInput formControlName="geologicalUnitsOtherText">
+      </mat-form-field>
+    </div>
+
     <br>
 
 

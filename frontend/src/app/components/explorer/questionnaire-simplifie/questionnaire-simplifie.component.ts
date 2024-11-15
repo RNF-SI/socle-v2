@@ -74,6 +74,8 @@ export class QuestionnaireSimplifieComponent implements OnInit {
     this.tInfosBaseSiteForm = this.fb.group({
       id_site: [''],
       geologicalUnits: this.fb.array([]), // Gère les ensembles géologiques sélectionnés
+      geologicalUnitsAutre: [false],
+      geologicalUnitsOtherText: [''],
       associated_with_mineral_resources: [false],
       mineral_resources_old_quarry: [false],
       mineral_resources_active_quarry: [false],
@@ -147,19 +149,38 @@ export class QuestionnaireSimplifieComponent implements OnInit {
     this.searchSubstanceTerm.valueChanges.subscribe((searchTerm: string | null) => {
       this.filterSubstances(searchTerm);
     });
+    this.tInfosBaseSiteForm.get('geologicalUnitsOther')?.valueChanges.subscribe(value => {
+      if (!value) {
+        this.tInfosBaseSiteForm.get('geologicalUnitsOtherText')?.setValue('');
+      }
+    });
+
   }
 
   initGeologicalUnitsCheckboxes(): void {
     const geologicalUnitsArray = this.geologicalUnitsOptions.map(unit =>
       new FormControl(this.isUnitSelected(unit.id_nomenclature))
     );
+    geologicalUnitsArray.push(new FormControl(false)); // Case "Autre"
+
     this.tInfosBaseSiteForm.setControl('geologicalUnits', this.fb.array(geologicalUnitsArray));
+    if (!this.tInfosBaseSiteForm.get('geologicalUnitsOther')) {
+      this.tInfosBaseSiteForm.addControl('geologicalUnitsOther', new FormControl(false));
+    }
+    if (!this.tInfosBaseSiteForm.get('geologicalUnitsOtherText')) {
+      this.tInfosBaseSiteForm.addControl('geologicalUnitsOtherText', new FormControl(''));
+    }
   }
+
 
   // Vérifie si une unité géologique est sélectionnée
   isUnitSelected(id: number): boolean {
     // Vérifie si l'ID est présent dans les données du site
     return this.site?.infos_base?.geological_units?.includes(id) || false;
+  }
+
+  getFormControl(controlName: string): FormControl {
+    return this.tInfosBaseSiteForm.get(controlName) as FormControl;
   }
 
 
@@ -241,9 +262,9 @@ export class QuestionnaireSimplifieComponent implements OnInit {
           mine_fossiliferous_material: site.infos_base.mine_fossiliferous_material,
           reserve_has_geological_site_for_visitors: site.infos_base.reserve_has_geological_site_for_visitors,
           offers_geodiversity_activities: site.infos_base.offers_geodiversity_activities,
-          geologicalUnits: []
-
-
+          geologicalUnits: [],
+          geologicalUnitsOther: site.infos_base.geological_units_other,
+          geologicalUnitsOtherText: site.infos_base.geological_units_other
         });
 
         this.initGeologicalUnitsCheckboxes();
@@ -431,9 +452,13 @@ export class QuestionnaireSimplifieComponent implements OnInit {
         }).then((result) => {
           if (result.isConfirmed) {
             const selectedGeologicalUnits = this.getSelectedGeologicalUnits();
-            const formData = this.tInfosBaseSiteForm.value;
-            formData['id_site'] = this.id_site;
-            formData['geologicalUnits'] = selectedGeologicalUnits;
+            const formData = {
+              ...this.tInfosBaseSiteForm.value,
+              geologicalUnits: selectedGeologicalUnits,
+              geologicalUnitsOtherText: this.tInfosBaseSiteForm.get('geologicalUnitsOther')?.value
+                ? this.tInfosBaseSiteForm.get('geologicalUnitsOtherText')?.value
+                : null
+            };
             this.tInfosBaseSiteService.updateSite(this.siteSlug!, formData).subscribe(
               (response: any) => {
 
