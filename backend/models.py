@@ -201,6 +201,11 @@ class BibNomenclatureType(db.Model):
 
     nomenclatures = db.relationship("Nomenclature", foreign_keys=Nomenclature.id_type)
 
+     # Retourne les nomenclatures triées par 'label'
+    @property
+    def sorted_nomenclatures(self):
+        return sorted(self.nomenclatures, key=lambda x: x.label)
+
 class CorSiteSubstance(db.Model):
     __tablename__= 'cor_site_substance'
 

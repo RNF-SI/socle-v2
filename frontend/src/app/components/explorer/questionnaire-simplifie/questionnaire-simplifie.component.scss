@@ -189,3 +189,11 @@
 .ensemble-geol {
   min-width: 500px;
 }
+
+.checkbox-geologicalUnits {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  /* 5 colonnes */
+  gap: 10px;
+  /* Espace entre les cases */
+}

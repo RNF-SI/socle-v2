@@ -127,7 +127,7 @@ class NomenclatureTypeSchema(ma.SQLAlchemyAutoSchema):
         include_fk = True
           
     
-    nomenclatures = ma.Nested(lambda: NomenclatureSchema, many=True)
+    nomenclatures = ma.Nested(lambda: NomenclatureSchema, many=True, attribute="sorted_nomenclatures")
 
 class PatrimoineGeologiqueGestionnaireSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
