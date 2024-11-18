@@ -197,3 +197,22 @@
   gap: 10px;
   /* Espace entre les cases */
 }
+
+.search-container {
+  padding: 8px;
+  /* Ajuste l'espacement autour de l'input */
+  background: #fff;
+  /* Optionnel : arrière-plan blanc */
+  position: sticky;
+  top: 0;
+  /* Garde l'input en haut si la liste est longue */
+  z-index: 1;
+}
+
+.search-input {
+  width: 100%;
+  /* Assure que l'input occupe tout l'espace */
+  border: none;
+  /* Supprime les bordures si nécessaire */
+  outline: none;
+}

@@ -29,7 +29,7 @@ export interface Site {
   superficie: number;
   sitesInpg: number;
   geopatrimoineSites: number;
-  stratotypes: number;
+  stratotypes: Stratotype[];
   terrainsAncien: string;
   terrainsRecent: string;
   infos_base: Infos_base;
@@ -50,4 +50,13 @@ export interface Infos_base {
   contains_paleontological_heritage_vertebrates: boolean;
   contains_paleontological_heritage_plants: boolean;
   contains_paleontological_heritage_trace_fossils: boolean;
+}
+
+export interface Stratotype {
+  id_stratotype: number;
+  libelle: string;
+  type: string;
+  actif: boolean;
+  costratotype: boolean;
+  ancien: boolean;
 }

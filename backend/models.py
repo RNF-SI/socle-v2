@@ -36,12 +36,11 @@ class TInfosBaseSite(db.Model):
     reserve_has_exhibition = db.Column(db.Boolean)
     geological_units = db.Column(db.ARRAY(db.Integer))  # Ajoutez ce champ pour stocker les IDs des unités géologiques sélectionnées.
     geological_units_other = db.Column(db.String)
-    reserve_contains_stratotype = db.Column(db.Boolean)
-    stratotype_limit = db.Column(db.Boolean)   
-    stratotype_limit_input = db.Column(db.String) 
-    stratotype_stage = db.Column(db.Boolean)   
-    stratotype_stage_input = db.Column(db.String)   
-    # TODO : tous les champs des stratotypes sont inutiles à priori si on passe par une table de correspondance
+    # reserve_contains_stratotype = db.Column(db.Boolean)
+    # stratotype_limit = db.Column(db.Boolean)   
+    # stratotype_limit_input = db.Column(db.String) 
+    # stratotype_stage = db.Column(db.Boolean)   
+    # stratotype_stage_input = db.Column(db.String)   
     contains_subterranean_habitats = db.Column(db.Boolean)
     subterranean_habitats_natural_cavities = db.Column(db.Boolean)
     subterranean_habitats_anthropogenic_cavities = db.Column(db.Boolean)
@@ -67,6 +66,11 @@ cor_site_inpg = db.Table('cor_site_inpg',
 cor_site_ages = db.Table('cor_site_ages',
     db.Column('site_id', db.Integer, db.ForeignKey('site.id_site', ondelete="CASCADE")),
     db.Column('nomenclature_id', db.Integer, db.ForeignKey('t_nomenclatures.id_nomenclature', ondelete="CASCADE"))
+)
+
+cor_site_stratotype = db.Table('cor_site_stratotype',
+    db.Column('site_id', db.Integer, db.ForeignKey('site.id_site', ondelete="CASCADE")),
+    db.Column('stratotype_id', db.Integer, db.ForeignKey('t_stratotypes.id_stratotype', ondelete="CASCADE"))
 )
 
 class Site(db.Model):
@@ -121,6 +125,12 @@ class Site(db.Model):
     patrimoines_geologiques = db.relationship('PatrimoineGeologiqueGestionnaire', backref='site', passive_deletes=True)
     
     substances = db.relationship("CorSiteSubstance")
+
+    stratotypes = db.relationship(
+        'Stratotype',
+        secondary=cor_site_stratotype,
+        passive_deletes=True
+    )
 
 
 class EntiteGeol(db.Model):
@@ -213,3 +223,14 @@ class CorSiteSubstance(db.Model):
 
     site = db.relationship("Site", back_populates="substances")
     substance = db.relationship("Nomenclature")
+
+class Stratotype(db.Model):
+    __tablename__= 't_stratotypes'
+
+    id_stratotype = db.Column(db.Integer, primary_key=True)
+    libelle = db.Column(db.String)
+    type = db.Column(db.String)
+    actif = db.Column(db.Boolean)
+    costratotype = db.Column(db.Boolean)
+    ancien = db.Column(db.Boolean)
+

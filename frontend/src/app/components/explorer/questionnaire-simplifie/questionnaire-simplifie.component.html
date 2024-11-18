@@ -255,16 +255,42 @@
         <div *ngIf="tInfosBaseSiteForm.get('reserve_contains_stratotype')?.value">
           <mat-checkbox formControlName="stratotype_limit">Stratotype de limite</mat-checkbox>
           <div *ngIf="tInfosBaseSiteForm.get('stratotype_limit')?.value">
-            <mat-form-field>
-              <mat-label>Préciser le ou les stratotypes concernés</mat-label>
-              <input matInput formControlName="stratotype_limit_input">
+            <mat-form-field appearance="fill">
+              <mat-select formArrayName="stratotypesLimite" multiple
+                [value]="tInfosBaseSiteForm.get('stratotypesLimite')?.value"
+                (selectionChange)="onStratotypesLimiteChange($event)">
+                <!-- Champ de recherche dans le menu déroulant -->
+                <div class="search-container" mat-select-header>
+                  <input type="text" placeholder="Rechercher..." [formControl]="searchStratotypesLimiteTerm"
+                    (click)="$event.stopPropagation()" class="search-input" />
+                </div>
+
+                <!-- Liste des options filtrées -->
+                <mat-option *ngFor="let stratotype of filteredStratotypesLimite" [value]="stratotype.id_stratotype">
+                  {{ stratotype.libelle }}
+                </mat-option>
+              </mat-select>
             </mat-form-field>
+
+
           </div>
           <mat-checkbox formControlName="stratotype_stage">Stratotype d’étage</mat-checkbox>
           <div *ngIf="tInfosBaseSiteForm.get('stratotype_stage')?.value">
-            <mat-form-field>
-              <mat-label>Préciser le ou les stratotypes concernés</mat-label>
-              <input matInput formControlName="stratotype_stage_input">
+            <mat-form-field appearance="fill">
+              <mat-select formArrayName="stratotypesEtage" multiple
+                [value]="tInfosBaseSiteForm.get('stratotypesEtage')?.value"
+                (selectionChange)="onStratotypesEtageChange($event)">
+                <!-- Champ de recherche dans le menu déroulant -->
+                <div class="search-container" mat-select-header>
+                  <input type="text" placeholder="Rechercher..." [formControl]="searchStratotypesEtageTerm"
+                    (click)="$event.stopPropagation()" class="search-input" />
+                </div>
+
+                <!-- Liste des options filtrées -->
+                <mat-option *ngFor="let stratotype of filteredStratotypesEtage" [value]="stratotype.id_stratotype">
+                  {{ stratotype.libelle }}
+                </mat-option>
+              </mat-select>
             </mat-form-field>
           </div>
         </div>
@@ -314,13 +340,6 @@
                 <button mat-icon-button class="remove-button" (click)="removeSubstance(i)">
                   <mat-icon>delete</mat-icon>
                 </button>
-                <!-- <mat-form-field appearance="fill">
-                  <mat-select formControlName="substance">
-                    <mat-option *ngFor="let substance of substancesOptions" [value]="substance.mnemonique">
-                      {{ substance.label }}
-                    </mat-option>
-                  </mat-select>
-                </mat-form-field> -->
                 <mat-form-field appearance="fill" class="substanceField">
                   <mat-select formControlName="substance">
                     <!-- Champ de recherche dans le menu déroulant -->

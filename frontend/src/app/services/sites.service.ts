@@ -99,5 +99,13 @@ export class SitesService {
   }
 
 
+  getStratotypesEtage(): Observable<any> {
+    return this._http.get<any>(`${environment.apiUrl}/stratotypes-etage`);
+  }
+
+  getStratotypesLimite(): Observable<any> {
+    return this._http.get<any>(`${environment.apiUrl}/stratotypes-limite`);
+  }
+
 
 }

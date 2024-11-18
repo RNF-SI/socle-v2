@@ -4,8 +4,8 @@ from flask import Flask, request, Response, render_template, redirect, Blueprint
 import requests
 import json
 from app import app, db
-from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Nomenclature, BibNomenclatureType,Inpg, Site, cor_site_inpg, CorSiteSubstance
-from schemas import PatrimoineGeologiqueGestionnaireSchema, PerimetreProtectionSchema, TInfosBaseSiteSchema, SiteSchema, NomenclatureSchema, NomenclatureTypeSchema, SiteSchemaSimple
+from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Nomenclature, BibNomenclatureType,Inpg, Site, cor_site_inpg, CorSiteSubstance, Stratotype
+from schemas import PatrimoineGeologiqueGestionnaireSchema, PerimetreProtectionSchema, TInfosBaseSiteSchema, SiteSchema, NomenclatureSchema, NomenclatureTypeSchema, SiteSchemaSimple, StratotypeSchema
 from pypnusershub import routes as fnauth
 import logging
 from sqlalchemy import func
@@ -282,8 +282,6 @@ def get_t_infos_base_site_by_slug(slug):
 def update_t_infos_base_site(slug):
     try:
         data = request.get_json()
-        print('Received data:', data.get('quarry_extracted_materials'))  # Ajoutez ceci pour vérifier les données reçues
-
         site = Site.query.filter_by(slug=slug).first()
         if not site:
             return jsonify({'message': 'Site non trouvé'}), 404
@@ -302,11 +300,11 @@ def update_t_infos_base_site(slug):
 
         site.infos_base.reserve_has_geological_collections = data.get('reserve_has_geological_collections', site.infos_base.reserve_has_geological_collections)
         site.infos_base.reserve_has_exhibition = data.get('reserve_has_exhibition', site.infos_base.reserve_has_exhibition)
-        site.infos_base.reserve_contains_stratotype = data.get('reserve_contains_stratotype', site.infos_base.reserve_contains_stratotype)
-        site.infos_base.stratotype_limit = data.get('stratotype_limit', site.infos_base.stratotype_limit)
-        site.infos_base.stratotype_limit_input = data.get('stratotype_limit_input', site.infos_base.stratotype_limit_input)
-        site.infos_base.stratotype_stage = data.get('stratotype_stage', site.infos_base.stratotype_stage)
-        site.infos_base.stratotype_stage_input = data.get('stratotype_stage_input', site.infos_base.stratotype_stage_input)
+        # site.infos_base.reserve_contains_stratotype = data.get('reserve_contains_stratotype', site.infos_base.reserve_contains_stratotype)
+        # site.infos_base.stratotype_limit = data.get('stratotype_limit', site.infos_base.stratotype_limit)
+        # site.infos_base.stratotype_limit_input = data.get('stratotype_limit_input', site.infos_base.stratotype_limit_input)
+        # site.infos_base.stratotype_stage = data.get('stratotype_stage', site.infos_base.stratotype_stage)
+        # site.infos_base.stratotype_stage_input = data.get('stratotype_stage_input', site.infos_base.stratotype_stage_input)
         site.infos_base.contains_subterranean_habitats = data.get('contains_subterranean_habitats', site.infos_base.contains_subterranean_habitats)
         site.infos_base.subterranean_habitats_natural_cavities = data.get('subterranean_habitats_natural_cavities', site.infos_base.subterranean_habitats_natural_cavities)
         site.infos_base.subterranean_habitats_anthropogenic_cavities = data.get('subterranean_habitats_anthropogenic_cavities', site.infos_base.subterranean_habitats_anthropogenic_cavities)
@@ -333,6 +331,35 @@ def update_t_infos_base_site(slug):
         # for age in site.ages:
         #     if age not in nouveaux_ages_dict:
         #         site.ages.remove(age)
+
+        if 'stratotypesLimite' in data or 'stratotypesEtage' in data:
+            # Fusionner les IDs des deux listes
+            stratotype_ids = set(data.get('stratotypesLimite', []) + data.get('stratotypesEtage', []))
+
+            # Récupérer les stratotypes actuels liés au site
+            current_stratotypes = {stratotype.id_stratotype for stratotype in site.stratotypes}
+
+            # Déterminer les stratotypes à ajouter
+            to_add = stratotype_ids - current_stratotypes
+
+            # Déterminer les stratotypes à supprimer
+            to_remove = current_stratotypes - stratotype_ids
+
+            # Ajouter les nouveaux stratotypes
+            for stratotype_id in to_add:
+                stratotype = Stratotype.query.get(stratotype_id)
+                if stratotype:
+                    site.stratotypes.append(stratotype)
+
+            # Supprimer les stratotypes qui ne sont plus présents
+            for stratotype_id in to_remove:
+                stratotype = next(
+                    (s for s in site.stratotypes if s.id_stratotype == stratotype_id),
+                    None
+                )
+                if stratotype:
+                    site.stratotypes.remove(stratotype)
+
 
         # Mise à jour des patrimoines géologiques principal
         if 'geologicalHeritages' in data and data['geologicalHeritages'] is not None:
@@ -551,3 +578,16 @@ def add_patrimoine_geologique(id_site):
         db.session.rollback()
         return jsonify({'message': 'Erreur lors de l\'ajout du patrimoine géologique', 'error': str(e)}), 500
 
+@bp.route('/stratotypes-etage', methods=['GET'])
+def get_stratotypes_etage():
+
+    stratotypes = Stratotype.query.filter(Stratotype.type == 'etage').order_by(Stratotype.libelle).all()  # Renvoie les sites filtrés par type_rn et/ou code
+    schema = StratotypeSchema(many=True)
+    return schema.jsonify(stratotypes)
+
+@bp.route('/stratotypes-limite', methods=['GET'])
+def get_stratotypes_limite():
+
+    stratotypes = Stratotype.query.filter(Stratotype.type == 'limite').order_by(Stratotype.libelle).all()  # Renvoie les sites filtrés par type_rn et/ou code
+    schema = StratotypeSchema(many=True)
+    return schema.jsonify(stratotypes)

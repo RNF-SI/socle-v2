@@ -3,6 +3,7 @@ import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@ang
 import { ActivatedRoute, Router } from '@angular/router';
 import { Nomenclature, NomenclatureType } from 'src/app/models/nomenclature.model';
 import { PatrimoineGeologique } from 'src/app/models/patrimoine-geologique.model';
+import { Stratotype } from 'src/app/models/site.model';
 import { NomenclaturesService } from 'src/app/services/nomenclatures.service';
 import { PatrimoineGeologiqueService } from 'src/app/services/patrimoine-geologique.service';
 import { SitesService } from 'src/app/services/sites.service';
@@ -39,8 +40,12 @@ export class QuestionnaireSimplifieComponent implements OnInit {
   searchSubstanceTerm = new FormControl('');
   showInpg: boolean = false;
   showPpInpg: boolean = false;
-
-
+  stratotypesEtage: Stratotype[] = [];
+  stratotypesLimite: Stratotype[] = [];
+  filteredStratotypesEtage: Stratotype[] = [];
+  filteredStratotypesLimite: Stratotype[] = [];
+  searchStratotypesEtageTerm = new FormControl('');
+  searchStratotypesLimiteTerm = new FormControl('');
 
   geologicalInterestOptions: string[] = [
     'Paléontologie',
@@ -76,6 +81,8 @@ export class QuestionnaireSimplifieComponent implements OnInit {
       geologicalUnits: this.fb.array([]), // Gère les ensembles géologiques sélectionnés
       geologicalUnitsAutre: [false],
       geologicalUnitsOtherText: [''],
+      stratotypesLimite: this.fb.array([]),
+      stratotypesEtage: this.fb.array([]),
       associated_with_mineral_resources: [false],
       mineral_resources_old_quarry: [false],
       mineral_resources_active_quarry: [false],
@@ -142,6 +149,7 @@ export class QuestionnaireSimplifieComponent implements OnInit {
     this.siteSlug = this.route.snapshot.paramMap.get('slug')!;
     this.fetchSiteDetails(this.siteSlug);
     this.loadNomenclature();
+    this.loadStratotypes();
     this.initGeologicalUnitsCheckboxes();
     // this.ajouterPatrimoineGeolPP();
     // this.ajouterPatrimoineGeol();
@@ -149,6 +157,12 @@ export class QuestionnaireSimplifieComponent implements OnInit {
     this.searchSubstanceTerm.valueChanges.subscribe((searchTerm: string | null) => {
       this.filterSubstances(searchTerm);
     });
+    this.searchStratotypesEtageTerm.valueChanges.subscribe((searchTerm: string | null) => {
+      this.filterStratotypeEtage(searchTerm);
+    })
+    this.searchStratotypesLimiteTerm.valueChanges.subscribe((searchTerm: string | null) => {
+      this.filterStratotypeLimite(searchTerm);
+    })
     this.tInfosBaseSiteForm.get('geologicalUnitsOther')?.valueChanges.subscribe(value => {
       if (!value) {
         this.tInfosBaseSiteForm.get('geologicalUnitsOtherText')?.setValue('');
@@ -210,7 +224,6 @@ export class QuestionnaireSimplifieComponent implements OnInit {
         if (response && Array.isArray(response.nomenclatures)) {
           this.substancesOptions = response.nomenclatures;
           this.filteredSubstancesOptions = this.substancesOptions;
-          console.log(this.filteredSubstancesOptions);
 
         } else {
           console.error('Expected nomenclatures to be an array, but got:', response);
@@ -220,6 +233,21 @@ export class QuestionnaireSimplifieComponent implements OnInit {
         console.error('Error fetching substances', error);
       }
     );
+  }
+
+  loadStratotypes(): void {
+    this.siteService.getStratotypesEtage().subscribe(
+      data => {
+        this.stratotypesEtage = data
+        this.filteredStratotypesEtage = data
+      }
+    );
+    this.siteService.getStratotypesLimite().subscribe(
+      data => {
+        this.stratotypesLimite = data
+        this.filteredStratotypesLimite = data
+      }
+    )
   }
 
   fetchSiteDetails(slug: string): void {
@@ -243,11 +271,11 @@ export class QuestionnaireSimplifieComponent implements OnInit {
           // protection_perimeter_contains_geological_heritage_inpg: site.protection_perimeter_contains_geological_heritage_inpg || site.inpg.length > 0,
           reserve_has_geological_collections: site.infos_base.reserve_has_geological_collections,
           reserve_has_exhibition: site.infos_base.reserve_has_exhibition,
-          reserve_contains_stratotype: site.infos_base.reserve_contains_stratotype,
-          stratotype_limit: site.infos_base.stratotype_limit,
-          stratotype_limit_input: site.infos_base.stratotype_limit_input,
-          stratotype_stage: site.infos_base.stratotype_stage,
-          stratotype_stage_input: site.infos_base.stratotype_stage_input,
+          reserve_contains_stratotype: site.stratotypes.length > 0,
+          // stratotype_limit: site.infos_base.stratotype_limit,
+          // stratotype_limit_input: site.infos_base.stratotype_limit_input,
+          // stratotype_stage: site.infos_base.stratotype_stage,
+          // stratotype_stage_input: site.infos_base.stratotype_stage_input,
           reserve_does_not_contain_stratotype: site.infos_base.reserve_does_not_contain_stratotype,
           contains_subterranean_habitats: site.infos_base.contains_subterranean_habitats,
           subterranean_habitats_natural_cavities: site.infos_base.subterranean_habitats_natural_cavities,
@@ -266,7 +294,7 @@ export class QuestionnaireSimplifieComponent implements OnInit {
           offers_geodiversity_activities: site.infos_base.offers_geodiversity_activities,
           geologicalUnits: [],
           geologicalUnitsOther: site.infos_base.geological_units_other,
-          geologicalUnitsOtherText: site.infos_base.geological_units_other
+          geologicalUnitsOtherText: site.infos_base.geological_units_other,
         });
 
         this.initGeologicalUnitsCheckboxes();
@@ -296,6 +324,7 @@ export class QuestionnaireSimplifieComponent implements OnInit {
           otherDetails: site.infos_base.contains_paleontological_heritage_other_details
 
         });
+        this.patchStratotypes(site.stratotypes);
 
         this.patchSubstances();
         this.populateGeologicalHeritages(site.patrimoines_geologiques)
@@ -308,6 +337,30 @@ export class QuestionnaireSimplifieComponent implements OnInit {
       }
     );
   }
+
+  patchStratotypes(stratotypes: any[]): void {
+    const stratotypesLimite = stratotypes
+      .filter((stratotype: any) => stratotype.type === 'limite')
+      .map((stratotype: any) => stratotype.id_stratotype);
+
+    this.tInfosBaseSiteForm.get('stratotype_limit')?.setValue(stratotypesLimite.length > 0);
+
+    const stratotypesEtage = stratotypes
+      .filter((stratotype: any) => stratotype.type === 'etage')
+      .map((stratotype: any) => stratotype.id_stratotype);
+
+    this.tInfosBaseSiteForm.get('stratotype_stage')?.setValue(stratotypesEtage.length > 0);
+
+    // Mise à jour des FormArray
+    const stratotypesLimiteArray = this.tInfosBaseSiteForm.get('stratotypesLimite') as FormArray;
+    stratotypesLimiteArray.clear();
+    stratotypesLimite.forEach((id: number) => stratotypesLimiteArray.push(new FormControl(id)));
+
+    const stratotypesEtageArray = this.tInfosBaseSiteForm.get('stratotypesEtage') as FormArray;
+    stratotypesEtageArray.clear();
+    stratotypesEtage.forEach((id: number) => stratotypesEtageArray.push(new FormControl(id)));
+  }
+
 
 
   get geologicalHeritages(): FormArray {
@@ -494,7 +547,6 @@ export class QuestionnaireSimplifieComponent implements OnInit {
   patchSubstances(): void {
     const substances = this.site.substances || [];
     const quarryMaterialsArray = this.quarryExtractedMaterials;
-    console.log("quarry : ", this.quarryExtractedMaterials);
 
 
     // Reset the array to avoid duplication
@@ -516,6 +568,39 @@ export class QuestionnaireSimplifieComponent implements OnInit {
       substance.label.toLowerCase().includes(term)
     );
   }
+
+  filterStratotypeEtage(searchTerm: string | null): void {
+    const term = (searchTerm || '').toLowerCase();
+    this.filteredStratotypesEtage = this.stratotypesEtage.filter(stratotype =>
+      stratotype.libelle.toLowerCase().includes(term)
+    );
+  }
+
+  filterStratotypeLimite(searchTerm: string | null): void {
+    const term = (searchTerm || '').toLowerCase();
+    this.filteredStratotypesLimite = this.stratotypesLimite.filter(stratotype =>
+      stratotype.libelle.toLowerCase().includes(term)
+    );
+  }
+
+  onStratotypesLimiteChange(event: any): void {
+    const selectedIds = event.value;
+    const stratotypesArray = this.tInfosBaseSiteForm.get('stratotypesLimite') as FormArray;
+
+    // Mise à jour des valeurs dans le FormArray
+    stratotypesArray.clear();
+    selectedIds.forEach((id: number) => stratotypesArray.push(new FormControl(id)));
+  }
+
+  onStratotypesEtageChange(event: any): void {
+    const selectedIds = event.value;
+    const stratotypesArray = this.tInfosBaseSiteForm.get('stratotypesEtage') as FormArray;
+
+    // Mise à jour des valeurs dans le FormArray
+    stratotypesArray.clear();
+    selectedIds.forEach((id: number) => stratotypesArray.push(new FormControl(id)));
+  }
+
 
 
 }
