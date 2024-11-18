@@ -23,30 +23,6 @@
 
 }
 
-
-
-
-// .heritage-entry {
-//   display: flex;
-//   align-items: center;
-//   margin-bottom: 10px;
-// }
-
-// .heritage-entry mat-form-field {
-//   flex: 1;
-//   margin-right: 10px;
-// }
-
-.add-button {
-  background-color: #0B885D;
-  color: black;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 15px auto;
-  /* Center the button */
-}
-
 .heritage-entry {
   display: grid;
   grid-template-columns: auto 1fr 1fr 1fr 1fr;
@@ -101,46 +77,6 @@
   /* Largeur minimale pour chaque élément */
 }
 
-.star-rating {
-  font-size: 24px;
-  /* Taille des étoiles */
-  color: #0B885D;
-  /* Couleur des étoiles */
-}
-
-
-
-.color-button .mat-radio-label-content {
-  color: #0B885D;
-  /* Couleur du texte */
-}
-
-.color-button .mat-radio-outer-circle,
-.color-button .mat-radio-inner-circle {
-  border-color: #0B885D;
-  /* Couleur du cercle extérieur */
-}
-
-.color-button.mat-radio-checked .mat-radio-outer-circle {
-  background-color: #0B885D;
-  /* Couleur du cercle intérieur quand coché */
-}
-
-.color-button.mat-radio-checked .mat-radio-inner-circle {
-  background-color: #0B885D;
-  /* Couleur de l'intérieur du bouton radio quand coché */
-}
-
-.button-container {
-  margin-left: 20px;
-  /* Optionnel : ajustez l'espace au-dessus du bouton */
-}
-
-.custom-button {
-  background-color: #0B885D !important;
-  color: white;
-  /* Pour le texte en blanc */
-}
 
 .submit-button-container {
   display: flex;
@@ -150,8 +86,8 @@
 }
 
 .submit-button-container button {
-  background-color: #afb42b;
-  /* Exemple de couleur verte */
+  background-color: mat-color($custom-accent, 500);
+  ;
   color: white;
   /* Couleur du texte en blanc */
   margin-right: 10px;
@@ -173,6 +109,7 @@
   color: mat-color($custom-primary, 500);
   text-decoration: none;
   font-weight: bold;
+  cursor: pointer;
 }
 
 .search-input::placeholder {
