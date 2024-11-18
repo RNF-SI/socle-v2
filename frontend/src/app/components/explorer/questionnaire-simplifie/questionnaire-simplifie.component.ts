@@ -210,6 +210,8 @@ export class QuestionnaireSimplifieComponent implements OnInit {
         if (response && Array.isArray(response.nomenclatures)) {
           this.substancesOptions = response.nomenclatures;
           this.filteredSubstancesOptions = this.substancesOptions;
+          console.log(this.filteredSubstancesOptions);
+
         } else {
           console.error('Expected nomenclatures to be an array, but got:', response);
         }
@@ -492,6 +494,8 @@ export class QuestionnaireSimplifieComponent implements OnInit {
   patchSubstances(): void {
     const substances = this.site.substances || [];
     const quarryMaterialsArray = this.quarryExtractedMaterials;
+    console.log("quarry : ", this.quarryExtractedMaterials);
+
 
     // Reset the array to avoid duplication
     quarryMaterialsArray.clear();
@@ -499,7 +503,7 @@ export class QuestionnaireSimplifieComponent implements OnInit {
     substances.forEach((item: any) => {
       quarryMaterialsArray.push(
         this.fb.group({
-          substance: [item.substance.mnemonique, Validators.required],
+          substance: [item.substance.id_nomenclature, Validators.required],
           fossiliferous: [item.fossilifere]
         })
       );

@@ -4,7 +4,7 @@ from flask import Flask, request, Response, render_template, redirect, Blueprint
 import requests
 import json
 from app import app, db
-from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Nomenclature, BibNomenclatureType,Inpg, Site, cor_site_inpg
+from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Nomenclature, BibNomenclatureType,Inpg, Site, cor_site_inpg, CorSiteSubstance
 from schemas import PatrimoineGeologiqueGestionnaireSchema, PerimetreProtectionSchema, TInfosBaseSiteSchema, SiteSchema, NomenclatureSchema, NomenclatureTypeSchema, SiteSchemaSimple
 from pypnusershub import routes as fnauth
 import logging
@@ -282,7 +282,7 @@ def get_t_infos_base_site_by_slug(slug):
 def update_t_infos_base_site(slug):
     try:
         data = request.get_json()
-        print('Received data:', data)  # Ajoutez ceci pour vérifier les données reçues
+        print('Received data:', data.get('quarry_extracted_materials'))  # Ajoutez ceci pour vérifier les données reçues
 
         site = Site.query.filter_by(slug=slug).first()
         if not site:
@@ -401,6 +401,30 @@ def update_t_infos_base_site(slug):
                     heritage.age_des_terrains_le_plus_recent = heritage_data['age_des_terrains_le_plus_recent']
                     heritage.age_des_terrains_le_plus_ancien = heritage_data['age_des_terrains_le_plus_ancien']
                     heritage.bibliographie = heritage_data.get('bibliographie', '')
+
+        if 'quarry_extracted_materials' in data and data['quarry_extracted_materials'] is not None:
+            existing_substances = {substance.substance_id: substance for substance in site.substances}  # Récupère les substances existantes liées au site
+            received_substances = {item['substance']: item['fossiliferous'] for item in data['quarry_extracted_materials']}
+
+            # Ajout ou mise à jour des substances reçues
+            for substance_id, fossiliferous in received_substances.items():
+                if substance_id in existing_substances:
+                    # Met à jour la valeur fossilifère si elle diffère
+                    if existing_substances[substance_id].fossilifere != fossiliferous:
+                        existing_substances[substance_id].fossilifere = fossiliferous
+                else:
+                    # Ajoute une nouvelle substance si elle n'existe pas encore
+                    new_substance = CorSiteSubstance(
+                        site_id=site.id_site,
+                        substance_id=substance_id,
+                        fossilifere=fossiliferous
+                    )
+                    db.session.add(new_substance)
+
+    # Suppression des substances qui ne sont plus dans les données reçues
+            for substance_id, existing_substance in existing_substances.items():
+                if substance_id not in received_substances:
+                    db.session.delete(existing_substance)
 
         db.session.commit()
         return jsonify({'type': 'success', 'msg': 'TInfosBaseSite mise à jour avec succès !'})

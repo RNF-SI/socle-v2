@@ -330,7 +330,7 @@
                     </mat-option>
 
                     <!-- Liste des options filtrées -->
-                    <mat-option *ngFor="let substance of filteredSubstancesOptions" [value]="substance.mnemonique">
+                    <mat-option *ngFor="let substance of filteredSubstancesOptions" [value]="substance.id_nomenclature">
                       {{ substance.label }}
                     </mat-option>
                   </mat-select>
