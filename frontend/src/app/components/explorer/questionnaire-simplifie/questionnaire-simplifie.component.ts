@@ -491,50 +491,60 @@ export class QuestionnaireSimplifieComponent implements OnInit {
 
   onSubmit(): void {
     if (this.tInfosBaseSiteForm.valid) {
-      Swal.fire({
-        position: "center",
-        icon: "success",
-        title: "Vos données ont été bien envoyées",
-        showConfirmButton: false,
-        timer: 1500
-      }).then(() => {
-        Swal.fire({
-          title: "Vous pouvez maintenant aller voir la synthèse ou remplir la fiche de détails.",
-          showDenyButton: true,
-          showCancelButton: true,
-          confirmButtonText: "Synthèse",
-          denyButtonText: `Fiche details`
-        }).then((result) => {
-          if (result.isConfirmed) {
-            const selectedGeologicalUnits = this.getSelectedGeologicalUnits();
-            const formData = {
-              ...this.tInfosBaseSiteForm.value,
-              geologicalUnits: selectedGeologicalUnits,
-              geologicalUnitsOtherText: this.tInfosBaseSiteForm.get('geologicalUnitsOther')?.value
-                ? this.tInfosBaseSiteForm.get('geologicalUnitsOtherText')?.value
-                : null
-            };
-            this.tInfosBaseSiteService.updateSite(this.siteSlug!, formData).subscribe(
-              (response: any) => {
+      const selectedGeologicalUnits = this.getSelectedGeologicalUnits();
+      const formData = {
+        ...this.tInfosBaseSiteForm.value,
+        geologicalUnits: selectedGeologicalUnits,
+        geologicalUnitsOtherText: this.tInfosBaseSiteForm.get('geologicalUnitsOther')?.value
+          ? this.tInfosBaseSiteForm.get('geologicalUnitsOtherText')?.value
+          : null
+      };
 
-                this.tInfosBaseSiteForm.patchValue(response);
-                Swal.fire("Les données sont sauvegardées.", "", "success").then(() => {
-                  this.router.navigate([`/site/${this.siteSlug}`]);
-                });
-              },
-              (error: any) => {
-                Swal.fire("Error", "There was an error updating the site data", "error");
-              }
-            );
-          } else if (result.isDenied) {
-            Swal.fire("Allez remplir fiche details.", "", "success").then(() => {
-              this.router.navigate([`/fiche-terrain/${this.siteSlug}`]);
-            });
-          }
-        });
+      // Envoi des données
+      this.tInfosBaseSiteService.updateSite(this.siteSlug!, formData).subscribe(
+        (response: any) => {
+          // Affiche le message de la réponse du backend
+          Swal.fire({
+            position: "center",
+            icon: response.type, // Affiche l'icône "success" ou "error"
+            title: response.msg, // Affiche le message du backend
+          }).then(() => {
+            // Si la réponse est un succès, proposer des actions supplémentaires
+            if (response.type === 'success') {
+              this.router.navigate([`/site/${this.siteSlug}`]);
+              Swal.fire({
+                title: "Souhaitez-vous remplir le questionnaire détaillé ?",
+                showDenyButton: true,
+                confirmButtonText: "Allons-y !",
+                denyButtonText: `Pas cette fois.`
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  this.router.navigate([`/fiche-terrain/${this.siteSlug}`]);
+                }
+              });
+            }
+          });
+        },
+        (error: any) => {
+          // Gestion des erreurs lors de l'appel
+          Swal.fire({
+            icon: "error",
+            title: "Erreur",
+            text: "Une erreur est survenue lors de l'envoi des données."
+          });
+        }
+      );
+    } else {
+      // Gestion de formulaire invalide
+      Swal.fire({
+        icon: "error",
+        title: "Formulaire invalide",
+        text: "Veuillez vérifier les champs du formulaire avant de soumettre."
       });
     }
   }
+
+
 
   changeInpgView() {
     this.showInpg = !this.showInpg

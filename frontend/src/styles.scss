@@ -16,3 +16,21 @@ body {
 
 @import 'styles/custom-theme.scss';
 @import 'conf/custom.scss';
+
+/* Bouton Confirm (OK) */
+.swal2-confirm {
+    background-color: mat-color($custom-primary, 500) !important;
+    /* Vert */
+    color: white !important;
+    border: none !important;
+    border-radius: 4px !important;
+}
+
+/* Bouton Deny */
+.swal2-deny {
+    background-color: mat-color($custom-accent, 500) !important;
+    /* Rouge */
+    color: white !important;
+    border: none !important;
+    border-radius: 4px !important;
+}
