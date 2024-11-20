@@ -49,6 +49,8 @@ export class EspaceDetailComponent implements OnInit {
 
   nbInpgConfidentielsReserve: number = 0;
   nbInpgConfidentielsPP: number = 0;
+  stratotypesLimite: any;
+  stratotypesEtage: any;
 
   private osm: L.TileLayer | undefined;
   private geologie: L.TileLayer.WMS | undefined;
@@ -119,6 +121,8 @@ export class EspaceDetailComponent implements OnInit {
         if (this.site.perimetre_protection) {
           this.nbInpgConfidentielsPP = this.site.perimetre_protection.sites_inpg.filter((inpg: { inpg: { niveau_de_diffusion: string; }; }) => inpg.inpg.niveau_de_diffusion === 'Confidentiel').length;
         }
+        this.stratotypesLimite = this.site.stratotypes.filter((stratotype) => stratotype.type === 'limite');
+        this.stratotypesEtage = this.site.stratotypes.filter((stratotype) => stratotype.type === 'etage');
       })
     }
   }

@@ -39,8 +39,8 @@
     </div>
     <div class="stat-item">
       <fa-icon [icon]="['fas', 'stream']"></fa-icon>
-      <div class="stat-value"></div>
-      <div class="stat-label">Stratotypes</div>
+      <div class="stat-value">{{ site.stratotypes.length }}</div>
+      <div class="stat-label">Stratotype<span *ngIf="site.stratotypes.length>1">s</span></div>
     </div>
     <div class="stat-item">
       <fa-icon [icon]="['fas', 'sort-numeric-down-alt']"></fa-icon>
@@ -122,15 +122,23 @@
 
       <p class="subsection-title">Stratotypes</p>
       <div class="subsection-response">
-        <div *ngIf="tInfosBaseSite?.reserve_contains_stratotype === true">
-          <p *ngIf="tInfosBaseSite?.stratotype_limit === true">
-            Stratotype de limite: {{ tInfosBaseSite?.stratotype_limit_input || 'Nom non précisé' }}
+        <div *ngIf="stratotypesLimite.length > 0">
+          <p>
+            Stratotype<span *ngIf="stratotypesLimite.length > 1">s</span> de limite :
           </p>
-          <p *ngIf="tInfosBaseSite?.stratotype_stage === true">
-            Stratotype d’étage: {{ tInfosBaseSite?.stratotype_stage_input || 'Nom non précisé' }}
-          </p>
+          <ng-container *ngFor="let strato of stratotypesLimite">
+            <span>{{ strato.libelle }}</span><br />
+          </ng-container><br>
         </div>
-        <p *ngIf="tInfosBaseSite?.reserve_contains_stratotype === false">
+        <div *ngIf="stratotypesEtage.length > 0">
+          <p>
+            Stratotype<span *ngIf="stratotypesEtage.length > 1">s</span> d'étage :
+          </p>
+          <ng-container *ngFor="let strato of stratotypesEtage">
+            <span>{{ strato.libelle }}</span><br />
+          </ng-container><br>
+        </div>
+        <p *ngIf="site.stratotypes.length == 0">
           Aucun stratotype identifié.
         </p>
       </div>
