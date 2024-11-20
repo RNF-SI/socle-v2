@@ -106,8 +106,8 @@ def get_sites_simple():
 @bp.route('/sites-simple-centroides', methods=['GET'])
 def get_sites_simple_centroid():
 
-    sites = Site.query.filter(Site.perimetre_protection != True).all()  # Renvoie les sites filtrés par type_rn et/ou code
-    schema = SiteSchemaSimple(only=('id_site','nom','slug','type_rn','code','region','creation_geol','geom_point','inpg', 'patrimoines_geologiques'),many=True)
+    sites = Site.query.filter(Site.perimetre_protection != True).order_by(Site.nom).all()  # Renvoie les sites filtrés par type_rn et/ou code
+    schema = SiteSchemaSimple(only=('id_site','nom','slug','type_rn','code','region','creation_geol','geom_point','sites_inpg', 'patrimoines_geologiques', 'stratotypes'),many=True)
     return schema.jsonify(sites)
 
 @bp.route('/sites-dans-bbox', methods=['GET'])

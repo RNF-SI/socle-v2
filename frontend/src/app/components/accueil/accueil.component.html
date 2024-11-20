@@ -92,7 +92,8 @@
       <td mat-cell *matCellDef="let element">
         <!-- Boucle sur les éléments non confidentiels -->
         <ng-container *ngFor="let inpg of getNonConfidentialSites(element); let i = index">
-          <a [href]="'https://inpn.mnhn.fr/site/inpg/' + inpg.id_metier" target="_blank">{{ inpg.id_metier }}</a>
+          <a [href]="'https://inpn.mnhn.fr/site/inpg/' + inpg.inpg.id_metier" target="_blank">{{ inpg.inpg.id_metier
+            }}</a>
           <!-- Ajoute un séparateur si ce n'est pas le dernier élément visible -->
           <span *ngIf="i < getNonConfidentialSites(element).length - 1">, </span>
         </ng-container>

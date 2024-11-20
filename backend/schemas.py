@@ -98,8 +98,20 @@ class SiteSchemaSimple(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Site 
 
-    inpg = ma.Nested(lambda: InpgSchema(only=("id_metier","lb_site", "niveau_de_diffusion")), many=True)
+    sites_inpg = fields.Method('get_sorted_sites_inpg')
     patrimoines_geologiques = ma.Nested(lambda: PatrimoineGeologiqueGestionnaireSchema(only=("lb",)), many=True)
+    stratotypes = ma.Nested(lambda:StratotypeSchema, many = True)
+
+    def get_sorted_sites_inpg(self, obj):
+        # Trier les sites_inpg par nombre_etoiles (desc) et lb_site (asc)
+        sorted_sites = sorted(
+            obj.sites_inpg,
+            key=lambda x: (-x.inpg.nombre_etoiles if x.inpg and x.inpg.nombre_etoiles is not None else 0, 
+                        x.inpg.lb_site if x.inpg and x.inpg.lb_site else '')
+        )
+
+        # Sérialiser avec CorSiteInpgSchema
+        return CorSiteInpgSchema(only=("active","inpg.id_metier","inpg.lb_site", "inpg.niveau_de_diffusion"),many=True).dump(sorted_sites)
 
 class EntiteGeolSchema(ma.SQLAlchemyAutoSchema):
     geom = fields.Method('wkt_to_geojson')

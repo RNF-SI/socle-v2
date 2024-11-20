@@ -232,16 +232,18 @@ export class AccueilComponent implements OnInit {
 
   computeStats(): void {
     const totalSites = this.espaces.length;
-    const totalInpgSites = this.espaces.reduce((total, site) => total + (site.inpg ? site.inpg.length : 0), 0);
-    const sitesAvecPatrimoine = this.espaces.filter(site => site.inpg && site.inpg.length > 0).length;
-    const sitesAvecStratotype = this.espaces.filter(site => site.infos_base && site.infos_base.reserve_contains_stratotype === true).length;
+    const totalInpgSites = this.espaces.reduce((total, site) => total + (site.sites_inpg ? site.sites_inpg.length : 0), 0);
+    const sitesAvecPatrimoine = this.espaces.filter(site => site.sites_inpg && site.sites_inpg.length > 0).length;
+    const nbStratotypes = this.espaces.reduce((count, site) => {
+      return count + (site.stratotypes ? site.stratotypes.length : 0);
+    }, 0);
     const sitesCreationGeol = this.espaces.filter(site => site.creation_geol === true).length;
     this.stats = [
       { icon: 'assets/images/symbol11_final.png', chiffre: totalSites, texte: 'Nombre total de réserves' },
       { icon: 'assets/images/symbol11_prct.png', chiffre: `${(sitesAvecPatrimoine / totalSites * 100).toFixed(0)}%`, texte: 'Proportion de réserves avec patrimoine géologique' },
       { icon: 'assets/images/iconSynth.png', chiffre: sitesCreationGeol, texte: 'Réserves créées pour protéger du patrimoine géologique' },
       { icon: 'assets/images/INPG.png', chiffre: totalInpgSites, texte: 'Sites INPG localisés en réserve naturelle' },
-      { icon: 'assets/images/stratotype.png', chiffre: sitesAvecStratotype, texte: 'Nombre de stratotypes protégés' }
+      { icon: 'assets/images/stratotype.png', chiffre: nbStratotypes, texte: 'Nombre de stratotypes protégés' }
     ];
   }
 
@@ -292,9 +294,9 @@ export class AccueilComponent implements OnInit {
         : true;
 
       const matchesPatrimoine = this.selectedPatrimoine === 'oui'
-        ? (site.inpg && site.inpg.length > 0) || (site.patrimoines_geologiques && site.patrimoines_geologiques.length > 0)
+        ? (site.sites_inpg && site.sites_inpg.length > 0) || (site.patrimoines_geologiques && site.patrimoines_geologiques.length > 0)
         : this.selectedPatrimoine === 'non'
-          ? (!site.inpg || site.inpg.length === 0) && (!site.patrimoines_geologiques || site.patrimoines_geologiques.length === 0)
+          ? (!site.sites_inpg || site.sites_inpg.length === 0) && (!site.patrimoines_geologiques || site.patrimoines_geologiques.length === 0)
           : this.selectedPatrimoine === 'reserve_geologique'
             ? site.creation_geol === true
             : true;
@@ -308,11 +310,13 @@ export class AccueilComponent implements OnInit {
 
 
   getNonConfidentialSites(element: any): any[] {
-    return element.inpg.filter((inpg: any) => inpg.niveau_de_diffusion !== 'Confidentiel');
+
+    return element.sites_inpg.filter((inpg: { inpg: { niveau_de_diffusion: string; }; }) => inpg.inpg.niveau_de_diffusion === 'Public');
+
   }
 
   countConfidentialSites(element: any): number {
-    return element.inpg.filter((inpg: any) => inpg.niveau_de_diffusion === 'Confidentiel').length;
+    return element.sites_inpg.filter((inpg: { inpg: { niveau_de_diffusion: string; }; }) => inpg.inpg.niveau_de_diffusion === 'Confidentiel').length;
   }
 
   clearPatrimoineSelection(): void {
