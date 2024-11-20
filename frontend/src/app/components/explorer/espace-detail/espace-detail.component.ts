@@ -8,6 +8,7 @@ import { AuthService } from 'src/app/home-rnf/services/auth-service.service';
 import { GeologicalInterests } from 'src/app/models/geological-interests.model';
 import { Nomenclature } from 'src/app/models/nomenclature.model';
 import { Site } from 'src/app/models/site.model';
+import { NomenclaturesService } from 'src/app/services/nomenclatures.service';
 import { PatrimoineGeologiqueService } from 'src/app/services/patrimoine-geologique.service';
 import { SitesService } from 'src/app/services/sites.service';
 import { TInfosBaseSiteService } from 'src/app/services/t-infos-base-site.service';
@@ -28,7 +29,7 @@ export class EspaceDetailComponent implements OnInit {
   reserveContainsGeologicalHeritage: any[] = [];
   protectionPerimeterContainsGeologicalHeritage: any[] = [];
   siteSlug: any;
-  geologicalUnitsOptions: string[] = [];
+  filteredGeologicalUnits: any = [];
   geologicalUnits: string[] = [];
   tInfosBaseSiteForm: any;
   faKey = faKey;
@@ -94,7 +95,8 @@ export class EspaceDetailComponent implements OnInit {
     private siteService: SitesService,
     private tInfosBaseSiteService: TInfosBaseSiteService,
     private patrimoineGeologiqueService: PatrimoineGeologiqueService,
-    private authService: AuthService
+    private authService: AuthService,
+    private nomenclaturesService: NomenclaturesService
   ) { }
 
   estConnecte() {
@@ -123,6 +125,21 @@ export class EspaceDetailComponent implements OnInit {
         }
         this.stratotypesLimite = this.site.stratotypes.filter((stratotype) => stratotype.type === 'limite');
         this.stratotypesEtage = this.site.stratotypes.filter((stratotype) => stratotype.type === 'etage');
+        this.nomenclaturesService.getNomenclaturesByTypeId(6).subscribe(
+          (response: any) => {
+            if (response && Array.isArray(response.nomenclatures)) {
+              this.filteredGeologicalUnits = response.nomenclatures.filter((option: { id_nomenclature: number; }) =>
+                this.site!.infos_base.geological_units.includes(option.id_nomenclature)
+              );
+              console.log(this.filteredGeologicalUnits);
+            } else {
+              console.error('Expected nomenclatures to be an array, but got:', response);
+            }
+          },
+          (error: any) => {
+            console.error('Error fetching geological units', error);
+          }
+        );
       })
     }
   }

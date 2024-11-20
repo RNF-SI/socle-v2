@@ -80,9 +80,11 @@
       <!-- TODO: tableu de corespendance  -->
       <p class="subsection-title">Ensemble géologique</p>
       <div class="subsection-response">
-        <p *ngIf="geologicalUnits.length > 0; else noGeologicalUnits">
-          {{ geologicalUnits.join(', ') }}
-        </p>
+        <div *ngIf="filteredGeologicalUnits && filteredGeologicalUnits.length > 0; else noGeologicalUnits">
+          <ng-container *ngFor="let geol of filteredGeologicalUnits">
+            <span>{{ geol.label}}</span><br>
+          </ng-container>
+        </div>
         <ng-template #noGeologicalUnits>
           <p>Aucun ensemble géologique sélectionné.</p>
         </ng-template>
@@ -145,7 +147,7 @@
       <div>
         <p class="subsection-title">Patrimoine paléontologique</p>
         <div class="subsection-response">
-          <span *ngIf="site.infos_base.contains_paleontological_heritage; else noPaleontologicalData">
+          <span>
             <div *ngIf="site.infos_base.contains_paleontological_heritage_invertebrates">
               <p>Invertébrés</p>
             </div>
@@ -157,6 +159,9 @@
             </div>
             <div *ngIf="site.infos_base.contains_paleontological_heritage_trace_fossils">
               <p>Traces fossiles</p>
+            </div>
+            <div *ngIf="site.infos_base.contains_paleontological_heritage_other_details">
+              <p>{{ site.infos_base.contains_paleontological_heritage_other_details }}</p>
             </div>
           </span>
           <ng-template #noPaleontologicalData>

@@ -51,6 +51,8 @@ export interface Infos_base {
   contains_paleontological_heritage_vertebrates: boolean;
   contains_paleontological_heritage_plants: boolean;
   contains_paleontological_heritage_trace_fossils: boolean;
+  contains_paleontological_heritage_other_details: string;
+  geological_units: number[];
 }
 
 export interface Stratotype {
