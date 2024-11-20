@@ -5,7 +5,7 @@ import shapely
 
 
 from app import ma
-from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Inpg, Nomenclature, BibNomenclatureType, CorSiteSubstance, Stratotype
+from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Inpg, Nomenclature, BibNomenclatureType, CorSiteSubstance, Stratotype, CorSiteInpg
 
 
 class PerimetreProtectionSchema(ma.SQLAlchemyAutoSchema):
@@ -19,7 +19,17 @@ class PerimetreProtectionSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Site
         exclude = ['geom_point']   
-    inpg = ma.Nested(lambda: InpgSchema, many=True)
+    sites_inpg = fields.Method('get_sorted_sites_inpg')
+    def get_sorted_sites_inpg(self, obj):
+        # Trier les sites_inpg par nombre_etoiles (desc) et lb_site (asc)
+        sorted_sites = sorted(
+            obj.sites_inpg,
+            key=lambda x: (-x.inpg.nombre_etoiles if x.inpg and x.inpg.nombre_etoiles is not None else 0, 
+                        x.inpg.lb_site if x.inpg and x.inpg.lb_site else '')
+        )
+
+        # Sérialiser avec CorSiteInpgSchema
+        return CorSiteInpgSchema(many=True).dump(sorted_sites)
     
     patrimoines_geologiques = ma.Nested(lambda: PatrimoineGeologiqueGestionnaireSchema, many=True)
 
@@ -50,12 +60,25 @@ class SiteSchema(ma.SQLAlchemyAutoSchema):
 
     entites_geol = ma.Nested(lambda: EntiteGeolSchema, many=True)
     infos_base = ma.Nested(lambda: TInfosBaseSiteSchema, many=False)
-    inpg = ma.Nested(lambda: InpgSchema, many=True)
+    # sites_inpg = ma.Nested(lambda: CorSiteInpgSchema, many=True)
+    sites_inpg = fields.Method('get_sorted_sites_inpg')
     ages = ma.Nested(lambda: NomenclatureSchema, many=True)
     perimetre_protection = ma.Nested(PerimetreProtectionSchema, many=False, attribute='perimetre_protection_site')
     patrimoines_geologiques = ma.Nested(lambda: PatrimoineGeologiqueGestionnaireSchema, many=True)
     substances = ma.Nested(lambda:CorSiteSubstanceSchema, many = True)
     stratotypes = ma.Nested(lambda:StratotypeSchema, many = True)
+
+    def get_sorted_sites_inpg(self, obj):
+        # Trier les sites_inpg par nombre_etoiles (desc) et lb_site (asc)
+        sorted_sites = sorted(
+            obj.sites_inpg,
+            key=lambda x: (-x.inpg.nombre_etoiles if x.inpg and x.inpg.nombre_etoiles is not None else 0, 
+                        x.inpg.lb_site if x.inpg and x.inpg.lb_site else '')
+        )
+
+        # Sérialiser avec CorSiteInpgSchema
+        return CorSiteInpgSchema(many=True).dump(sorted_sites)
+
 
 class SiteSchemaSimple(ma.SQLAlchemyAutoSchema):
     geom = fields.Method('wkt_to_geojson')
@@ -146,3 +169,10 @@ class CorSiteSubstanceSchema(ma.SQLAlchemyAutoSchema) :
 class StratotypeSchema(ma.SQLAlchemyAutoSchema) :
     class Meta:
         model = Stratotype
+
+class CorSiteInpgSchema(ma.SQLAlchemyAutoSchema) :
+    class Meta:
+        model = CorSiteInpg
+        load_relationships = True
+
+    inpg = ma.Nested(lambda:InpgSchema)   

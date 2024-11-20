@@ -109,13 +109,15 @@ export class EspaceDetailComponent implements OnInit {
     if (slug) {
       this.siteService.getSiteBySlug(slug).subscribe((site: Site) => {
         this.site = site;
+        console.log(this.site);
+
         setTimeout(() => (this.initMap(), this.addLayers(), this.zoomToExtent()), 1);
         this.uniqueInteretGeolPrincipal = Array.from(
-          new Set(this.site.inpg.map((inpg: any) => inpg.interet_geol_principal))
+          new Set(this.site.sites_inpg.map((inpg: any) => inpg.inpg.interet_geol_principal))
         );
-        this.nbInpgConfidentielsReserve = this.site.inpg.filter((inpg: { niveau_de_diffusion: string; }) => inpg.niveau_de_diffusion === 'Confidentiel').length;
+        this.nbInpgConfidentielsReserve = this.site.sites_inpg.filter((inpg: { inpg: { niveau_de_diffusion: string; }; }) => inpg.inpg.niveau_de_diffusion === 'Confidentiel').length;
         if (this.site.perimetre_protection) {
-          this.nbInpgConfidentielsPP = this.site.perimetre_protection.inpg.filter((inpg: { niveau_de_diffusion: string; }) => inpg.niveau_de_diffusion === 'Confidentiel').length;
+          this.nbInpgConfidentielsPP = this.site.perimetre_protection.sites_inpg.filter((inpg: { inpg: { niveau_de_diffusion: string; }; }) => inpg.inpg.niveau_de_diffusion === 'Confidentiel').length;
         }
       })
     }
@@ -216,7 +218,7 @@ export class EspaceDetailComponent implements OnInit {
       fillColor: '#4a90e2'
     };
 
-    const inpgPublicLayers = this.site!.inpg
+    const inpgPublicLayers = this.site!.sites_inpg
       .filter((inpg: any) => inpg.niveau_de_diffusion === 'Public')
       .map((inpg: any) => L.geoJSON(
         inpg.geom, {
@@ -245,7 +247,7 @@ export class EspaceDetailComponent implements OnInit {
       fillColor: '#f5a623'
     };
 
-    const inpgConfidentialLayers = this.site!.inpg
+    const inpgConfidentialLayers = this.site!.sites_inpg
       .filter((inpg: any) => inpg.niveau_de_diffusion === 'Confidentiel')
       .map((inpg: any) => L.geoJSON(inpg.geom, { style: siteLayerStyle }));
 

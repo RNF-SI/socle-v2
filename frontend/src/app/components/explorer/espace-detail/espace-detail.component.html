@@ -26,8 +26,8 @@
     </div>
     <div class="stat-item">
       <fa-icon [icon]="['fas', 'map-marker']"></fa-icon>
-      <div class="stat-value">{{ site.inpg.length }} </div>
-      <div class="stat-label">Site<span *ngIf="site.inpg.length>1">s</span></div>
+      <div class="stat-value">{{ site.sites_inpg.length }} </div>
+      <div class="stat-label">Site<span *ngIf="site.sites_inpg.length>1">s</span></div>
       <div class="stat-label">INPG</div>
     </div>
     <div class="stat-item">
@@ -70,7 +70,7 @@
         La réserve a été créée sur le fondement d’un patrimoine géologique.
       </p>
       <div *ngIf="site.creation_geol != true">
-        <div *ngIf="site.inpg && site.inpg.length > 0; else noInpgData">
+        <div *ngIf="site.sites_inpg && site.sites_inpg.length > 0; else noInpgData">
           <p>La réserve abrite du patrimoine géologique, mais ce n’est pas ce dernier qui a motivé sa création.</p>
         </div>
         <ng-template #noInpgData>
@@ -171,23 +171,23 @@
         Sites INPG sur la réserve
       </div>
       <div class="subsection-response">
-        <div *ngIf="site.inpg && site.inpg.length > 0; else noInpgData">
-          <div *ngFor="let inpg of site.inpg">
-            <div *ngIf="inpg.niveau_de_diffusion === 'Public'">
+        <div *ngIf="site.sites_inpg && site.sites_inpg.length > 0; else noInpgData">
+          <div *ngFor="let inpg of site.sites_inpg">
+            <div *ngIf="inpg.inpg.niveau_de_diffusion === 'Public'">
               <fa-icon [icon]="['fas', 'star']" size="2xs"></fa-icon>
-              <fa-icon *ngIf="inpg.nombre_etoiles > 1; else etoileVide2" [icon]="['fas', 'star']" size="2xs">
+              <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 1; else etoileVide2" [icon]="['fas', 'star']" size="2xs">
               </fa-icon>
               <ng-template #etoileVide2>
                 <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
               </ng-template>
-              <fa-icon *ngIf="inpg.nombre_etoiles > 2; else etoileVide3" [icon]="['fas', 'star']" size="2xs">
+              <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 2; else etoileVide3" [icon]="['fas', 'star']" size="2xs">
               </fa-icon>
               <ng-template #etoileVide3>
                 <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
               </ng-template>
-              <a [href]="'https://inpn.mnhn.fr/site/inpg/' + inpg.id_metier" target="_blank"> {{
-                inpg.lb_site }}</a>
-              {{ inpg.interet_geol_principal }}
+              <a [href]="'https://inpn.mnhn.fr/site/inpg/' + inpg.inpg.id_metier" target="_blank"> {{
+                inpg.inpg.lb_site }}</a>
+              {{ inpg.inpg.interet_geol_principal }}
             </div>
           </div>
           <div *ngIf="nbInpgConfidentielsReserve && !estConnecte()">
@@ -204,23 +204,23 @@
           Sites INPG confidentiels sur la réserve
         </div>
         <div class="subsection-response">
-          <div *ngIf="site.inpg && site.inpg.length > 0; else noInpgData">
-            <div *ngFor="let inpg of site.inpg">
-              <div *ngIf="inpg.niveau_de_diffusion === 'Confidentiel'">
+          <div *ngIf="site.sites_inpg && site.sites_inpg.length > 0; else noInpgData">
+            <div *ngFor="let inpg of site.sites_inpg">
+              <div *ngIf="inpg.inpg.niveau_de_diffusion === 'Confidentiel'">
                 <fa-icon [icon]="['fas', 'star']" size="2xs"></fa-icon>
-                <fa-icon *ngIf="inpg.nombre_etoiles > 1; else etoileVide2" [icon]="['fas', 'star']" size="2xs">
+                <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 1; else etoileVide2" [icon]="['fas', 'star']" size="2xs">
                 </fa-icon>
                 <ng-template #etoileVide2>
                   <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
                 </ng-template>
-                <fa-icon *ngIf="inpg.nombre_etoiles > 2; else etoileVide3" [icon]="['fas', 'star']" size="2xs">
+                <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 2; else etoileVide3" [icon]="['fas', 'star']" size="2xs">
                 </fa-icon>
                 <ng-template #etoileVide3>
                   <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
                 </ng-template>
-                <a [href]="'https://inpn.mnhn.fr/site/inpg/' + inpg.id_metier" target="_blank"> {{
-                  inpg.lb_site }}</a>
-                {{ inpg.interet_geol_principal }}
+                <a [href]="'https://inpn.mnhn.fr/site/inpg/' + inpg.inpg.id_metier" target="_blank"> {{
+                  inpg.inpg.lb_site }}</a>
+                {{ inpg.inpg.interet_geol_principal }}
               </div>
             </div>
           </div>
@@ -231,23 +231,24 @@
           Sites INPG sur le périmètre de protection
         </div>
         <div class="subsection-response">
-          <div *ngIf="site.perimetre_protection.inpg && site.perimetre_protection.inpg.length > 0; else noInpgData">
-            <div *ngFor="let inpg of site.perimetre_protection.inpg">
-              <div *ngIf="inpg.niveau_de_diffusion === 'Public'">
+          <div
+            *ngIf="site.perimetre_protection.sites_inpg && site.perimetre_protection.sites_inpg.length > 0; else noInpgData">
+            <div *ngFor="let inpg of site.perimetre_protection.sites_inpg">
+              <div *ngIf="inpg.inpg.niveau_de_diffusion === 'Public'">
                 <fa-icon [icon]="['fas', 'star']" size="2xs"></fa-icon>
-                <fa-icon *ngIf="inpg.nombre_etoiles > 1; else etoileVide2" [icon]="['fas', 'star']" size="2xs">
+                <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 1; else etoileVide2" [icon]="['fas', 'star']" size="2xs">
                 </fa-icon>
                 <ng-template #etoileVide2>
                   <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
                 </ng-template>
-                <fa-icon *ngIf="inpg.nombre_etoiles > 2; else etoileVide3" [icon]="['fas', 'star']" size="2xs">
+                <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 2; else etoileVide3" [icon]="['fas', 'star']" size="2xs">
                 </fa-icon>
                 <ng-template #etoileVide3>
                   <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
                 </ng-template>
-                <a [href]="inpg.url" target="_blank"> {{
-                  inpg.lb_site }}</a>
-                {{ inpg.interet_geol_principal }}
+                <a [href]="inpg.inpg.url" target="_blank"> {{
+                  inpg.inpg.lb_site }}</a>
+                {{ inpg.inpg.interet_geol_principal }}
               </div>
             </div>
             <div *ngIf="nbInpgConfidentielsPP && !estConnecte()">
@@ -265,23 +266,24 @@
           Sites INPG confidentiels sur le périmètre de protection
         </div>
         <div class="subsection-response">
-          <div *ngIf="site.perimetre_protection.inpg && site.perimetre_protection.inpg.length > 0; else noInpgData">
-            <div *ngFor="let inpg of site.perimetre_protection.inpg">
-              <div *ngIf="inpg.niveau_de_diffusion === 'Confidentiel'">
+          <div
+            *ngIf="site.perimetre_protection.sites_inpg && site.perimetre_protection.sites_inpg.length > 0; else noInpgData">
+            <div *ngFor="let inpg of site.perimetre_protection.sites_inpg">
+              <div *ngIf="inpg.inpg.niveau_de_diffusion === 'Confidentiel'">
                 <fa-icon [icon]="['fas', 'star']" size="2xs"></fa-icon>
-                <fa-icon *ngIf="inpg.nombre_etoiles > 1; else etoileVide2" [icon]="['fas', 'star']" size="2xs">
+                <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 1; else etoileVide2" [icon]="['fas', 'star']" size="2xs">
                 </fa-icon>
                 <ng-template #etoileVide2>
                   <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
                 </ng-template>
-                <fa-icon *ngIf="inpg.nombre_etoiles > 2; else etoileVide3" [icon]="['fas', 'star']" size="2xs">
+                <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 2; else etoileVide3" [icon]="['fas', 'star']" size="2xs">
                 </fa-icon>
                 <ng-template #etoileVide3>
                   <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
                 </ng-template>
-                <a [href]="inpg.url" target="_blank"> {{
-                  inpg.lb_site }}</a>
-                {{ inpg.interet_geol_principal }}
+                <a [href]="inpg.inpg.url" target="_blank"> {{
+                  inpg.inpg.lb_site }}</a>
+                {{ inpg.inpg.interet_geol_principal }}
               </div>
             </div>
           </div>
@@ -298,8 +300,8 @@
         <tbody>
           <tr>
             <td>
-              <div *ngIf="site.inpg && site.inpg.length > 0; else noInpgData">
-                <div *ngFor="let inpg of site.inpg">
+              <div *ngIf="site.sites_inpg && site.sites_inpg.length > 0; else noInpgData">
+                <div *ngFor="let inpg of site.sites_inpg">
                   <a [href]="inpg.url" target="_blank">{{ inpg.lb_site }}</a>
                   {{ inpg.interet_geol_principal }}
                 </div>
@@ -310,8 +312,8 @@
             </td>
             <td>
               <div
-                *ngIf="site.perimetre_protection?.inpg && site.perimetre_protection.inpg.length > 0; else noDataINPG">
-                <div *ngFor="let inpg of site.perimetre_protection.inpg">
+                *ngIf="site.perimetre_protection?.inpg && site.perimetre_protection.sites_inpg.length > 0; else noDataINPG">
+                <div *ngFor="let inpg of site.perimetre_protection.sites_inpg">
                   <a [href]="inpg.url" target="_blank">{{ inpg.lb_site }}</a>
                   {{ inpg.interet_geol_principal }}
                 </div>

@@ -58,10 +58,10 @@ class TInfosBaseSite(db.Model):
     offers_geodiversity_activities = db.Column(db.Boolean)
     # slug = db.Column(db.String(255), unique=True)
 
-cor_site_inpg = db.Table('cor_site_inpg',
-    db.Column('site_id', db.Integer, db.ForeignKey('site.id_site', ondelete="CASCADE")),
-    db.Column('inpg_id', db.Integer, db.ForeignKey('inpg.id_inpg', ondelete="CASCADE"))
-)
+# cor_site_inpg = db.Table('cor_site_inpg',
+#     db.Column('site_id', db.Integer, db.ForeignKey('site.id_site', ondelete="CASCADE")),
+#     db.Column('inpg_id', db.Integer, db.ForeignKey('inpg.id_inpg', ondelete="CASCADE"))
+# )
 
 cor_site_ages = db.Table('cor_site_ages',
     db.Column('site_id', db.Integer, db.ForeignKey('site.id_site', ondelete="CASCADE")),
@@ -109,12 +109,12 @@ class Site(db.Model):
 
     infos_base = db.relationship("TInfosBaseSite", foreign_keys=TInfosBaseSite.id_site, uselist=False)
 
-    inpg = db.relationship(
-        'Inpg',
-        secondary=cor_site_inpg,
-        passive_deletes=True,
-        order_by="desc(Inpg.nombre_etoiles)"
-    )
+    # inpg = db.relationship(
+    #     'Inpg',
+    #     secondary=cor_site_inpg,
+    #     passive_deletes=True,
+    #     order_by="desc(Inpg.nombre_etoiles)"
+    # )
 
     ages = db.relationship(
         'Nomenclature',
@@ -125,6 +125,8 @@ class Site(db.Model):
     patrimoines_geologiques = db.relationship('PatrimoineGeologiqueGestionnaire', backref='site', passive_deletes=True)
     
     substances = db.relationship("CorSiteSubstance")
+
+    sites_inpg = db.relationship("CorSiteInpg")
 
     stratotypes = db.relationship(
         'Stratotype',
@@ -234,3 +236,13 @@ class Stratotype(db.Model):
     costratotype = db.Column(db.Boolean)
     ancien = db.Column(db.Boolean)
 
+class CorSiteInpg(db.Model):
+    __tablename__= 'cor_site_inpg'
+
+    site_id = db.Column(db.Integer, db.ForeignKey('site.id_site', ondelete='CASCADE'), primary_key= True)
+    inpg_id = db.Column(db.Integer, db.ForeignKey('inpg.id_inpg', ondelete='CASCADE'), primary_key= True)
+    active = db.Column(db.Boolean)
+    raison_desactive = db.Column(db.String)
+
+    site = db.relationship("Site", back_populates="sites_inpg")
+    inpg = db.relationship("Inpg")

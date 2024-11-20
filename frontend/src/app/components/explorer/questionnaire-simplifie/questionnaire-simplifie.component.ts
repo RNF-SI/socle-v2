@@ -255,10 +255,10 @@ export class QuestionnaireSimplifieComponent implements OnInit {
       (site: any) => {
         this.site = site;
         console.log(this.site);
-        if (this.site.inpg.length < 6) {
+        if (this.site.sites_inpg.length < 6) {
           this.showInpg = true
         }
-        if (this.site.perimetre_protection && this.site.perimetre_protection.inpg.length < 6) {
+        if (this.site.perimetre_protection && this.site.perimetre_protection.sites_inpg.length < 6) {
           this.showPpInpg = true
         }
 
@@ -267,8 +267,8 @@ export class QuestionnaireSimplifieComponent implements OnInit {
         this.tInfosBaseSiteForm.patchValue({
           id_site: site.id_site,
           reserve_created_on_geological_basis: site.creation_geol,
-          // reserve_contains_geological_heritage_inpg: site.reserve_contains_geological_heritage_inpg || site.inpg.length > 0,
-          // protection_perimeter_contains_geological_heritage_inpg: site.protection_perimeter_contains_geological_heritage_inpg || site.inpg.length > 0,
+          // reserve_contains_geological_heritage_inpg: site.reserve_contains_geological_heritage_inpg || site.sites_inpg.length > 0,
+          // protection_perimeter_contains_geological_heritage_inpg: site.protection_perimeter_contains_geological_heritage_inpg || site.sites_inpg.length > 0,
           reserve_has_geological_collections: site.infos_base.reserve_has_geological_collections,
           reserve_has_exhibition: site.infos_base.reserve_has_exhibition,
           reserve_contains_stratotype: site.stratotypes.length > 0,
@@ -543,6 +543,97 @@ export class QuestionnaireSimplifieComponent implements OnInit {
       });
     }
   }
+
+  confirmDeletion(siteName: string, siteId: number, inpgId: number, pp: boolean): void {
+    Swal.fire({
+      title: 'Selon vous, le site INPG ' + siteName + ' ne doit pas être associé à la réserve',
+      input: 'textarea',
+      inputPlaceholder: 'Saisissez la raison ici...',
+      showCancelButton: true,
+      confirmButtonText: 'Retirer le site INPG',
+      cancelButtonText: 'Annuler',
+      footer: 'Cette action n\'est pas irréversible. Le site INPG restera présenté dans ce formulaire comme n\'étant pas associé à la réserve.',
+      inputValidator: (value) => {
+        if (!value) {
+          return 'Vous devez saisir une raison !';
+        }
+        return undefined;
+      }
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        const reason = result.value;
+
+        // Appeler le service pour effectuer la modification côté back
+        this.siteService.invalidInpgSite(siteId, inpgId, reason).subscribe({
+          next: () => {
+            // Mise à jour locale de l'objet site
+            if (pp == true) {
+              const inpgToUpdate = this.site.perimetre_protection.sites_inpg.find(
+                (inpg: any) => inpg.inpg.id_inpg === inpgId
+              );
+              if (inpgToUpdate) {
+                inpgToUpdate.active = false;
+                inpgToUpdate.raison_desactive = reason;
+              }
+            } else {
+              const inpgToUpdate = this.site.sites_inpg.find(
+                (inpg: any) => inpg.inpg.id_inpg === inpgId
+              );
+              if (inpgToUpdate) {
+                inpgToUpdate.active = false;
+                inpgToUpdate.raison_desactive = reason;
+              }
+            }
+
+            Swal.fire('Succès', `Le site INPG ${siteName} a été dissocié de la réserve.`, 'success');
+          },
+          error: (err) => {
+            Swal.fire('Erreur', 'Une erreur s\'est produite lors de la mise à jour.', 'error');
+          }
+        });
+      }
+    });
+  }
+
+  confirmRevalid(siteName: string, siteId: number, inpgId: number, raison: string, pp: boolean): void {
+    Swal.fire({
+      title: 'Selon vous, le site INPG ' + siteName + ' doit finalement être associé à la réserve',
+      text: 'La raison qui avait été donnée pour le dissocier était : ' + raison,
+      showCancelButton: true,
+      confirmButtonText: 'Confirmer',
+      cancelButtonText: 'Annuler'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Appeler le service pour effectuer la modification côté back
+        this.siteService.revalidInpgSite(siteId, inpgId).subscribe({
+          next: () => {
+            // Mise à jour locale de l'objet site
+            if (pp == true) {
+              const inpgToUpdate = this.site.perimetre_protection.sites_inpg.find(
+                (inpg: any) => inpg.inpg.id_inpg === inpgId
+              );
+              if (inpgToUpdate) {
+                inpgToUpdate.active = true;
+              }
+            } else {
+              const inpgToUpdate = this.site.sites_inpg.find(
+                (inpg: any) => inpg.inpg.id_inpg === inpgId
+              );
+              if (inpgToUpdate) {
+                inpgToUpdate.active = true;
+              }
+            }
+
+            Swal.fire('Succès', `Le site INPG ${siteName} a été réassocié à la réserve.`, 'success');
+          },
+          error: (err) => {
+            Swal.fire('Erreur', 'Une erreur s\'est produite lors de la mise à jour.', 'error');
+          }
+        });
+      }
+    });
+  }
+
 
 
 

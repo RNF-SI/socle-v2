@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Site } from '../models/site.model';
 
@@ -106,6 +106,29 @@ export class SitesService {
   getStratotypesLimite(): Observable<any> {
     return this._http.get<any>(`${environment.apiUrl}/stratotypes-limite`);
   }
+
+  invalidInpgSite(siteId: number, inpgId: number, reason: string): Observable<any> {
+    const infos = { siteId, inpgId, reason };
+
+    return this._http.put(`${environment.apiUrl}/invalid-inpg-from-site`, infos).pipe(
+      catchError((error) => {
+        console.error('Erreur lors de la requête PUT :', error);
+        return throwError(error);
+      })
+    );
+  }
+
+  revalidInpgSite(siteId: number, inpgId: number): Observable<any> {
+    const infos = { siteId, inpgId };
+
+    return this._http.put(`${environment.apiUrl}/revalid-inpg-from-site`, infos).pipe(
+      catchError((error) => {
+        console.error('Erreur lors de la requête PUT :', error);
+        return throwError(error);
+      })
+    );
+  }
+
 
 
 }

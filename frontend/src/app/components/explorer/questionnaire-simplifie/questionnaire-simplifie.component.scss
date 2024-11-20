@@ -105,6 +105,20 @@
   color: gold;
 }
 
+.delete-icon {
+  color: red !important;
+  cursor: pointer;
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+.valid-icon {
+  color: green !important;
+  cursor: pointer;
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
 .sites-inpg a {
   color: mat-color($custom-primary, 500);
   text-decoration: none;
@@ -152,4 +166,25 @@
   border: none;
   /* Supprime les bordures si nécessaire */
   outline: none;
+}
+
+.strikethrough {
+  text-decoration: line-through;
+  /* Barre le texte */
+  opacity: 0.5;
+  /* Rend les éléments semi-transparents (optionnel) */
+}
+
+.detail-sites-inpg {
+  display: flex;
+  /* Active Flexbox pour aligner les éléments */
+  align-items: center;
+  /* Aligne verticalement les éléments */
+}
+
+.detail-content {
+  display: inline-flex;
+  /* Gère le contenu interne en ligne */
+  align-items: center;
+  /* Centre les icônes et le texte */
 }

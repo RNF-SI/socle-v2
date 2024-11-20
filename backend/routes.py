@@ -4,7 +4,7 @@ from flask import Flask, request, Response, render_template, redirect, Blueprint
 import requests
 import json
 from app import app, db
-from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Nomenclature, BibNomenclatureType,Inpg, Site, cor_site_inpg, CorSiteSubstance, Stratotype
+from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Nomenclature, BibNomenclatureType,Inpg, Site, CorSiteInpg, CorSiteSubstance, Stratotype
 from schemas import PatrimoineGeologiqueGestionnaireSchema, PerimetreProtectionSchema, TInfosBaseSiteSchema, SiteSchema, NomenclatureSchema, NomenclatureTypeSchema, SiteSchemaSimple, StratotypeSchema
 from pypnusershub import routes as fnauth
 import logging
@@ -127,55 +127,55 @@ def get_sites_in_bbox():
     return schema.jsonify(sites)
 
 
-@bp.route('/sites/patrimoine', methods=['GET'])
-def get_sites_patrimoine():
-    patrimoine_filter = request.args.get('patrimoine', 'all')
+# @bp.route('/sites/patrimoine', methods=['GET'])
+# def get_sites_patrimoine():
+#     patrimoine_filter = request.args.get('patrimoine', 'all')
 
-    if patrimoine_filter == 'oui':
-        # Récupérer les sites qui ont un patrimoine géologique
-        sites_with_patrimoine = db.session.query(Site, db.func.array_agg(Inpg.id_metier)).join(PatrimoineGeologiqueGestionnaire, Site.id_site == PatrimoineGeologiqueGestionnaire.id_site)\
-            .outerjoin(cor_site_inpg, Site.id_site == cor_site_inpg.c.site_id)\
-            .outerjoin(Inpg, cor_site_inpg.c.inpg_id == Inpg.id_inpg)\
-            .group_by(Site.id_site).all()
-    elif patrimoine_filter == 'non':
-        # Récupérer les sites qui n'ont pas de patrimoine géologique
-        sites_without_patrimoine = db.session.query(Site, db.func.array_agg(Inpg.id_metier)).outerjoin(PatrimoineGeologiqueGestionnaire).filter(PatrimoineGeologiqueGestionnaire.id_site == None)\
-            .outerjoin(cor_site_inpg, Site.id_site == cor_site_inpg.c.site_id)\
-            .outerjoin(Inpg, cor_site_inpg.c.inpg_id == Inpg.id_inpg)\
-            .group_by(Site.id_site).all()
-        sites_with_patrimoine = sites_without_patrimoine
-    else:
-        # Récupérer tous les sites
-        sites_with_patrimoine = db.session.query(Site, db.func.array_agg(Inpg.id_metier)).outerjoin(cor_site_inpg, Site.id_site == cor_site_inpg.c.site_id)\
-            .outerjoin(Inpg, cor_site_inpg.c.inpg_id == Inpg.id_inpg)\
-            .group_by(Site.id_site).all()
+#     if patrimoine_filter == 'oui':
+#         # Récupérer les sites qui ont un patrimoine géologique
+#         sites_with_patrimoine = db.session.query(Site, db.func.array_agg(Inpg.id_metier)).join(PatrimoineGeologiqueGestionnaire, Site.id_site == PatrimoineGeologiqueGestionnaire.id_site)\
+#             .outerjoin(cor_site_inpg, Site.id_site == cor_site_inpg.c.site_id)\
+#             .outerjoin(Inpg, cor_site_inpg.c.inpg_id == Inpg.id_inpg)\
+#             .group_by(Site.id_site).all()
+#     elif patrimoine_filter == 'non':
+#         # Récupérer les sites qui n'ont pas de patrimoine géologique
+#         sites_without_patrimoine = db.session.query(Site, db.func.array_agg(Inpg.id_metier)).outerjoin(PatrimoineGeologiqueGestionnaire).filter(PatrimoineGeologiqueGestionnaire.id_site == None)\
+#             .outerjoin(cor_site_inpg, Site.id_site == cor_site_inpg.c.site_id)\
+#             .outerjoin(Inpg, cor_site_inpg.c.inpg_id == Inpg.id_inpg)\
+#             .group_by(Site.id_site).all()
+#         sites_with_patrimoine = sites_without_patrimoine
+#     else:
+#         # Récupérer tous les sites
+#         sites_with_patrimoine = db.session.query(Site, db.func.array_agg(Inpg.id_metier)).outerjoin(cor_site_inpg, Site.id_site == cor_site_inpg.c.site_id)\
+#             .outerjoin(Inpg, cor_site_inpg.c.inpg_id == Inpg.id_inpg)\
+#             .group_by(Site.id_site).all()
 
-    # Serializer et retourner la réponse
-    result = []
-    site_schema = SiteSchema(many=False)
-    for site, id_metiers in sites_with_patrimoine:
-        site_data = site_schema.dump(site)
-        site_data['id_metier'] = ', '.join([str(metier) for metier in id_metiers])  # Concaténer les id_metier
-        result.append(site_data)
+#     # Serializer et retourner la réponse
+#     result = []
+#     site_schema = SiteSchema(many=False)
+#     for site, id_metiers in sites_with_patrimoine:
+#         site_data = site_schema.dump(site)
+#         site_data['id_metier'] = ', '.join([str(metier) for metier in id_metiers])  # Concaténer les id_metier
+#         result.append(site_data)
 
-    return jsonify(result)
+#     return jsonify(result)
 
 
 # Flask route update
-@bp.route('/sites/inpg', methods=['GET'])
-def get_sites_with_inpg():
-    # Requête qui retourne un site et tous ses id_metier associés
-    sites = db.session.query(Site, db.func.array_agg(Inpg.id_metier), db.func.array_agg(Inpg.url)).outerjoin(cor_site_inpg, Site.id_site == cor_site_inpg.c.site_id)\
-        .outerjoin(Inpg, cor_site_inpg.c.inpg_id == Inpg.id_inpg).group_by(Site.id_site).all()
+# @bp.route('/sites/inpg', methods=['GET'])
+# def get_sites_with_inpg():
+#     # Requête qui retourne un site et tous ses id_metier associés
+#     sites = db.session.query(Site, db.func.array_agg(Inpg.id_metier), db.func.array_agg(Inpg.url)).outerjoin(cor_site_inpg, Site.id_site == cor_site_inpg.c.site_id)\
+#         .outerjoin(Inpg, cor_site_inpg.c.inpg_id == Inpg.id_inpg).group_by(Site.id_site).all()
 
-    site_schema = SiteSchema(many=False)
-    result = []
-    for site, id_metiers, urls in sites:
-        site_data = site_schema.dump(site)  # Sérialiser uniquement le site
-        site_data['id_metier'] = [{'id': metier, 'url': url} for metier, url in zip(id_metiers, urls)]  # Associer chaque `id_metier` à son `url`
-        result.append(site_data)
+#     site_schema = SiteSchema(many=False)
+#     result = []
+#     for site, id_metiers, urls in sites:
+#         site_data = site_schema.dump(site)  # Sérialiser uniquement le site
+#         site_data['id_metier'] = [{'id': metier, 'url': url} for metier, url in zip(id_metiers, urls)]  # Associer chaque `id_metier` à son `url`
+#         result.append(site_data)
 
-    return jsonify(result)
+#     return jsonify(result)
 
 
 
@@ -466,6 +466,54 @@ def update_t_infos_base_site(slug):
         response.status_code = 500
         return response
 
+@bp.route('/invalid-inpg-from-site', methods=['PUT'])
+def update_inpg_site():
+    data = request.get_json()
+    print(data.get('reason'))
+    try :
+        inpg = db.session.query(CorSiteInpg).filter_by(inpg_id=data.get('inpgId'), site_id=data.get('siteId')).first()
+
+        print(inpg)
+
+        inpg.active = False
+        inpg.raison_desactive = data.get('reason')
+
+        db.session.commit()
+
+        return jsonify({'type': 'success', 'msg': 'Les site INPG a été invalidé !'})
+    
+    except Exception as e:
+        print(e)
+        response = jsonify(
+            type='bug',
+            msg='Erreur lors de l\'invalidation du site INPG',
+            flask_message=str(e)
+        )
+        response.status_code = 500
+        return response
+
+@bp.route('/revalid-inpg-from-site', methods=['PUT'])
+def update_inpg_site_site():
+    data = request.get_json()
+    print(data.get('reason'))
+    try :
+        inpg = db.session.query(CorSiteInpg).filter_by(inpg_id=data.get('inpgId'), site_id=data.get('siteId')).first()
+
+        inpg.active = True
+
+        db.session.commit()
+
+        return jsonify({'type': 'success', 'msg': 'Les site INPG a été revalidé !'})
+    
+    except Exception as e:
+        print(e)
+        response = jsonify(
+            type='bug',
+            msg='Erreur lors de la revalidation du site INPG',
+            flask_message=str(e)
+        )
+        response.status_code = 500
+        return response
 
 @bp.route('/stratotypes/count', methods=['GET'])
 def get_stratotype_count():

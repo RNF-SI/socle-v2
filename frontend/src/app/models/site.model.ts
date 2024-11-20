@@ -22,6 +22,7 @@ export interface Site {
 
   monosite: string;
   inpg: any;
+  sites_inpg: any;
   patrimoines_geologiques: any;
   perimetre_protection: any;
   interet_geol_principal: any;
