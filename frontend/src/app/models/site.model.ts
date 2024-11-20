@@ -38,6 +38,8 @@ export interface Site {
   geom: any;
   jonction_nom: any;
   surf_off: any;
+  substances: any;
+
   // WTF : je ne comprend pas du tout ce modèle, il ne correspond pas du tout à sites...
 }
 
@@ -53,6 +55,13 @@ export interface Infos_base {
   contains_paleontological_heritage_trace_fossils: boolean;
   contains_paleontological_heritage_other_details: string;
   geological_units: number[];
+  mineral_resources_old_quarry: boolean;
+  mineral_resources_active_quarry: boolean;
+  mineral_resources_old_mine: boolean;
+  mineral_resources_active_mine: boolean;
+  reserve_has_geological_collections: boolean;
+  reserve_has_geological_site_for_visitors: boolean;
+  offers_geodiversity_activities: boolean;
 }
 
 export interface Stratotype {

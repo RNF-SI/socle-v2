@@ -371,32 +371,38 @@
       <img src="assets/images/iconSynth.png" alt="Icone patrimoine" class="heritage-icon">
       <h2 class="heritage-title">Ressources minérales</h2>
     </div>
-    <div *ngIf="!tInfosBaseSite?.associated_with_mineral_resources">
-      <p>Pas d’exploitation de ressource minérale connue</p>
-    </div>
-    <div *ngIf="tInfosBaseSite?.associated_with_mineral_resources">
-      <div *ngIf="tInfosBaseSite?.mineral_resources_old_quarry">
-        <p>Ancienne carrière</p>
+    <div class="heritage-content">
+
+      <div
+        *ngIf="!site.infos_base.mineral_resources_old_quarry && !site.infos_base.mineral_resources_active_quarry && !site.infos_base.mineral_resources_old_mine && !site.infos_base.mineral_resources_active_mine">
+        <p>Pas d’exploitation de ressource minérale connue</p>
       </div>
-      <div *ngIf="tInfosBaseSite?.mineral_resources_active_quarry">
-        <p>Carrières en activité</p>
+      <div>
+        <div *ngIf="site.infos_base.mineral_resources_old_quarry">
+          <p>Anciennes carrières</p>
+        </div>
+        <div *ngIf="site.infos_base.mineral_resources_active_quarry">
+          <p>Carrières en activité</p>
+        </div>
+        <div *ngIf="site.infos_base.mineral_resources_old_mine">
+          <p>Anciennes mines </p>
+        </div>
+        <div *ngIf="site.infos_base.mineral_resources_active_mine">
+          <p>Mines en activité </p>
+        </div>
       </div>
-      <div *ngIf="tInfosBaseSite?.mineral_resources_old_mine">
-        <p>Anciennes mines </p>
-      </div>
-      <div *ngIf="tInfosBaseSite?.mineral_resources_active_mine">
-        <p>Mines en activité </p>
-      </div>
-      <!-- Si Carrière en activité ou Mine en activité est cochée Oui
-        <div *ngIf="tInfosBaseSite?.mineral_resources_active_quarry || tInfosBaseSite?.mineral_resources_active_mine">
-          <h3>Substances exploitées</h3>
+      <div *ngIf="site.substances.length > 0">
+        <div class="subsection-title">
+          Substances exploitées
+        </div>
+        <div class="subsection-response">
           <ul>
-             Afficher chaque substance sélectionnée  
-            <li *ngFor="let substance of substancesOptions">
-              {{ substance.label }}
+            <li *ngFor="let substance of site.substances">
+              {{ substance.substance.label }}<span *ngIf="substance.fossilifere"> (fossilifère)</span>
             </li>
           </ul>
-        </div> -->
+        </div>
+      </div>
     </div>
   </div>
   <div #infoBlock class="collections-section">
@@ -404,11 +410,13 @@
       <img src="assets/images/iconSynth.png" alt="Icone patrimoine" class="heritage-icon">
       <h2 class="heritage-title">Collections</h2>
     </div>
-    <div *ngIf="tInfosBaseSite?.reserve_has_geological_collections">
-      <p>La réserve dispose de collections géologiques propres</p>
-    </div>
-    <div *ngIf="!tInfosBaseSite?.reserve_has_geological_collections">
-      <p>La réserve ne dispose pas de collections géologiques propres</p>
+    <div class="heritage-content">
+      <div *ngIf="site.infos_base.reserve_has_geological_collections">
+        <p>La réserve dispose de collections géologiques propres</p>
+      </div>
+      <div *ngIf="!site.infos_base.reserve_has_geological_collections">
+        <p>La réserve ne dispose pas de collections géologiques propres</p>
+      </div>
     </div>
   </div>
   <div #infoBlock class="sensibilisation-section">
@@ -416,20 +424,22 @@
       <img src="assets/images/iconSynth.png" alt="Icone patrimoine" class="heritage-icon">
       <h2 class="heritage-title">Sensibilisation</h2>
     </div>
-    <!-- Première partie : Site géologique aménagé pour les visiteurs -->
-    <div *ngIf="tInfosBaseSite?.reserve_has_geological_site_for_visitors; else noSiteForVisitors">
-      <p>La réserve dispose d’un site géologique aménagé pour les visiteurs</p>
+    <div class="heritage-content">
+      <!-- Première partie : Site géologique aménagé pour les visiteurs -->
+      <div *ngIf="site.infos_base.reserve_has_geological_site_for_visitors; else noSiteForVisitors">
+        <p>La réserve dispose d’un site géologique aménagé pour les visiteurs</p>
+      </div>
+      <ng-template #noSiteForVisitors>
+        <p>La réserve ne dispose pas de site géologique aménagé pour les visiteurs</p>
+      </ng-template>
+      <!-- Deuxième partie : Animations sur la thématique géodiversité / patrimoine géologique   -->
+      <div *ngIf="site.infos_base.offers_geodiversity_activities; else noGeodiversityActivities">
+        <p>La réserve propose des animations sur la thématique géodiversité / patrimoine géologique</p>
+      </div>
+      <ng-template #noGeodiversityActivities>
+        <p>La réserve ne propose pas d’animation sur la thématique géodiversité / patrimoine géologique</p>
+      </ng-template>
     </div>
-    <ng-template #noSiteForVisitors>
-      <p>La réserve ne dispose pas de site géologique aménagé pour les visiteurs</p>
-    </ng-template>
-    <!-- Deuxième partie : Animations sur la thématique géodiversité / patrimoine géologique   -->
-    <div *ngIf="tInfosBaseSite?.offers_geodiversity_activities; else noGeodiversityActivities">
-      <p>La réserve propose des animations sur la thématique géodiversité / patrimoine géologique</p>
-    </div>
-    <ng-template #noGeodiversityActivities>
-      <p>La réserve ne propose pas d’animation sur la thématique géodiversité / patrimoine géologique</p>
-    </ng-template>
   </div>
 
 
