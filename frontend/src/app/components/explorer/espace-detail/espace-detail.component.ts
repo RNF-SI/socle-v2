@@ -38,6 +38,7 @@ export class EspaceDetailComponent implements OnInit {
   selectedSite: any = {};
   substancesOptions: Nomenclature[] = [];
   uniqueInteretGeolPrincipal = [];
+  rnId: string | null = null;
 
   private map: L.Map | undefined;
   private layerControl = L.control.layers();
@@ -56,46 +57,13 @@ export class EspaceDetailComponent implements OnInit {
   private osm: L.TileLayer | undefined;
   private geologie: L.TileLayer.WMS | undefined;
 
-  // Correct the type to be a single object instead of an array
-
-
-  // Applications = [
-  //   {
-  //     'nom': 'Aiguilles Rouges',
-  //     'superficie': '3276.00 ',
-  //     'sitesInpg': '2',
-  //     'autresSitesDeGeopatrimoine': '2',
-  //     'nombreDeStratotypes': '2',
-  //     'terrainsLesPlusAnciens': 'Bathonien',
-  //     'terrainsLesPlusRecents': 'Holocène'
-  //   },
-  //   {
-  //     'nom': 'Anciennes carrières de Cléty',
-  //     'superficie': '2050.00',
-  //     'sitesInpg': '3',
-  //     'autresSitesDeGeopatrimoine': '3',
-  //     'nombreDeStratotypes': '3',
-  //     'terrainsLesPlusAnciens': 'Albien',
-  //     'terrainsLesPlusRecents': 'Holocène'
-  //   },
-  //   {
-  //     'nom': 'Anciennes carrières d\'Orival',
-  //     'superficie': '1506.00',
-  //     'sitesInpg': '4',
-  //     'autresSitesDeGeopatrimoine': '4',
-  //     'nombreDeStratotypes': '4',
-  //     'terrainsLesPlusAnciens': 'Bathonien',
-  //     'terrainsLesPlusRecents': 'Holocène'
-  //   }
-  // ];
-
   constructor(
     private renderer: Renderer2,
     private route: ActivatedRoute,
     private siteService: SitesService,
     private tInfosBaseSiteService: TInfosBaseSiteService,
     private patrimoineGeologiqueService: PatrimoineGeologiqueService,
-    private authService: AuthService,
+    public authService: AuthService,
     private nomenclaturesService: NomenclaturesService
   ) { }
 
@@ -113,6 +81,7 @@ export class EspaceDetailComponent implements OnInit {
     if (slug) {
       this.siteService.getSiteBySlug(slug).subscribe((site: Site) => {
         this.site = site;
+        this.rnId = this.site.code;
         console.log(this.site);
 
         setTimeout(() => (this.initMap(), this.addLayers(), this.zoomToExtent()), 1);
@@ -125,21 +94,22 @@ export class EspaceDetailComponent implements OnInit {
         }
         this.stratotypesLimite = this.site.stratotypes.filter((stratotype) => stratotype.type === 'limite');
         this.stratotypesEtage = this.site.stratotypes.filter((stratotype) => stratotype.type === 'etage');
-        this.nomenclaturesService.getNomenclaturesByTypeId(6).subscribe(
-          (response: any) => {
-            if (response && Array.isArray(response.nomenclatures)) {
-              this.filteredGeologicalUnits = response.nomenclatures.filter((option: { id_nomenclature: number; }) =>
-                this.site!.infos_base.geological_units.includes(option.id_nomenclature)
-              );
-              console.log(this.filteredGeologicalUnits);
-            } else {
-              console.error('Expected nomenclatures to be an array, but got:', response);
+        if (this.site.infos_base.geological_units) {
+          this.nomenclaturesService.getNomenclaturesByTypeId(6).subscribe(
+            (response: any) => {
+              if (response && Array.isArray(response.nomenclatures)) {
+                this.filteredGeologicalUnits = response.nomenclatures.filter((option: { id_nomenclature: number; }) =>
+                  this.site!.infos_base.geological_units.includes(option.id_nomenclature)
+                );
+              } else {
+                console.error('Expected nomenclatures to be an array, but got:', response);
+              }
+            },
+            (error: any) => {
+              console.error('Error fetching geological units', error);
             }
-          },
-          (error: any) => {
-            console.error('Error fetching geological units', error);
-          }
-        );
+          );
+        }
       })
     }
   }

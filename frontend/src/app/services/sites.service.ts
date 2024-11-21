@@ -26,6 +26,11 @@ export class SitesService {
     return this._http.get<Site>(`${environment.apiUrl}/site/${slug}`);
   }
 
+
+  getSiteByIdLocal(id_local: string): Observable<Site> {
+    return this._http.get<Site>(`${environment.apiUrl}/site/id_local/${id_local}`);
+  }
+
   addSite(site: Site): Observable<Site> {
     return this._http.post<Site>(this.apiUrl, site);
   }

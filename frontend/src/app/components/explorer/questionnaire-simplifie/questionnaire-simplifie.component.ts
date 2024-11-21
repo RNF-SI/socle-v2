@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Nomenclature, NomenclatureType } from 'src/app/models/nomenclature.model';
@@ -18,7 +18,8 @@ import Swal from 'sweetalert2';
 })
 export class QuestionnaireSimplifieComponent implements OnInit {
   tInfosBaseSiteForm: FormGroup;
-  @Input() siteSlug: string | undefined;
+  siteSlug: string | undefined;
+  siteIdLocal: string | undefined;
   id_site: any;
   eres: NomenclatureType | undefined;
   systemes: NomenclatureType | undefined;
@@ -146,8 +147,8 @@ export class QuestionnaireSimplifieComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.siteSlug = this.route.snapshot.paramMap.get('slug')!;
-    this.fetchSiteDetails(this.siteSlug);
+    this.siteIdLocal = this.route.snapshot.paramMap.get('id_rn')!;
+    this.fetchSiteDetails(this.siteIdLocal);
     this.loadNomenclature();
     this.loadStratotypes();
     this.initGeologicalUnitsCheckboxes();
@@ -250,10 +251,11 @@ export class QuestionnaireSimplifieComponent implements OnInit {
     )
   }
 
-  fetchSiteDetails(slug: string): void {
-    this.siteService.getSiteBySlug(slug).subscribe(
+  fetchSiteDetails(id_rn: string): void {
+    this.siteService.getSiteByIdLocal(id_rn).subscribe(
       (site: any) => {
         this.site = site;
+        this.siteSlug = this.site.slug;
         console.log(this.site);
         if (this.site.sites_inpg.length < 6) {
           this.showInpg = true

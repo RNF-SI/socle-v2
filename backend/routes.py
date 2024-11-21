@@ -30,6 +30,14 @@ def getSiteBySlug(slug):
     schema = SiteSchema()
     return schema.jsonify(site)
 
+@bp.route('/site/id_local/<id_local>', methods=['GET'])
+def getSiteByIdLocal(id_local):
+    site = Site.query.filter_by(code=id_local).first()
+    if site is None:
+        abort(404)
+    schema = SiteSchema()
+    return schema.jsonify(site)
+
 @bp.route('/site', methods=['POST'])
 def add_site():
     data = request.get_json()

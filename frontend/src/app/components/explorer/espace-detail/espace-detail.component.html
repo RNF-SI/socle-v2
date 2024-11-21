@@ -1,6 +1,7 @@
 <div *ngIf="site" class="bouttons">
   <mat-button-toggle-group>
-    <mat-button-toggle [routerLink]="['/questionnaire-simplifie', site.slug]" class="filled-toggle">
+    <mat-button-toggle *ngIf="authService.hasAccessToRn(rnId)" [routerLink]="['/questionnaire-simplifie', site.code]"
+      class="filled-toggle">
       <fa-icon [icon]="['fas', 'edit']"></fa-icon> Editer les informations
     </mat-button-toggle>
     <mat-button-toggle (click)="exportData()" class="filled-toggle">
@@ -465,7 +466,8 @@
 </div>
 <div *ngIf="site" class="bouttons">
   <mat-button-toggle-group>
-    <mat-button-toggle [routerLink]="['/questionnaire-simplifie', site.slug]" class="filled-toggle">
+    <mat-button-toggle *ngIf="authService.hasAccessToRn(rnId)" [routerLink]="['/questionnaire-simplifie', site.code]"
+      class="filled-toggle">
       <fa-icon [icon]="['fas', 'edit']"></fa-icon> Editer les informations
     </mat-button-toggle>
     <mat-button-toggle (click)="exportData()" class="filled-toggle">

@@ -10,9 +10,12 @@ import { FicheTerrainComponent } from './components/explorer/fiche-terrain/fiche
 import { QuestionnaireSimplifieComponent } from './components/explorer/questionnaire-simplifie/questionnaire-simplifie.component';
 import { LiensComponent } from './components/liens/liens.component';
 import { SaisirComponent } from './components/saisir/saisir.component';
+import { AccessDeniedComponent } from './home-rnf/components/access-denied/access-denied.component';
 import { LoginComponent } from './home-rnf/components/login/login.component';
 import { LogoutComponent } from './home-rnf/components/logout/logout.component';
 import { NavHomeComponent } from './home-rnf/components/nav-home/nav-home.component';
+import { NotFoundComponent } from './home-rnf/components/not-found/not-found.component';
+import { RnAuthGuardService } from './home-rnf/services/auth-guard-rn.service';
 import { LazyDialogLoader } from './home-rnf/services/lazy-dialog-loader.service';
 import { LogoutLinkService } from './home-rnf/services/logout-link.service';
 
@@ -56,8 +59,9 @@ const routes: Routes = [
       },
 
       {
-        path: 'questionnaire-simplifie/:slug',
-        component: QuestionnaireSimplifieComponent
+        path: 'questionnaire-simplifie/:id_rn',
+        component: QuestionnaireSimplifieComponent,
+        canActivate: [RnAuthGuardService]
       },
       {
         path: 'fiche-terrain/:slug',
@@ -73,6 +77,15 @@ const routes: Routes = [
         path: 'contacts',
         component: ContactsComponent
       },
+      {
+        path: 'non-autorise',
+        component: AccessDeniedComponent
+      },
+      {
+        path: '**',
+        pathMatch: 'full',
+        component: NotFoundComponent
+      }
 
 
 
