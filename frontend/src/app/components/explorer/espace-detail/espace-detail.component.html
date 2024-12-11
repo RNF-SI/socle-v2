@@ -1,6 +1,6 @@
 <div *ngIf="site" class="bouttons">
   <mat-button-toggle-group>
-    <mat-button-toggle *ngIf="authService.hasAccessToRn(rnId)" [routerLink]="['/questionnaire-simplifie', site.code]"
+    <mat-button-toggle *ngIf="hasAccessToRn" [routerLink]="['/questionnaire-simplifie', site.code]"
       class="filled-toggle">
       <fa-icon [icon]="['fas', 'edit']"></fa-icon> Editer les informations
     </mat-button-toggle>

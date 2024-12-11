@@ -57,6 +57,9 @@ export class EspaceDetailComponent implements OnInit {
   private osm: L.TileLayer | undefined;
   private geologie: L.TileLayer.WMS | undefined;
 
+
+  hasAccessToRn: boolean = false; // Variable pour stocker l'accès
+
   constructor(
     private renderer: Renderer2,
     private route: ActivatedRoute,
@@ -76,14 +79,17 @@ export class EspaceDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
     const slug = this.route.snapshot.paramMap.get('slug');
 
     if (slug) {
       this.siteService.getSiteBySlug(slug).subscribe((site: Site) => {
         this.site = site;
         this.rnId = this.site.code;
-        console.log(this.site);
-
+        this.authService.hasAccessToRn(this.rnId).subscribe(
+          access => this.hasAccessToRn = access, // Met à jour la variable
+          error => this.hasAccessToRn = false // En cas d'erreur, refuse l'accès      
+        );
         setTimeout(() => (this.initMap(), this.addLayers(), this.zoomToExtent()), 1);
         this.uniqueInteretGeolPrincipal = Array.from(
           new Set(this.site.sites_inpg.map((inpg: any) => inpg.inpg.interet_geol_principal))

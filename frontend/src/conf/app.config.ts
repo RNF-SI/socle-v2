@@ -1,5 +1,5 @@
 export const AppConfig = {
-    "ID_APPLICATION_GEONATURE": 5,
+    "ID_APPLICATION_GEONATURE": 11,
     "API_ENDPOINT": "http://127.0.0.1:5068",
     "appName": "Socle2",
     "appTitle": " SOCLE",
