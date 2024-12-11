@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AuthGuard } from './auth.guard';
 import { AccueilComponent } from './components/accueil/accueil.component';
 import { AideComponent } from './components/aide/aide.component';
 import { ContactsComponent } from './components/contacts/contacts.component';
@@ -16,6 +15,7 @@ import { LogoutComponent } from './home-rnf/components/logout/logout.component';
 import { NavHomeComponent } from './home-rnf/components/nav-home/nav-home.component';
 import { NotFoundComponent } from './home-rnf/components/not-found/not-found.component';
 import { RnAuthGuardService } from './home-rnf/services/auth-guard-rn.service';
+import { AuthGuardService } from './home-rnf/services/auth-guard.service';
 import { LazyDialogLoader } from './home-rnf/services/lazy-dialog-loader.service';
 import { LogoutLinkService } from './home-rnf/services/logout-link.service';
 
@@ -71,7 +71,7 @@ const routes: Routes = [
       {
         path: 'saisir',
         component: SaisirComponent,
-        canActivate: [AuthGuard] // Appliquer le guard ici
+        canActivate: [AuthGuardService]
       },
       {
         path: 'contacts',
