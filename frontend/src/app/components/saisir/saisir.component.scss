@@ -1,22 +1,31 @@
 .search-container {
-    display: flex;
-    justify-content: center;
-    margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+mat-form-field {
+  width: 50%;
+  max-width: 500px;
+}
+
+.espace-card {
+  width: 100%;
+  max-width: 750px;
+  margin-bottom: 30px;
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
-  
-  mat-form-field {
-    width: 50%;
-    max-width: 500px;
-  }
-  
-  .espace-card {
-    width: 100%;
-    max-width: 750px;
-    margin-bottom: 30px;
-    cursor: pointer;
-  
-    &:hover {
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-  }
-  
+}
+
+@import 'src/styles/custom-theme.scss';
+
+.contenu {
+  font-family: Century Gothic, sans-serif;
+  margin-top: 20px;
+  text-align: justify;
+  padding-left: 10%;
+  padding-right: 10%;
+}
