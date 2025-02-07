@@ -3,6 +3,7 @@ import { HttpClientModule } from '@angular/common/http';
 import localeFr from '@angular/common/locales/fr';
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
@@ -73,7 +74,6 @@ registerLocaleData(localeFr, 'fr');
     MatButtonModule,
     MatButtonToggleModule,
     MatRadioModule,
-    MatInputModule,
     MatListModule,
     MatCardModule,
     MatSidenavModule,
@@ -91,7 +91,8 @@ registerLocaleData(localeFr, 'fr');
     MatTableModule,
     BrowserAnimationsModule,
     MatGridListModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatAutocompleteModule
   ],
 
   providers: [

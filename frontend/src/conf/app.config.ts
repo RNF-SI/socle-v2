@@ -1,6 +1,10 @@
 export const AppConfig = {
     "ID_APPLICATION_GEONATURE": 11,
     "API_ENDPOINT": "http://127.0.0.1:5068",
+    "SEARCH_INPUT": true,
+    "SEARCH_ITEMS_ROUTE": "/sites-simple-centroides",
+    "SEARCH_PREFIXE": "/site",
+    "SEARCH_PLACEHOLDER": "Rechercher une réserve...",
     "appName": "Socle2",
     "appTitle": " SOCLE",
     "appSubTitle": " Base de données de la géodiversité des réserves naturelles",
