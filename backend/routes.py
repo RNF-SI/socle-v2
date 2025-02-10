@@ -4,8 +4,8 @@ from flask import Flask, request, Response, render_template, redirect, Blueprint
 import requests
 import json
 from app import app, db
-from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Nomenclature, BibNomenclatureType,Inpg, Site, CorSiteInpg, CorSiteSubstance, Stratotype
-from schemas import PatrimoineGeologiqueGestionnaireSchema, PerimetreProtectionSchema, TInfosBaseSiteSchema, SiteSchema, NomenclatureSchema, NomenclatureTypeSchema, SiteSchemaSimple, StratotypeSchema
+from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Nomenclature, BibNomenclatureType,Inpg, Site, CorSiteInpg, CorSiteSubstance, Stratotype, Parametres
+from schemas import PatrimoineGeologiqueGestionnaireSchema, PerimetreProtectionSchema, TInfosBaseSiteSchema, SiteSchema, NomenclatureSchema, NomenclatureTypeSchema, SiteSchemaSimple, StratotypeSchema, ParametresSchema
 from pypnusershub import routes as fnauth
 import logging
 from sqlalchemy import func
@@ -647,3 +647,10 @@ def get_stratotypes_limite():
     stratotypes = Stratotype.query.filter(Stratotype.type == 'limite').order_by(Stratotype.libelle).all()  # Renvoie les sites filtrés par type_rn et/ou code
     schema = StratotypeSchema(many=True)
     return schema.jsonify(stratotypes)
+
+@bp.route('/parametre/<libelle>', methods=['GET'])
+def get_parametre_by_libelle(libelle):
+
+    parametre = Parametres.query.filter(Parametres.libelle == libelle).first()
+    schema = ParametresSchema(many=False)
+    return schema.jsonify(parametre)
