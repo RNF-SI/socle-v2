@@ -254,9 +254,13 @@ export class AccueilComponent implements OnInit {
   }
 
   handleSearch(event: Event): void {
-    const query = (event.target as HTMLInputElement).value.toLowerCase();
+    const query = this.removeAccents((event.target as HTMLInputElement).value.toLowerCase());
     this.searchQuery = query;
     this.applyFilters();
+  }
+
+  private removeAccents(text: string): string {
+    return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   }
 
   onTypeRnChange(typeRn: string): void {
@@ -290,7 +294,7 @@ export class AccueilComponent implements OnInit {
         : true;
 
       const matchesSearch = this.searchQuery
-        ? site.nom.toLowerCase().includes(this.searchQuery) || site.code.toLowerCase().includes(this.searchQuery)
+        ? this.removeAccents(site.nom.toLowerCase()).includes(this.searchQuery) || site.code.toLowerCase().includes(this.searchQuery)
         : true;
 
       const matchesPatrimoine = this.selectedPatrimoine === 'oui'
