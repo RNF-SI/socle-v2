@@ -246,3 +246,10 @@ class CorSiteInpg(db.Model):
 
     site = db.relationship("Site", back_populates="sites_inpg")
     inpg = db.relationship("Inpg")
+
+class Parametres(db.Model) :
+    __tablename__= 't_parametres'
+
+    id_parametre = db.Column(db.Integer, primary_key=True)
+    libelle = db.Column(db.String)
+    valeur = db.Column(db.String)

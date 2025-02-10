@@ -5,6 +5,8 @@ import { Router } from '@angular/router';
 import * as L from 'leaflet';
 import { AuthService } from 'src/app/home-rnf/services/auth-service.service';
 import { ExcelService } from 'src/app/home-rnf/services/excel.service';
+import { Parametre } from 'src/app/models/parametres.model';
+import { ParametresService } from 'src/app/services/parametres.service';
 // import 'Leaflet.Deflate';
 import { SitesService } from 'src/app/services/sites.service';
 import { Site } from '../../models/site.model';
@@ -37,6 +39,7 @@ export class AccueilComponent implements OnInit {
   regions: string[] = ['Normandie', 'Pays de la Loire', 'Corse', 'Provence-Alpes-Côte d\'Azur', 'Grand Est', 'Auvergne-Rhône-Alpes', 'Bretagne', 'Hauts-de-France', 'Occitanie', 'Nouvelle-Aquitaine', 'Bourgogne-Franche-Comté', 'Île-de-France', 'Guyane', 'La Réunion', 'Centre-Val de Loire', 'Guadeloupe', 'Martinique', 'Mayotte'];
   selectedRegion: string = '';
   stats: Stat[] = [];
+  date_maj_inpg: Date | null = null;
 
   displayedColumns: string[] = ['nom', 'code', 'type', 'inpg'];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -54,7 +57,8 @@ export class AccueilComponent implements OnInit {
     private siteService: SitesService,
     private router: Router,
     private excelService: ExcelService,
-    public authService: AuthService
+    public authService: AuthService,
+    public parametresService: ParametresService
   ) { }
 
   estConnecte() {
@@ -72,6 +76,20 @@ export class AccueilComponent implements OnInit {
     setTimeout(() => {
       this.map!.invalidateSize();
     }, 0);
+
+    this.parametresService.getParamtreByLibelle('date_maj_inpg').subscribe(
+      (parametre: Parametre) => {
+        const parts = parametre.valeur.split('/');
+        if (parts.length !== 3) {
+          throw new Error(`Format de date invalide : ${parametre.valeur}. Le format attendu est JJ/MM/AAAA.`);
+        }
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1; // Les mois commencent à 0 en JavaScript
+        const year = parseInt(parts[2], 10);
+
+        this.date_maj_inpg = new Date(year, month, day);
+      }
+    )
   }
 
   // Utiliser le hook AfterViewChecked pour invalider la taille de la carte après le retour sur la page

@@ -5,7 +5,7 @@ import shapely
 
 
 from app import ma
-from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Inpg, Nomenclature, BibNomenclatureType, CorSiteSubstance, Stratotype, CorSiteInpg
+from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Inpg, Nomenclature, BibNomenclatureType, CorSiteSubstance, Stratotype, CorSiteInpg, Parametres
 
 
 class PerimetreProtectionSchema(ma.SQLAlchemyAutoSchema):
@@ -188,3 +188,7 @@ class CorSiteInpgSchema(ma.SQLAlchemyAutoSchema) :
         load_relationships = True
 
     inpg = ma.Nested(lambda:InpgSchema)   
+
+class ParametresSchema(ma.SQLAlchemyAutoSchema) :
+    class Meta:
+        model = Parametres
