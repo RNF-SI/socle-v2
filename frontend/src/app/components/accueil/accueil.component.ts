@@ -3,6 +3,8 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import * as L from 'leaflet';
+import { AuthService } from 'src/app/home-rnf/services/auth-service.service';
+import { ExcelService } from 'src/app/home-rnf/services/excel.service';
 // import 'Leaflet.Deflate';
 import { SitesService } from 'src/app/services/sites.service';
 import { Site } from '../../models/site.model';
@@ -46,10 +48,22 @@ export class AccueilComponent implements OnInit {
   geoJson: any;
   accentColor: any;
 
+  export: any = [];
+
   constructor(
     private siteService: SitesService,
-    private router: Router
+    private router: Router,
+    private excelService: ExcelService,
+    public authService: AuthService
   ) { }
+
+  estConnecte() {
+    if (this.authService.authenticated) {
+      // logged in so return true
+      return true;
+    }
+    else return false
+  }
 
   ngOnInit(): void {
 
@@ -250,7 +264,12 @@ export class AccueilComponent implements OnInit {
   // Autres méthodes pour filtrage et interactions utilisateur
 
   onRowClick(element: any): void {
-    this.router.navigate(['/site', element.slug]);  // Utilisation du Router pour naviguer
+    // Crée l'UrlTree correspondant à la route souhaitée
+    const urlTree = this.router.createUrlTree(['/site', element.slug]);
+    // Sérialise l'UrlTree en chaîne de caractères et ajoute l'origine pour obtenir l'URL complète
+    const url = window.location.origin + this.router.serializeUrl(urlTree);
+    // Ouvre l'URL dans un nouvel onglet
+    window.open(url, '_blank');
   }
 
   handleSearch(event: Event): void {
@@ -326,5 +345,42 @@ export class AccueilComponent implements OnInit {
   clearPatrimoineSelection(): void {
     this.selectedPatrimoine = '';
     this.onPatrimoineChange(this.selectedPatrimoine);
+  }
+
+  exportAsXlsx(): void {
+
+    this.export = []
+
+    console.log(this.filteredEspaces);
+
+    this.filteredEspaces.forEach(element => {
+      let sites_inpg_nom: any[] = [];
+      let sites_inpg_code: any[] = [];
+      let sites_inpg_confidentiel_nom: any[] = [];
+      let sites_inpg_confidentiel_code: any[] = [];
+      element.sites_inpg.forEach((inpg: { inpg: any; }) => {
+        if (inpg.inpg.niveau_de_diffusion == 'Public') {
+          sites_inpg_nom.push(inpg.inpg.lb_site + " (" + inpg.inpg.id_metier + ")");
+          sites_inpg_code.push(inpg.inpg.id_metier)
+        }
+        else {
+          sites_inpg_confidentiel_nom.push(inpg.inpg.lb_site + " (" + inpg.inpg.id_metier + ")");
+          sites_inpg_confidentiel_code.push(inpg.inpg.id_metier);
+        }
+      });
+      let temp: any = {};
+      temp['Nom du site'] = element.nom;
+      temp['Code RNF'] = element.code;
+      temp['Type de réserve'] = element.type_rn
+      temp['Sites INPG publics (Nom complet)'] = sites_inpg_nom.join(' ; ');
+      temp['Sites INPG publics (Identifiant)'] = sites_inpg_code.join(' ; ');
+      if (this.estConnecte()) {
+        temp['Sites INPG confidentiels (Nom complet)'] = sites_inpg_confidentiel_nom.join(' ; ');
+        temp['Sites INPG confidentiels (Identifiant)'] = sites_inpg_confidentiel_code.join(' ; ');
+      }
+      this.export.push(temp);
+    })
+
+    this.excelService.exportAsExcelFile(this.export, 'geologie_reserves_naturelles');
   }
 }

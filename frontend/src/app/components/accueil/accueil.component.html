@@ -64,6 +64,8 @@
         <mat-option *ngFor="let region of regions" [value]="region">{{ region }}</mat-option>
       </mat-select>
     </mat-form-field>
+
+
   </div>
 
   <table mat-table [dataSource]="dataSource">
@@ -118,4 +120,9 @@
 
   <mat-paginator [pageSizeOptions]="[10, 20, 50]" showFirstLastButtons aria-label="Select page of periodic elements">
   </mat-paginator>
+  <div class="button-export-container">
+    <button mat-raised-button color="primary" (click)="exportAsXlsx()">
+      <mat-icon>download</mat-icon> Télécharger en XLSX
+    </button>
+  </div>
 </div>
