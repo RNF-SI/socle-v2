@@ -408,7 +408,7 @@ export class AccueilComponent implements OnInit, AfterViewChecked {
   computeStats(): void {
     const totalSites = this.espaces.length;
     const totalInpgSites = this.espaces.reduce((total, site) => total + (site.sites_inpg ? site.sites_inpg.length : 0), 0);
-    const sitesAvecPatrimoine = this.espaces.filter(site => site.sites_inpg && site.sites_inpg.length > 0).length;
+    const sitesAvecPatrimoine = this.espaces.filter(site => site.sites_inpg && (site.sites_inpg.length > 0) || site.patrimoines_geologiques.length > 0).length;
     const nbStratotypes = this.espaces.reduce((count, site) => count + (site.stratotypes ? site.stratotypes.length : 0), 0);
     const sitesCreationGeol = this.espaces.filter(site => site.creation_geol === true).length;
     const proportion = Number((sitesAvecPatrimoine / totalSites * 100).toFixed(0));
