@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewChecked, Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
@@ -24,12 +24,19 @@ interface Stat {
   texte: string;
 }
 
+interface Location {
+  name: string;
+  lat: number;
+  lng: number;
+  zoom: number;
+}
+
 @Component({
   selector: 'app-accueil',
   templateUrl: './accueil.component.html',
   styleUrls: ['./accueil.component.scss']
 })
-export class AccueilComponent implements OnInit {
+export class AccueilComponent implements OnInit, AfterViewChecked {
   espaces: Site[] = [];
   filteredEspaces: Site[] = [];
   selectedTypeRn: string = '';
@@ -47,9 +54,27 @@ export class AccueilComponent implements OnInit {
 
   private map: L.Map | undefined;
   private centroidesLayer: L.LayerGroup | undefined;
-  private polygonesLayer: L.FeatureGroup = L.featureGroup();  // Utilisez FeatureGroup au lieu de LayerGroup
+  private polygonesLayer: L.FeatureGroup = L.featureGroup();  // Ancien FeatureGroup (non utilisé avec la nouvelle logique)
   geoJson: any;
   accentColor: any;
+
+  // =============================
+  // Déclaration des différentes couches
+  // Pour les centroïdes
+  centroidesPatrimoineLayer: L.LayerGroup = L.layerGroup();
+  centroidesContientLayer: L.LayerGroup = L.layerGroup();
+  centroidesAutresLayer: L.LayerGroup = L.layerGroup();
+
+  // Pour les polygones
+  polygonesPatrimoineLayer: L.LayerGroup = L.layerGroup();
+  polygonesContientLayer: L.LayerGroup = L.layerGroup();
+  polygonesAutresLayer: L.LayerGroup = L.layerGroup();
+  // =============================
+
+  // Toggle switches pour les 3 catégories (affichage par défaut activé)
+  showPatrimoine: boolean = true;
+  showContient: boolean = true;
+  showAutres: boolean = true;
 
   export: any = [];
 
@@ -61,17 +86,21 @@ export class AccueilComponent implements OnInit {
     public parametresService: ParametresService
   ) { }
 
+  locations: Location[] = [
+    { name: 'Hexagone', lat: 46.45, lng: 2.21, zoom: 6 },
+    { name: 'Antilles/Guyane', lat: 11, lng: -57.59, zoom: 6 },
+    { name: 'Océan Indien', lat: -33.36, lng: 52.91, zoom: 4 }
+    // Ajoutez autant de localisations que nécessaire
+  ];
+
+  selectedLocation: Location = { name: 'Hexagone', lat: 46.45, lng: 2.21, zoom: 6 };
+
   estConnecte() {
-    if (this.authService.authenticated) {
-      // logged in so return true
-      return true;
-    }
-    else return false
+    return this.authService.authenticated;
   }
 
   ngOnInit(): void {
-
-    this.loadSitesCentroid();  // Charger les centroïdes et métadonnées au démarrage
+    this.loadSitesCentroid();  // Chargement des centroïdes et métadonnées au démarrage
     this.initMap();
     setTimeout(() => {
       this.map!.invalidateSize();
@@ -86,17 +115,41 @@ export class AccueilComponent implements OnInit {
         const day = parseInt(parts[0], 10);
         const month = parseInt(parts[1], 10) - 1; // Les mois commencent à 0 en JavaScript
         const year = parseInt(parts[2], 10);
-
         this.date_maj_inpg = new Date(year, month, day);
       }
-    )
+    );
   }
 
-  // Utiliser le hook AfterViewChecked pour invalider la taille de la carte après le retour sur la page
+  // =============================
+  // Définition des styles selon la catégorie
+  private getMarkerStyle(category: 'patrimoine' | 'contient' | 'autres'): L.CircleMarkerOptions {
+    switch (category) {
+      case 'patrimoine':
+        return { radius: 8, opacity: 1, color: '#fabb64', fillOpacity: 1, fillColor: '#fcd6a2' };
+      case 'contient':
+        return { radius: 8, opacity: 1, color: '#518196', fillOpacity: 1, fillColor: '#97b3c0' };
+      default:
+        return { radius: 8, opacity: 1, color: '#c8d469', fillOpacity: 1, fillColor: '#dee5a5' };
+    }
+  }
+
+  private getPolygonStyle(category: 'patrimoine' | 'contient' | 'autres'): L.PathOptions {
+    switch (category) {
+      case 'patrimoine':
+        return { weight: 3, opacity: 0.5, color: '#fabb64', fillOpacity: 0.8, fillColor: '#fabb64' };
+      case 'contient':
+        return { weight: 3, opacity: 0.5, color: '#518196', fillOpacity: 0.8, fillColor: '#518196' };
+      default:
+        return { weight: 3, opacity: 0.5, color: '#c8d469', fillOpacity: 0.8, fillColor: '#c8d469' };
+    }
+  }
+  // =============================
+
+  // Invalider la taille de la carte après affichage
   ngAfterViewChecked(): void {
     setTimeout(() => {
       if (this.map) {
-        this.map.invalidateSize();  // Forcer la mise à jour de la taille de la carte
+        this.map.invalidateSize();
       }
     }, 0);
   }
@@ -120,7 +173,7 @@ export class AccueilComponent implements OnInit {
     });
 
     this.map = L.map('map', {
-      center: [47.2, 2.5],
+      center: [46.45, 2.21],
       zoom: 6,
       layers: [osm]
     });
@@ -129,60 +182,74 @@ export class AccueilComponent implements OnInit {
       "OpenStreetMap": osm,
       "Carte géologique": geologie
     };
+
+    // (Optionnel) Vous pouvez toujours ajouter un contrôle de couches de base si vous le souhaitez
     L.control.layers(baseMaps).addTo(this.map);
 
-    // Gestion des événements de zoom et déplacement
+    // Gestion des événements de zoom et de déplacement :
     this.map.on('zoomend moveend', () => {
-      const zoom = this.map?.getZoom();
-      if (zoom && zoom >= 11) {
-        this.loadPolygones();  // Charger les polygones au zoom >= 12
-        this.hideCentroides();  // Masquer les centroïdes
-      } else {
-        this.clearPolygones();  // Vider les polygones
-        this.showCentroides();  // Réafficher les centroïdes
+      // En cas de zoom élevé, on charge (ou recharge) les polygones
+      if (this.map!.getZoom() >= 11) {
+        this.loadPolygones();
       }
+      this.updateLayerDisplay();
     });
   }
 
-  // Charger les centroïdes (geom_point) et les informations des sites
+  // =============================
+  // Chargement des centroïdes
   loadSitesCentroid(): void {
     this.siteService.getSitesCentroid().subscribe(
       (sites: any[]) => {
         this.espaces = sites;
         this.filteredEspaces = this.espaces;
-
         this.dataSource.data = this.filteredEspaces;
         this.dataSource.paginator = this.paginator;
 
-        // Créer le calque des centroïdes
-        this.centroidesLayer = L.layerGroup();
         sites.forEach((site) => {
+          let category: 'patrimoine' | 'contient' | 'autres';
+          if (site.creation_geol === true) {
+            category = 'patrimoine';
+          } else if (site.creation_geol === false &&
+            ((site.sites_inpg && site.sites_inpg.length > 0) || (site.patrimoines_geologiques && site.patrimoines_geologiques.length > 0))) {
+            category = 'contient';
+          } else {
+            category = 'autres';
+          }
+
+          const markerStyle = this.getMarkerStyle(category);
+
           const point = L.geoJSON(site.geom_point, {
-            pointToLayer: (feature, latlng) => L.circleMarker(latlng, {
-              radius: 8,
-              opacity: 0.5,
-              color: '#008f68',
-              fillOpacity: 0.8,
-              fillColor: '#6DB65B'
-            }),
+            pointToLayer: (feature, latlng) => L.circleMarker(latlng, markerStyle),
             onEachFeature: (feature, layer) => {
-              // Crée le contenu du popup, par exemple avec une des propriétés de l'objet
-              const tooltipContent = site.nom
+              const tooltipContent = site.nom;
               layer.bindTooltip(tooltipContent, {});
-              /// Redirection vers la page correspondante au clic
               layer.on('click', () => {
                 if (site.slug) {
-                  // Remplace 'site/' par ton URL de base si nécessaire
-                  this.router.navigate(['/site', site.slug]);
+                  const urlTree = this.router.createUrlTree(['/site', site.slug]);
+                  const url = window.location.origin + this.router.serializeUrl(urlTree);
+                  window.open(url, '_blank');
                 }
               });
             }
           });
-          this.centroidesLayer!.addLayer(point);
-        });
-        this.centroidesLayer.addTo(this.map!);
 
-        // Calcul des statistiques
+          // Ajout dans le groupe correspondant
+          if (category === 'patrimoine') {
+            this.centroidesPatrimoineLayer.addLayer(point);
+          } else if (category === 'contient') {
+            this.centroidesContientLayer.addLayer(point);
+          } else {
+            this.centroidesAutresLayer.addLayer(point);
+          }
+        });
+
+        // Au démarrage, si le zoom est faible (< 11), on affiche les centroïdes
+        if (this.map && this.map.getZoom() < 11) {
+          this.centroidesPatrimoineLayer.addTo(this.map);
+          this.centroidesContientLayer.addTo(this.map);
+          this.centroidesAutresLayer.addTo(this.map);
+        }
         this.computeStats();
       },
       error => {
@@ -191,49 +258,56 @@ export class AccueilComponent implements OnInit {
     );
   }
 
-  // Charger les polygones dans la BBOX visible
+  // =============================
+  // Chargement des polygones dans la BBOX visible
   loadPolygones(): void {
     const bounds = this.map?.getBounds();
     if (!bounds) return;
-
     const bbox = `${bounds.getWest()},${bounds.getSouth()},${bounds.getEast()},${bounds.getNorth()}`;
+
     this.siteService.getPolygones(bbox).subscribe(
       (polygones: any[]) => {
-
-        // Si `polygonesLayer` n'est pas encore sur la carte, l'ajouter
-        if (!this.map?.hasLayer(this.polygonesLayer)) {
-          this.polygonesLayer.addTo(this.map!);
-        }
-
-        // Ajouter chaque polygone au FeatureGroup
+        // Pour chaque polygone, déterminer la catégorie et l'ajouter au groupe correspondant
         polygones.forEach((polygone) => {
+          let category: 'patrimoine' | 'contient' | 'autres';
+          if (polygone.creation_geol === true) {
+            category = 'patrimoine';
+          } else if (polygone.creation_geol === false &&
+            ((polygone.sites_inpg && polygone.sites_inpg.length > 0) ||
+              (polygone.patrimoines_geologiques && polygone.patrimoines_geologiques.length > 0))) {
+            category = 'contient';
+          } else {
+            category = 'autres';
+          }
+
+          const polygonStyle = this.getPolygonStyle(category);
+
           const polygon = L.geoJSON(polygone.geom, {
-            style: {
-              weight: 3,
-              opacity: 0.5,
-              color: '#008f68',
-              fillOpacity: 0.8,
-              fillColor: '#6DB65B'
-            },
+            style: polygonStyle,
             onEachFeature: (feature, layer) => {
-              // Crée le contenu du popup, par exemple avec une des propriétés de l'objet
-              const tooltipContent = polygone.nom
+              const tooltipContent = polygone.nom;
               layer.bindTooltip(tooltipContent, {});
-              /// Redirection vers la page correspondante au clic
               layer.on('click', () => {
                 if (polygone.slug) {
-                  // Remplace 'site/' par ton URL de base si nécessaire
-                  this.router.navigate(['/site', polygone.slug]);
+                  const urlTree = this.router.createUrlTree(['/site', polygone.slug]);
+                  const url = window.location.origin + this.router.serializeUrl(urlTree);
+                  window.open(url, '_blank');
                 }
               });
             }
-          }).on('click', () => {
-            if (polygone.properties && polygone.properties.slug) {
-              this.router.navigate(['/site', polygone.properties.slug]);
-            }
-          });
-          this.polygonesLayer.addLayer(polygon);  // Ajoute le polygone au FeatureGroup
+          })
+
+          // Ajout dans le groupe correspondant
+          if (category === 'patrimoine') {
+            this.polygonesPatrimoineLayer.addLayer(polygon);
+          } else if (category === 'contient') {
+            this.polygonesContientLayer.addLayer(polygon);
+          } else {
+            this.polygonesAutresLayer.addLayer(polygon);
+          }
         });
+        // Une fois les polygones chargés, on met à jour l'affichage
+        this.updateLayerDisplay();
       },
       error => {
         console.error('Error fetching polygones', error);
@@ -241,34 +315,99 @@ export class AccueilComponent implements OnInit {
     );
   }
 
-  // Masquer les centroïdes
+  // =============================
+  // Méthode de mise à jour de l'affichage des couches selon le zoom et les toggles
+  updateLayerDisplay(): void {
+    if (!this.map) return;
+    const zoom = this.map.getZoom();
+
+    if (zoom < 11) {
+      // Pour un zoom faible, afficher les centroïdes selon l'état des toggles et retirer les polygones
+      this.map.removeLayer(this.polygonesPatrimoineLayer);
+      this.map.removeLayer(this.polygonesContientLayer);
+      this.map.removeLayer(this.polygonesAutresLayer);
+
+      if (this.showPatrimoine) {
+        if (!this.map.hasLayer(this.centroidesPatrimoineLayer)) {
+          this.centroidesPatrimoineLayer.addTo(this.map);
+        }
+      } else {
+        this.map.removeLayer(this.centroidesPatrimoineLayer);
+      }
+      if (this.showContient) {
+        if (!this.map.hasLayer(this.centroidesContientLayer)) {
+          this.centroidesContientLayer.addTo(this.map);
+        }
+      } else {
+        this.map.removeLayer(this.centroidesContientLayer);
+      }
+      if (this.showAutres) {
+        if (!this.map.hasLayer(this.centroidesAutresLayer)) {
+          this.centroidesAutresLayer.addTo(this.map);
+        }
+      } else {
+        this.map.removeLayer(this.centroidesAutresLayer);
+      }
+    } else {
+      // Pour un zoom élevé, afficher les polygones selon l'état des toggles et retirer les centroïdes
+      this.map.removeLayer(this.centroidesPatrimoineLayer);
+      this.map.removeLayer(this.centroidesContientLayer);
+      this.map.removeLayer(this.centroidesAutresLayer);
+
+      if (this.showPatrimoine) {
+        if (!this.map.hasLayer(this.polygonesPatrimoineLayer)) {
+          this.polygonesPatrimoineLayer.addTo(this.map);
+        }
+      } else {
+        this.map.removeLayer(this.polygonesPatrimoineLayer);
+      }
+      if (this.showContient) {
+        if (!this.map.hasLayer(this.polygonesContientLayer)) {
+          this.polygonesContientLayer.addTo(this.map);
+        }
+      } else {
+        this.map.removeLayer(this.polygonesContientLayer);
+      }
+      if (this.showAutres) {
+        if (!this.map.hasLayer(this.polygonesAutresLayer)) {
+          this.polygonesAutresLayer.addTo(this.map);
+        }
+      } else {
+        this.map.removeLayer(this.polygonesAutresLayer);
+      }
+    }
+  }
+
+  // Méthode appelée lors du changement d'un toggle dans le template
+  onToggleChange(): void {
+    this.updateLayerDisplay();
+  }
+  // =============================
+
+  // Méthodes de masquage / affichage (anciennes versions, ici non utilisées directement)
   hideCentroides(): void {
-    if (this.centroidesLayer) {
-      this.map?.removeLayer(this.centroidesLayer);
-    }
+    this.map!.removeLayer(this.centroidesPatrimoineLayer);
+    this.map!.removeLayer(this.centroidesContientLayer);
+    this.map!.removeLayer(this.centroidesAutresLayer);
   }
 
-  // Réafficher les centroïdes
   showCentroides(): void {
-    if (this.centroidesLayer) {
-      this.centroidesLayer.addTo(this.map!);
-    }
+    this.centroidesPatrimoineLayer.addTo(this.map!);
+    this.centroidesContientLayer.addTo(this.map!);
+    this.centroidesAutresLayer.addTo(this.map!);
   }
 
-  // Vider les polygones de la carte
   clearPolygones(): void {
-    if (this.polygonesLayer) {
-      this.polygonesLayer.clearLayers();  // Efface tous les polygones à l’intérieur de `polygonesLayer`
-    }
+    this.polygonesPatrimoineLayer.clearLayers();
+    this.polygonesContientLayer.clearLayers();
+    this.polygonesAutresLayer.clearLayers();
   }
 
   computeStats(): void {
     const totalSites = this.espaces.length;
     const totalInpgSites = this.espaces.reduce((total, site) => total + (site.sites_inpg ? site.sites_inpg.length : 0), 0);
     const sitesAvecPatrimoine = this.espaces.filter(site => site.sites_inpg && site.sites_inpg.length > 0).length;
-    const nbStratotypes = this.espaces.reduce((count, site) => {
-      return count + (site.stratotypes ? site.stratotypes.length : 0);
-    }, 0);
+    const nbStratotypes = this.espaces.reduce((count, site) => count + (site.stratotypes ? site.stratotypes.length : 0), 0);
     const sitesCreationGeol = this.espaces.filter(site => site.creation_geol === true).length;
     this.stats = [
       { icon: 'assets/images/symbol11_final.png', chiffre: totalSites, texte: 'Nombre total de réserves' },
@@ -279,14 +418,11 @@ export class AccueilComponent implements OnInit {
     ];
   }
 
-  // Autres méthodes pour filtrage et interactions utilisateur
-
+  // =============================
+  // Méthodes de filtrage et interactions utilisateur
   onRowClick(element: any): void {
-    // Crée l'UrlTree correspondant à la route souhaitée
     const urlTree = this.router.createUrlTree(['/site', element.slug]);
-    // Sérialise l'UrlTree en chaîne de caractères et ajoute l'origine pour obtenir l'URL complète
     const url = window.location.origin + this.router.serializeUrl(urlTree);
-    // Ouvre l'URL dans un nouvel onglet
     window.open(url, '_blank');
   }
 
@@ -322,18 +458,11 @@ export class AccueilComponent implements OnInit {
 
   applyFilters(): void {
     this.filteredEspaces = this.espaces.filter(site => {
-      const matchesTypeRn = this.selectedTypeRn.length > 0
-        ? this.selectedTypeRn.includes(site.type_rn)
-        : true;
-
-      const matchesRegion = this.selectedRegion.length > 0
-        ? this.selectedRegion.includes(site.region)
-        : true;
-
+      const matchesTypeRn = this.selectedTypeRn.length > 0 ? this.selectedTypeRn.includes(site.type_rn) : true;
+      const matchesRegion = this.selectedRegion.length > 0 ? this.selectedRegion.includes(site.region) : true;
       const matchesSearch = this.searchQuery
         ? this.removeAccents(site.nom.toLowerCase()).includes(this.searchQuery) || site.code.toLowerCase().includes(this.searchQuery)
         : true;
-
       const matchesPatrimoine = this.selectedPatrimoine === 'oui'
         ? (site.sites_inpg && site.sites_inpg.length > 0) || (site.patrimoines_geologiques && site.patrimoines_geologiques.length > 0)
         : this.selectedPatrimoine === 'non'
@@ -341,19 +470,14 @@ export class AccueilComponent implements OnInit {
           : this.selectedPatrimoine === 'reserve_geologique'
             ? site.creation_geol === true
             : true;
-
       return matchesTypeRn && matchesRegion && matchesSearch && matchesPatrimoine;
     });
-
     this.dataSource.data = this.filteredEspaces;
     this.dataSource.paginator = this.paginator;
   }
 
-
   getNonConfidentialSites(element: any): any[] {
-
     return element.sites_inpg.filter((inpg: { inpg: { niveau_de_diffusion: string; }; }) => inpg.inpg.niveau_de_diffusion === 'Public');
-
   }
 
   countConfidentialSites(element: any): number {
@@ -366,11 +490,7 @@ export class AccueilComponent implements OnInit {
   }
 
   exportAsXlsx(): void {
-
-    this.export = []
-
-    console.log(this.filteredEspaces);
-
+    this.export = [];
     this.filteredEspaces.forEach(element => {
       let sites_inpg_nom: any[] = [];
       let sites_inpg_code: any[] = [];
@@ -379,9 +499,8 @@ export class AccueilComponent implements OnInit {
       element.sites_inpg.forEach((inpg: { inpg: any; }) => {
         if (inpg.inpg.niveau_de_diffusion == 'Public') {
           sites_inpg_nom.push(inpg.inpg.lb_site + " (" + inpg.inpg.id_metier + ")");
-          sites_inpg_code.push(inpg.inpg.id_metier)
-        }
-        else {
+          sites_inpg_code.push(inpg.inpg.id_metier);
+        } else {
           sites_inpg_confidentiel_nom.push(inpg.inpg.lb_site + " (" + inpg.inpg.id_metier + ")");
           sites_inpg_confidentiel_code.push(inpg.inpg.id_metier);
         }
@@ -389,7 +508,7 @@ export class AccueilComponent implements OnInit {
       let temp: any = {};
       temp['Nom du site'] = element.nom;
       temp['Code RNF'] = element.code;
-      temp['Type de réserve'] = element.type_rn
+      temp['Type de réserve'] = element.type_rn;
       temp['Sites INPG publics (Nom complet)'] = sites_inpg_nom.join(' ; ');
       temp['Sites INPG publics (Identifiant)'] = sites_inpg_code.join(' ; ');
       if (this.estConnecte()) {
@@ -397,8 +516,14 @@ export class AccueilComponent implements OnInit {
         temp['Sites INPG confidentiels (Identifiant)'] = sites_inpg_confidentiel_code.join(' ; ');
       }
       this.export.push(temp);
-    })
-
+    });
     this.excelService.exportAsExcelFile(this.export, 'geologie_reserves_naturelles');
+  }
+  // Méthode appelée lors du changement de la sélection dans la liste déroulante
+  onLocationChange(): void {
+    if (this.map && this.selectedLocation) {
+      // Utilise setView pour centrer la carte sur les coordonnées et le niveau de zoom sélectionnés
+      this.map.setView([this.selectedLocation.lat, this.selectedLocation.lng], this.selectedLocation.zoom);
+    }
   }
 }

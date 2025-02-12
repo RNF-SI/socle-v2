@@ -131,7 +131,7 @@ def get_sites_in_bbox():
             func.ST_MakeEnvelope(xmin, ymin, xmax, ymax, 4326)  # Remplacez 4326 par votre SRID
         )
     ).all()
-    schema = SiteSchemaSimple(only=('id_site','geom', 'nom','slug'),many=True)
+    schema = SiteSchemaSimple(only=('id_site','geom', 'nom','slug', 'sites_inpg','patrimoines_geologiques','creation_geol'),many=True)
     return schema.jsonify(sites)
 
 
