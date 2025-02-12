@@ -311,3 +311,12 @@ span.legend-item {
   color: white !important;
   /* Remplacez #ff5722 par la couleur souhaitée */
 }
+
+.geopatrimoine-lb {
+  color: mat-color($custom-primary, 500);
+  font-weight: bold;
+}
+
+.geopatrimoine-biblio {
+  font-style: italic;
+}

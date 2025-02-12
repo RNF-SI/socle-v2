@@ -85,6 +85,8 @@ export class EspaceDetailComponent implements OnInit {
     if (slug) {
       this.siteService.getSiteBySlug(slug).subscribe((site: Site) => {
         this.site = site;
+        console.log(this.site);
+
         this.rnId = this.site.code;
         this.authService.hasAccessToRn(this.rnId).subscribe(
           access => this.hasAccessToRn = access, // Met à jour la variable

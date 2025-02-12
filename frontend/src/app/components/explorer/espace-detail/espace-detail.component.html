@@ -303,68 +303,21 @@
           </div>
         </div>
       </div>
-
-      <!-- <table class="table-geologique">
-        <thead>
-          <tr>
-            <th>Au sein de la réserve</th>
-            <th>Au sein du périmètre de protection</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <div *ngIf="site.sites_inpg && site.sites_inpg.length > 0; else noInpgData">
-                <div *ngFor="let inpg of site.sites_inpg">
-                  <a [href]="inpg.url" target="_blank">{{ inpg.lb_site }}</a>
-                  {{ inpg.interet_geol_principal }}
-                </div>
-              </div>
-              <ng-template #noInpgData>
-                <div>Aucune données.</div>
-              </ng-template>
-            </td>
-            <td>
-              <div
-                *ngIf="site.perimetre_protection?.inpg && site.perimetre_protection.sites_inpg.length > 0; else noDataINPG">
-                <div *ngFor="let inpg of site.perimetre_protection.sites_inpg">
-                  <a [href]="inpg.url" target="_blank">{{ inpg.lb_site }}</a>
-                  {{ inpg.interet_geol_principal }}
-                </div>
-              </div>
-              <ng-template #noDataINPG>
-                <p>Aucune données.</p>
-              </ng-template>
-            </td>
-          <tr>
-            <td>
-              <div *ngIf="principalHeritage && principalHeritage.length > 0; else noHeritageData">
-                <div *ngFor="let heritage of principalHeritage">
-                  <a [href]="heritage.url" target="_blank">{{ heritage.lb }}</a>
-                  {{ heritage.interet_geol_principal }} - {{ heritage.bibliographie }}
-                </div>
-              </div>
-              <ng-template #noHeritageData>
-                <div>Aucune données.</div>
-              </ng-template>
-            </td>
-
-            <td>
-              <div *ngIf="protectionHeritage && protectionHeritage.length > 0; else noDataHeritage">
-                <div *ngFor="let heritage of protectionHeritage">
-                  <a [href]="heritage.url" target="_blank">{{ heritage.lb }}</a>
-                  {{ heritage.interet_geol_principal }}
-                </div>
-              </div>
-              <ng-template #noDataHeritage>
-                <p>Aucune données.</p>
-              </ng-template>
-            </td>
-          </tr>
-        </tbody>
-      </table> -->
+      <div *ngIf="site.patrimoines_geologiques.length > 0">
+        <div class="subsection-title">
+          Autres sites de géopatrimoine
+        </div>
+        <div class="subsection-response">
+          <div *ngFor="let patrimoine of site.patrimoines_geologiques">
+            <div>
+              <span class="geopatrimoine-lb">{{patrimoine.lb}}</span>
+              {{ patrimoine.interet_geol_principal }}
+              (<span class="geopatrimoine-biblio">{{patrimoine.bibliographie}}</span>)
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-
   </div>
   <!-- TODO: ajouter de tableu de corespendance pour stocker de donner  -->
   <div #infoBlock class="mineral-resources-section">
@@ -456,12 +409,6 @@
   <ng-template #template let-nativeElement>
     <div [attr.class]="nativeElement.className" [innerHTML]="nativeElement.innerHTML"></div>
   </ng-template>
-
-  <!-- <mat-card-actions class="links-container">
-    <a mat-button [routerLink]="['/fiche-terrain', site.slug]">Fiche détaillée</a>
-    <a mat-button [routerLink]="['/t_infos_base_site', site.slug]">Editer les informations</a>
-    <button mat-button (click)="exportData()">Exporter la fiche</button>
-  </mat-card-actions> -->
   <br>
 </div>
 <div *ngIf="site" class="bouttons">
