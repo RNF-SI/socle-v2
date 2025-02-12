@@ -423,7 +423,7 @@ export class AccueilComponent implements OnInit, AfterViewChecked {
         overlayHeight: proportion // Hauteur relative de l'overlay en pourcentage
       },
       { icon: 'assets/images/iconSynth.png', chiffre: sitesCreationGeol, texte: 'Réserves créées pour protéger du patrimoine géologique' },
-      { icon: 'assets/images/INPG.png', chiffre: totalInpgSites, texte: 'Sites INPG localisés en réserve naturelle' },
+      { icon: 'assets/images/INPG.png', chiffre: totalInpgSites, texte: 'Sites INPG recoupant une réserve naturelle' },
       { icon: 'assets/images/stratotype.png', chiffre: nbStratotypes, texte: 'Nombre de stratotypes protégés' }
     ];
   }
