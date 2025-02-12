@@ -19,9 +19,11 @@ L.Icon.Default.mergeOptions({
 
 interface Stat {
   icon: string;
+  overlayIcon?: string;
   iconfill?: string;
   chiffre: number | string;
   texte: string;
+  overlayHeight?: number;
 }
 
 interface Location {
@@ -409,14 +411,23 @@ export class AccueilComponent implements OnInit, AfterViewChecked {
     const sitesAvecPatrimoine = this.espaces.filter(site => site.sites_inpg && site.sites_inpg.length > 0).length;
     const nbStratotypes = this.espaces.reduce((count, site) => count + (site.stratotypes ? site.stratotypes.length : 0), 0);
     const sitesCreationGeol = this.espaces.filter(site => site.creation_geol === true).length;
+    const proportion = Number((sitesAvecPatrimoine / totalSites * 100).toFixed(0));
+
     this.stats = [
-      { icon: 'assets/images/symbol11_final.png', chiffre: totalSites, texte: 'Nombre total de réserves' },
-      { icon: 'assets/images/symbol11_prct.png', chiffre: `${(sitesAvecPatrimoine / totalSites * 100).toFixed(0)}%`, texte: 'Proportion de réserves avec patrimoine géologique' },
+      { icon: 'assets/images/alveole_straw.png', chiffre: totalSites, texte: 'Nombre total de réserves' },
+      {
+        icon: 'assets/images/alveole_straw.png',
+        chiffre: `${proportion}%`,
+        texte: 'Proportion de réserves avec patrimoine géologique',
+        overlayIcon: 'assets/images/alveole_teal_blue.png', // Icône à superposer
+        overlayHeight: proportion // Hauteur relative de l'overlay en pourcentage
+      },
       { icon: 'assets/images/iconSynth.png', chiffre: sitesCreationGeol, texte: 'Réserves créées pour protéger du patrimoine géologique' },
       { icon: 'assets/images/INPG.png', chiffre: totalInpgSites, texte: 'Sites INPG localisés en réserve naturelle' },
       { icon: 'assets/images/stratotype.png', chiffre: nbStratotypes, texte: 'Nombre de stratotypes protégés' }
     ];
   }
+
 
   // =============================
   // Méthodes de filtrage et interactions utilisateur
