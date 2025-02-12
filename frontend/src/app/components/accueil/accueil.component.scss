@@ -190,10 +190,35 @@ p {
   color: mat-color($custom-accent, 500);
 }
 
+.icon-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .statistiques-image {
   width: 100%;
   height: auto;
 }
+
+.overlay-container {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.overlay-image {
+  width: 100%;
+  height: auto;
+  position: absolute;
+  bottom: 0;
+}
+
 
 .mat-mdc-header-row {
   background-color: mat-color($custom-primary, 100);

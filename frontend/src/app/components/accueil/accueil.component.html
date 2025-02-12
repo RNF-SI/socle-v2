@@ -7,10 +7,15 @@
     <div class="col-md-6 statistiques">
       <div *ngFor="let stat of stats" class="row d-flex align-items-center">
         <div class="col-md-2 stat-logo d-flex justify-content-center">
-          <div>
+          <div class="icon-container">
             <img [src]="stat.icon" class="statistiques-image">
+            <div *ngIf="stat.overlayIcon" class="overlay-container"
+              [style.clipPath]="'inset(' + (100 - stat.overlayHeight!) + '% 0 0 0)'">
+              <img [src]="stat.overlayIcon" class="overlay-image">
+            </div>
           </div>
         </div>
+
         <div class="col-md-3 stat-chiffre d-flex justify-content-center">
           {{ stat.chiffre }}
         </div>
