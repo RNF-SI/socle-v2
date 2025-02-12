@@ -4,7 +4,7 @@
   <br>
 
   <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-6 statistiques">
       <div *ngFor="let stat of stats" class="row d-flex align-items-center">
         <div class="col-md-2 stat-logo d-flex justify-content-center">
           <div>
@@ -20,7 +20,42 @@
       </div>
     </div>
     <div class="col-md-6">
+      <div class="row">
+        <div class="col-md-7">
+          <div class="layer-toggles">
+            <div>
+              <mat-slide-toggle class="toggle-patrimoine" [(ngModel)]="showPatrimoine" (change)="onToggleChange()">
+                Réserves créées sur le fondement d'un patrimoine géologique
+              </mat-slide-toggle>
+            </div>
+            <div>
+              <mat-slide-toggle class="toggle-contient" [(ngModel)]="showContient" (change)="onToggleChange()">
+                Autres réserves abritant du patrimoine géologique
+              </mat-slide-toggle>
+            </div>
+            <div>
+              <mat-slide-toggle class="toggle-autres" [(ngModel)]="showAutres" (change)="onToggleChange()">
+                Réserves sans patrimoine géologique connu
+              </mat-slide-toggle>
+            </div>
+          </div>
+
+        </div>
+        <div class="col-md-5 d-flex align-items-center">
+          <div class="location-dropdown w-100">
+            <mat-form-field appearance="outline">
+              <mat-label>Zoommer sur...</mat-label>
+              <mat-select [(ngModel)]="selectedLocation" (selectionChange)="onLocationChange()">
+                <mat-option *ngFor="let loc of locations" [value]="loc">
+                  {{ loc.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
       <div id="map"></div>
+
     </div>
   </div>
 
