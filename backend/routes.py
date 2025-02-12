@@ -9,6 +9,7 @@ from schemas import PatrimoineGeologiqueGestionnaireSchema, PerimetreProtectionS
 from pypnusershub import routes as fnauth
 import logging
 from sqlalchemy import func
+from sqlalchemy.orm import joinedload, load_only
 
 bp = Blueprint('routes', __name__)
 
@@ -113,9 +114,27 @@ def get_sites_simple():
 
 @bp.route('/sites-simple-centroides', methods=['GET'])
 def get_sites_simple_centroid():
+    sites = (
+        Site.query
+        .options(
+            load_only(
+                Site.id_site, Site.nom, Site.slug, Site.type_rn, Site.code, Site.region, Site.creation_geol, Site.geom_point
+            ),  # Charger uniquement les champs nécessaires
+            joinedload(Site.sites_inpg).joinedload(CorSiteInpg.inpg).load_only(
+                Inpg.id_metier, Inpg.lb_site, Inpg.niveau_de_diffusion, Inpg.nombre_etoiles
+            ),  # Charger les sites_inpg et inpg en une seule requête
+            joinedload(Site.patrimoines_geologiques).load_only(PatrimoineGeologiqueGestionnaire.lb),
+            joinedload(Site.stratotypes).load_only(Stratotype.libelle),
+        )
+        .filter(Site.perimetre_protection != True)
+        .order_by(Site.nom)
+        .all()
+    )
 
-    sites = Site.query.filter(Site.perimetre_protection != True).order_by(Site.nom).all()  # Renvoie les sites filtrés par type_rn et/ou code
-    schema = SiteSchemaSimple(only=('id_site','nom','slug','type_rn','code','region','creation_geol','geom_point','sites_inpg', 'patrimoines_geologiques', 'stratotypes'),many=True)
+    schema = SiteSchemaSimple(
+        only=('id_site', 'nom', 'slug', 'type_rn', 'code', 'region', 'creation_geol', 'geom_point', 'sites_inpg', 'patrimoines_geologiques', 'stratotypes'),
+        many=True
+    )
     return schema.jsonify(sites)
 
 @bp.route('/sites-dans-bbox', methods=['GET'])
