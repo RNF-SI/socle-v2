@@ -123,10 +123,10 @@ p {
 
 }
 
-.search-container mat-form-field:first-child {
-  height: 100%;
-  /* Exemple de largeur dynamique */
-}
+// .search-container mat-form-field:first-child {
+//   height: 100%;
+//   /* Exemple de largeur dynamique */
+// }
 
 
 .header-row {
@@ -249,7 +249,18 @@ a:hover {
 }
 
 .search-container {
-  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  /* Écarte les éléments uniformément */
+  gap: 10px;
+  /* Ajoute un espace entre les champs */
+}
+
+mat-form-field {
+  flex: 1 1 20%;
+  /* 1 = facteur de croissance, 1 = facteur de rétrécissement, 25% = largeur de base */
+  min-width: 0;
+  /* Permet l'ajustement dynamique */
 }
 
 .button-export-container {
