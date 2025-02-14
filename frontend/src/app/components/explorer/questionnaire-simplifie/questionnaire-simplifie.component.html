@@ -320,6 +320,9 @@
           </div>
         </div>
       </div>
+      <mat-error *ngIf="tInfosBaseSiteForm.hasError('missingStratotype') && isFormSubmitted">
+        Vous devez sélectionner au moins un stratotype si la réserve en contient un ou cocher non dans le cas contraire.
+      </mat-error>
     </div>
 
     <!-- TODO: ajouter tableu de cores pour stocke les repens choisie et garder dans mini question pour question 10 -->
@@ -433,7 +436,7 @@
       </div>
     </div>
     <div class="submit-button-container">
-      <button mat-raised-button type="submit" [disabled]="tInfosBaseSiteForm.invalid">Enregistrer les
+      <button mat-raised-button type="submit">Enregistrer les
         modifications</button>
     </div>
   </form>

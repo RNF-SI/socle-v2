@@ -47,6 +47,8 @@ export class QuestionnaireSimplifieComponent implements OnInit {
   filteredStratotypesLimite: Stratotype[] = [];
   searchStratotypesEtageTerm = new FormControl('');
   searchStratotypesLimiteTerm = new FormControl('');
+  isFormSubmitted = false;
+
 
   geologicalInterestOptions: string[] = [
     'Paléontologie',
@@ -144,8 +146,21 @@ export class QuestionnaireSimplifieComponent implements OnInit {
       systemes: [],
       series: [],
       etages: []
-    });
+    }, { validators: this.validateStratotypeSelection });
   }
+
+  private validateStratotypeSelection(form: FormGroup): { [key: string]: boolean } | null {
+    const containsStratotype = form.get('reserve_contains_stratotype')?.value;
+    const stratotypesLimite = form.get('stratotypesLimite') as FormArray;
+    const stratotypesEtage = form.get('stratotypesEtage') as FormArray;
+
+    if (containsStratotype && stratotypesLimite.length === 0 && stratotypesEtage.length === 0) {
+      return { missingStratotype: true }; // Ajoute une erreur personnalisée
+    }
+
+    return null; // Pas d'erreur
+  }
+
 
   ngOnInit(): void {
     this.siteIdLocal = this.route.snapshot.paramMap.get('id_rn')!;
@@ -167,16 +182,32 @@ export class QuestionnaireSimplifieComponent implements OnInit {
     })
     this.resetFieldOnParentChange('geologicalUnitsOther', 'geologicalUnitsOtherText');
     this.resetFieldOnParentChange('reserve_has_geological_site_for_visitors', 'site_for_visitors_free_access');
-
+    this.resetFieldOnParentChange('stratotype_limit', 'stratotypesLimite', true);
+    this.resetFieldOnParentChange('stratotype_stage', 'stratotypesEtage', true);
+    this.resetFieldOnParentChange('reserve_contains_stratotype', 'stratotypesLimite', true);
+    this.resetFieldOnParentChange('reserve_contains_stratotype', 'stratotypesEtage', true);
+    this.resetFieldOnParentChange('reserve_contains_stratotype', 'stratotype_limit');
+    this.resetFieldOnParentChange('reserve_contains_stratotype', 'stratotype_stage');
   }
 
-  private resetFieldOnParentChange(parentControlName: string, childControlName: string): void {
+  private resetFieldOnParentChange(parentControlName: string, childControlName: string, isArray: boolean = false): void {
     this.tInfosBaseSiteForm.get(parentControlName)?.valueChanges.subscribe(value => {
       if (!value) {
-        this.tInfosBaseSiteForm.get(childControlName)?.setValue(null, { emitEvent: false });
+        const childControl = this.tInfosBaseSiteForm.get(childControlName);
+
+        if (isArray && childControl instanceof FormArray) {
+          // Réinitialiser le FormArray en le vidant
+          while (childControl.length !== 0) {
+            childControl.removeAt(0);
+          }
+        } else {
+          // Réinitialiser un champ classique à null
+          childControl?.setValue(null, { emitEvent: false });
+        }
       }
     });
   }
+
 
   initGeologicalUnitsCheckboxes(): void {
     const geologicalUnitsArray = this.geologicalUnitsOptions.map(unit =>
@@ -499,6 +530,8 @@ export class QuestionnaireSimplifieComponent implements OnInit {
   }
 
   onSubmit(): void {
+    this.isFormSubmitted = true;
+
     if (this.tInfosBaseSiteForm.valid) {
       const selectedGeologicalUnits = this.getSelectedGeologicalUnits();
       const formData = {
