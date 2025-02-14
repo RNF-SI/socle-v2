@@ -91,7 +91,7 @@
         </div>
         <div class="button-container">
           <button mat-raised-button color="primary" type="button" (click)="ajouterPatrimoineGeol()">
-            Ajouter un patrimoine géologique à la réserve
+            Ajouter un site géologique d’intérêt patrimonial à la réserve
           </button>
         </div>
       </div>
@@ -181,7 +181,7 @@
         </div>
         <div class="button-container">
           <button mat-raised-button color="primary" type="button" (click)="ajouterPatrimoineGeolPP()">
-            Ajouter un patrimoine géologique au périmètre de protection
+            Ajouter un site géologique d’intérêt patrimonial au périmètre de protection
           </button>
         </div>
       </div>
@@ -219,8 +219,8 @@
       </label>
       <div>
         <mat-radio-group formControlName="reserve_has_geological_collections">
-          <mat-radio-button [value]="false">Non</mat-radio-button>
           <mat-radio-button [value]="true">Oui</mat-radio-button>
+          <mat-radio-button [value]="false">Non</mat-radio-button>
         </mat-radio-group>
       </div>
     </div>
@@ -232,8 +232,8 @@
       </label>
       <div>
         <mat-radio-group formControlName="reserve_has_exhibition">
-          <mat-radio-button [value]="false">Non</mat-radio-button>
           <mat-radio-button [value]="true">Oui</mat-radio-button>
+          <mat-radio-button [value]="false">Non</mat-radio-button>
         </mat-radio-group>
       </div>
     </div>
@@ -403,8 +403,8 @@
       </label>
       <div>
         <mat-radio-group formControlName="reserve_has_geological_site_for_visitors">
-          <mat-radio-button [value]="false">Non</mat-radio-button>
           <mat-radio-button [value]="true">Oui</mat-radio-button>
+          <mat-radio-button [value]="false">Non</mat-radio-button>
         </mat-radio-group>
       </div>
     </div>
@@ -416,8 +416,8 @@
       </label>
       <div>
         <mat-radio-group formControlName="offers_geodiversity_activities">
-          <mat-radio-button [value]="false">Non</mat-radio-button>
           <mat-radio-button [value]="true">Oui</mat-radio-button>
+          <mat-radio-button [value]="false">Non</mat-radio-button>
         </mat-radio-group>
       </div>
     </div>
