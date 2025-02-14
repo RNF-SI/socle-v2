@@ -207,6 +207,30 @@ export class EspaceDetailComponent implements OnInit {
       this.addLegendItem(legendContainer!, siteLayerStyle.fillColor, siteLayerStyle.fillOpacity, siteLayerStyle.color, "Périmètre de protection")
     }
 
+    // Fonction permettant de créer les popups :
+
+    const getPopupContent = (
+      inpg: any,
+      title: string,
+      titleColor: string,
+      showButton: boolean
+    ) => {
+      const stars = "★".repeat(Math.min(3, Math.max(0, inpg.inpg.nombre_etoiles || 0)));
+
+      return `
+      <div style="display: flex; align-items: center; gap: 10px; padding-bottom: 5px; border-bottom: 1px solid #ccc;">
+      <img src="assets/images/INPG.png" alt="INPG Logo" style="width: 40px; height: auto;">
+      <h3 style="margin: 0; font-size: 1rem; font-weight: bold;color: ${titleColor};">${title}</h3>
+      </div>
+      <p><span style="color: gold; font-size: 1.2rem;">${stars}</span> <strong>${inpg.inpg.lb_site} - ${inpg.inpg.id_metier}</strong> (${inpg.inpg.interet_geol_principal})</p>
+      ${showButton ? `
+        <button onclick="window.open('https://inpn.mnhn.fr/site/inpg/${inpg.inpg.id_metier}', '_blank')" style="display: block; width: 100%; padding: 5px; background-color: #4a90e2; color: white; border: none; cursor: pointer;">
+        Voir la fiche
+        </button>
+      ` : ''}
+      `;
+    };
+
     // 3. Couche INPG publics du site
 
     var siteLayerStyle = {
@@ -218,16 +242,16 @@ export class EspaceDetailComponent implements OnInit {
     };
 
     const inpgPublicLayers = this.site!.sites_inpg
-      .filter((inpg: any) => inpg.niveau_de_diffusion === 'Public')
+      .filter((inpg: any) => inpg.inpg.niveau_de_diffusion === 'Public')
       .map((inpg: any) => L.geoJSON(
-        inpg.geom, {
+        inpg.inpg.geom, {
         style: siteLayerStyle,
         onEachFeature: (feature, layer) => {
-          layer.bindPopup(`<a href="https://inpn.mnhn.fr/site/inpg/${inpg.id_metier}" target="_blank">
-            ${inpg.lb_site} - ${inpg.id_metier} (${inpg.interet_geol_principal})
-          </a>`)
+          const popupContent = getPopupContent(inpg, "Site INPG public", "#4a90e2", true);
+          layer.bindPopup(popupContent);
         }
       }));
+
 
     if (inpgPublicLayers.length > 0) {
       const publicGroup = L.layerGroup(inpgPublicLayers).addTo(this.map!);
@@ -235,6 +259,14 @@ export class EspaceDetailComponent implements OnInit {
       inpgPublicLayers.forEach((layer: { getBounds: () => L.LatLngExpression | L.LatLngBoundsExpression; }) => this.bounds.extend(layer.getBounds()));
       this.addLegendItem(legendContainer!, siteLayerStyle.fillColor, siteLayerStyle.fillOpacity, siteLayerStyle.color, "Sites INPG publics")
     }
+
+    // Création d'une liste des ID utilisés dans `inpgPublicLayers`
+    const existingPublicInpgIds = new Set(
+      this.site!.sites_inpg
+        .filter((inpg: any) => inpg.inpg.niveau_de_diffusion === 'Public')
+        .map((inpg: any) => inpg.inpg.id_inpg) // Stocke uniquement les ID
+    );
+
 
     // 4. Couche INPG confidentiels du site
 
@@ -247,8 +279,15 @@ export class EspaceDetailComponent implements OnInit {
     };
 
     const inpgConfidentialLayers = this.site!.sites_inpg
-      .filter((inpg: any) => inpg.niveau_de_diffusion === 'Confidentiel')
-      .map((inpg: any) => L.geoJSON(inpg.geom, { style: siteLayerStyle }));
+      .filter((inpg: any) => inpg.inpg.niveau_de_diffusion === 'Confidentiel')
+      .map((inpg: any) => L.geoJSON(
+        inpg.inpg.geom, {
+        style: siteLayerStyle,
+        onEachFeature: (feature, layer) => {
+          const popupContent = getPopupContent(inpg, "Site INPG confidentiel", "#f5a623", false);
+          layer.bindPopup(popupContent);
+        }
+      }));
 
     if (inpgConfidentialLayers.length > 0) {
       const confidentialGroup = L.layerGroup(inpgConfidentialLayers).addTo(this.map!);
@@ -256,6 +295,12 @@ export class EspaceDetailComponent implements OnInit {
       inpgConfidentialLayers.forEach((layer: { getBounds: () => L.LatLngExpression | L.LatLngBoundsExpression; }) => this.bounds.extend(layer.getBounds()));
       this.addLegendItem(legendContainer!, siteLayerStyle.fillColor, siteLayerStyle.fillOpacity, siteLayerStyle.color, "Sites INPG confidentiels")
     }
+
+    const existingConfidentialInpgIds = new Set(
+      this.site!.sites_inpg
+        .filter((inpg: any) => inpg.inpg.niveau_de_diffusion === 'Confidentiel')
+        .map((inpg: any) => inpg.inpg.id_inpg) // Stocke uniquement les ID
+    );
 
     // 5. Couche INPG publics du périmètre de protection
 
@@ -266,10 +311,19 @@ export class EspaceDetailComponent implements OnInit {
       fillOpacity: 0.5,
       fillColor: '#4a90e2'
     };
-    if (this.site!.perimetre_protection && this.site!.perimetre_protection.inpg) {
-      const protectionInpgPublicLayers = this.site!.perimetre_protection.inpg
-        .filter((inpg: any) => inpg.niveau_de_diffusion === 'Public')
-        .map((inpg: any) => L.geoJSON(inpg.geom, { style: siteLayerStyle }));
+    if (this.site!.perimetre_protection && this.site!.perimetre_protection.sites_inpg) {
+      const protectionInpgPublicLayers = this.site!.perimetre_protection.sites_inpg
+        .filter((inpg: any) => inpg.inpg.niveau_de_diffusion === 'Public' &&
+          !existingPublicInpgIds.has(inpg.inpg.id_inpg) // Vérifie si l'ID est déjà présent)
+        )
+        .map((inpg: any) => L.geoJSON(
+          inpg.inpg.geom, {
+          style: siteLayerStyle,
+          onEachFeature: (feature, layer) => {
+            const popupContent = getPopupContent(inpg, "Site INPG public", "#4a90e2", true);
+            layer.bindPopup(popupContent);
+          }
+        }));
 
       if (protectionInpgPublicLayers.length > 0) {
         const protectionPublicGroup = L.layerGroup(protectionInpgPublicLayers).addTo(this.map!);
@@ -290,10 +344,19 @@ export class EspaceDetailComponent implements OnInit {
       fillColor: '#f5a623'
     };
 
-    if (this.site!.perimetre_protection && this.site!.perimetre_protection.inpg) {
-      const protectionInpgConfidentialLayers = this.site!.perimetre_protection.inpg
-        .filter((inpg: any) => inpg.niveau_de_diffusion === 'Confidentiel')
-        .map((inpg: any) => L.geoJSON(inpg.geom));
+    if (this.site!.perimetre_protection && this.site!.perimetre_protection.sites_inpg) {
+      const protectionInpgConfidentialLayers = this.site!.perimetre_protection.sites_inpg
+        .filter((inpg: any) => inpg.inpg.niveau_de_diffusion === 'Confidentiel' &&
+          !existingConfidentialInpgIds.has(inpg.inpg.id_inpg) // Vérifie si l'ID est déjà présent)
+        )
+        .map((inpg: any) => L.geoJSON(
+          inpg.inpg.geom, {
+          style: siteLayerStyle,
+          onEachFeature: (feature, layer) => {
+            const popupContent = getPopupContent(inpg, "Site INPG confidentiel", "#f5a623", false);
+            layer.bindPopup(popupContent);
+          }
+        }));
 
       if (protectionInpgConfidentialLayers.length > 0) {
         const protectionConfidentialGroup = L.layerGroup(protectionInpgConfidentialLayers).addTo(this.map!);
