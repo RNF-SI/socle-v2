@@ -480,6 +480,8 @@ export class EspaceDetailComponent implements OnInit {
       if (layerControl) (layerControl as HTMLElement).style.display = 'none';
       if (zoomControl) (zoomControl as HTMLElement).style.display = 'none';
 
+      this.zoomToExtent();
+
       // Sauvegarder la couche de fond actuelle (osm ou geologie)
       let currentBaseLayer: L.Layer | null | undefined = null;
       map.eachLayer(layer => {
