@@ -273,6 +273,7 @@ def submitData():
             mine_extracted_material=data.get('mine_extracted_material'),
             mine_fossiliferous_material=data.get('mine_fossiliferous_material'),
             reserve_has_geological_site_for_visitors=data.get('reserve_has_geological_site_for_visitors'),
+            site_for_visitors_free_access=data.get('site_for_visitors_free_access'),
             offers_geodiversity_activities=data.get('offers_geodiversity_activities')
         )
 
@@ -345,6 +346,7 @@ def update_t_infos_base_site(slug):
         site.infos_base.mine_extracted_material = data.get('mine_extracted_material', site.infos_base.mine_extracted_material)
         site.infos_base.mine_fossiliferous_material = data.get('mine_fossiliferous_material', site.infos_base.mine_fossiliferous_material)
         site.infos_base.reserve_has_geological_site_for_visitors = data.get('reserve_has_geological_site_for_visitors', site.infos_base.reserve_has_geological_site_for_visitors)
+        site.infos_base.site_for_visitors_free_access = data.get('site_for_visitors_free_access', site.infos_base.site_for_visitors_free_access)
         site.infos_base.offers_geodiversity_activities = data.get('offers_geodiversity_activities', site.infos_base.offers_geodiversity_activities)
         site.infos_base.geological_units = data.get('geologicalUnits', site.infos_base.geological_units)
         site.infos_base.geological_units_other = data.get('geologicalUnitsOtherText', site.infos_base.geological_units_other)

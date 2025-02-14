@@ -138,6 +138,7 @@ export class QuestionnaireSimplifieComponent implements OnInit {
       mine_extracted_material: [''],
       mine_fossiliferous_material: [false],
       reserve_has_geological_site_for_visitors: [false],
+      site_for_visitors_free_access: [],
       offers_geodiversity_activities: [false],
       eres: [],
       systemes: [],
@@ -164,12 +165,17 @@ export class QuestionnaireSimplifieComponent implements OnInit {
     this.searchStratotypesLimiteTerm.valueChanges.subscribe((searchTerm: string | null) => {
       this.filterStratotypeLimite(searchTerm);
     })
-    this.tInfosBaseSiteForm.get('geologicalUnitsOther')?.valueChanges.subscribe(value => {
+    this.resetFieldOnParentChange('geologicalUnitsOther', 'geologicalUnitsOtherText');
+    this.resetFieldOnParentChange('reserve_has_geological_site_for_visitors', 'site_for_visitors_free_access');
+
+  }
+
+  private resetFieldOnParentChange(parentControlName: string, childControlName: string): void {
+    this.tInfosBaseSiteForm.get(parentControlName)?.valueChanges.subscribe(value => {
       if (!value) {
-        this.tInfosBaseSiteForm.get('geologicalUnitsOtherText')?.setValue('');
+        this.tInfosBaseSiteForm.get(childControlName)?.setValue(null, { emitEvent: false });
       }
     });
-
   }
 
   initGeologicalUnitsCheckboxes(): void {
@@ -293,6 +299,7 @@ export class QuestionnaireSimplifieComponent implements OnInit {
           mine_extracted_material: site.infos_base.mine_extracted_material,
           mine_fossiliferous_material: site.infos_base.mine_fossiliferous_material,
           reserve_has_geological_site_for_visitors: site.infos_base.reserve_has_geological_site_for_visitors,
+          site_for_visitors_free_access: site.infos_base.site_for_visitors_free_access,
           offers_geodiversity_activities: site.infos_base.offers_geodiversity_activities,
           geologicalUnits: [],
           geologicalUnitsOther: site.infos_base.geological_units_other,
