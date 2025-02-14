@@ -317,6 +317,20 @@
           </div>
         </div>
       </div>
+      <div *ngIf="site.perimetre_protection && site.perimetre_protection.patrimoines_geologiques.length > 0">
+        <div class="subsection-title">
+          Autres sites de géopatrimoine du périmètre de protection
+        </div>
+        <div class="subsection-response">
+          <div *ngFor="let patrimoine of site.perimetre_protection.patrimoines_geologiques">
+            <div>
+              <span class="geopatrimoine-lb">{{patrimoine.lb}}</span>
+              {{ patrimoine.interet_geol_principal }}
+              (<span class="geopatrimoine-biblio">{{patrimoine.bibliographie}}</span>)
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <!-- TODO: ajouter de tableu de corespendance pour stocker de donner  -->
