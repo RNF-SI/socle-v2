@@ -196,3 +196,13 @@
 .input-field {
   width: 50%;
 }
+
+.subsection-title {
+  color: mat-color($custom-accent, 500);
+  font-weight: bold;
+  margin-top: 15px;
+}
+
+.subsection-response {
+  padding-left: 20px;
+}

@@ -18,8 +18,11 @@
     <!-- Question supprimée du questionnaire pour limiter les risques d'erreurs. Importé depuis RADIS. -->
 
     <div class="form-group sites-inpg">
-      <h6>Patrimoine géologique</h6>
-      <div>
+      <div class="subsection-title">
+        Sites INPG de la réserve
+      </div>
+      <br>
+      <div class="subsection-response">
         <h6 *ngIf="site.sites_inpg.length > 0">La réserve abrite {{site.sites_inpg.length}} site<span
             *ngIf="site.sites_inpg.length > 1">s</span> INPG <a (click)="changeInpgView()"
             *ngIf="site.sites_inpg.length > 5"><span *ngIf="!showInpg">Afficher</span><span
@@ -53,11 +56,18 @@
             </div>
           </div>
         </div>
-        <br>
-        <h6 *ngIf="geologicalHeritages.controls.length > 0">Autre<span
-            *ngIf="geologicalHeritages.controls.length > 1">s</span> patrimoine<span
-            *ngIf="geologicalHeritages.controls.length > 1">s</span> géologique<span
-            *ngIf="geologicalHeritages.controls.length > 1">s</span> sur la réserve : </h6>
+      </div>
+      <br>
+      <div class="subsection-title">
+        Autres sites géologiques d'intérêt patrimonial de la réserve
+      </div>
+      <br>
+      <div class="subsection-response">
+
+        <div *ngIf="geologicalHeritages.controls.length == 0">
+          <p>Aucun autre site géologique d'intérêt patrimonial n'est renseigné sur la réserve.</p>
+          <br>
+        </div>
         <div formArrayName="geologicalHeritages" *ngFor="let heritage of geologicalHeritages.controls; let i = index">
           <div [formGroupName]="i" class="heritage-entry">
             <button mat-icon-button class="remove-button" (click)="removeHeritage(i)">
@@ -99,53 +109,64 @@
 
 
 
-    <!-- Question 3 -->
     <div class="form-group sites-inpg" *ngIf="site.perimetre_protection">
-      <h6 *ngIf="site.perimetre_protection.sites_inpg.length > 0">Le périmètre de protection de la réserve abrite
-        {{site.perimetre_protection.sites_inpg.length}} site<span
-          *ngIf="site.perimetre_protection.sites_inpg.length > 1">s</span>
-        INPG <a (click)="changePpInpgView()" *ngIf="site.perimetre_protection.sites_inpg.length > 5"><span
-            *ngIf="!showPpInpg">Afficher</span><span *ngIf="showPpInpg">Masquer</span> les sites</a></h6>
-      <h6 *ngIf="site.perimetre_protection.sites_inpg.length == 0">Le périmètre de protection de la réserve n'abrite
-        aucun
-        site INPG</h6>
-      <div
-        *ngIf="site.perimetre_protection.sites_inpg && site.perimetre_protection.sites_inpg.length > 0 && showPpInpg">
-        <div *ngFor="let inpg of site.perimetre_protection.sites_inpg" class="detail-sites-inpg">
-          <div [class.strikethrough]="inpg.active == false" class="detail-content">
-            <fa-icon [icon]="['fas', 'star']" size="2xs"></fa-icon>
-            <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 1; else etoileVide2" [icon]="['fas', 'star']" size="2xs">
-            </fa-icon>
-            <ng-template #etoileVide2>
-              <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
-            </ng-template>
-            <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 2; else etoileVide3" [icon]="['fas', 'star']" size="2xs">
-            </fa-icon>
-            <ng-template #etoileVide3>
-              <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
-            </ng-template>
-            <a [href]="'https://inpn.mnhn.fr/site/inpg/' + inpg.inpg.id_metier" target="_blank"> {{
-              inpg.inpg.lb_site }}</a>
-            {{ inpg.inpg.interet_geol_principal }}
-            <fa-icon *ngIf="inpg.active != false" [icon]="['fas', 'times']" size="sm" class="delete-icon"
-              (click)="confirmDeletion(inpg.inpg.lb_site, site.perimetre_protection.id_site, inpg.inpg.id_inpg, true)">
-            </fa-icon>
-          </div>
-          <div *ngIf="inpg.active == false" style="color: red;">
-            Invalidé car : {{inpg.raison_desactive}}
-            <fa-icon [icon]="['fas', 'check']" size="sm" class="valid-icon"
-              (click)="confirmRevalid(inpg.inpg.lb_site, site.perimetre_protection.id_site, inpg.inpg.id_inpg, inpg.raison_desactive, true)">
-            </fa-icon>
+      <div class="subsection-title">
+        Sites INPG du périmètre de protection
+      </div>
+      <br>
+      <div class="subsection-response">
+        <h6 *ngIf="site.perimetre_protection.sites_inpg.length > 0">Le périmètre de protection de la réserve abrite
+          {{site.perimetre_protection.sites_inpg.length}} site<span
+            *ngIf="site.perimetre_protection.sites_inpg.length > 1">s</span>
+          INPG <a (click)="changePpInpgView()" *ngIf="site.perimetre_protection.sites_inpg.length > 5"><span
+              *ngIf="!showPpInpg">Afficher</span><span *ngIf="showPpInpg">Masquer</span> les sites</a></h6>
+        <h6 *ngIf="site.perimetre_protection.sites_inpg.length == 0">Le périmètre de protection de la réserve n'abrite
+          aucun
+          site INPG</h6>
+        <div
+          *ngIf="site.perimetre_protection.sites_inpg && site.perimetre_protection.sites_inpg.length > 0 && showPpInpg">
+          <div *ngFor="let inpg of site.perimetre_protection.sites_inpg" class="detail-sites-inpg">
+            <div [class.strikethrough]="inpg.active == false" class="detail-content">
+              <fa-icon [icon]="['fas', 'star']" size="2xs"></fa-icon>
+              <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 1; else etoileVide2" [icon]="['fas', 'star']" size="2xs">
+              </fa-icon>
+              <ng-template #etoileVide2>
+                <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
+              </ng-template>
+              <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 2; else etoileVide3" [icon]="['fas', 'star']" size="2xs">
+              </fa-icon>
+              <ng-template #etoileVide3>
+                <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
+              </ng-template>
+              <a [href]="'https://inpn.mnhn.fr/site/inpg/' + inpg.inpg.id_metier" target="_blank"> {{
+                inpg.inpg.lb_site }}</a>
+              {{ inpg.inpg.interet_geol_principal }}
+              <fa-icon *ngIf="inpg.active != false" [icon]="['fas', 'times']" size="sm" class="delete-icon"
+                (click)="confirmDeletion(inpg.inpg.lb_site, site.perimetre_protection.id_site, inpg.inpg.id_inpg, true)">
+              </fa-icon>
+            </div>
+            <div *ngIf="inpg.active == false" style="color: red;">
+              Invalidé car : {{inpg.raison_desactive}}
+              <fa-icon [icon]="['fas', 'check']" size="sm" class="valid-icon"
+                (click)="confirmRevalid(inpg.inpg.lb_site, site.perimetre_protection.id_site, inpg.inpg.id_inpg, inpg.raison_desactive, true)">
+              </fa-icon>
+            </div>
           </div>
         </div>
       </div>
       <br>
-      <h6 *ngIf="protectionGeologicalHeritages.controls.length > 0">Autre<span
-          *ngIf="protectionGeologicalHeritages.controls.length > 1">s</span> patrimoine<span
-          *ngIf="protectionGeologicalHeritages.controls.length > 1">s</span> géologique<span
-          *ngIf="protectionGeologicalHeritages.controls.length > 1">s</span> sur le périmètre de protection de la
-        réserve : </h6>
-      <div>
+
+      <div class="subsection-title">
+        Autres sites géologiques d'intérêt patrimonial du périmètre de protection
+      </div>
+      <br>
+      <div class="subsection-response">
+
+        <div *ngIf="protectionGeologicalHeritages.controls.length == 0">
+          <p>Aucun autre site géologique d'intérêt patrimonial n'est renseigné sur le périmètre de protection de la
+            réserve.</p>
+          <br>
+        </div>
         <div formArrayName="protection_geologicalHeritages"
           *ngFor="let heritage of protectionGeologicalHeritages.controls; let i = index">
           <div [formGroupName]="i" class="heritage-entry">
