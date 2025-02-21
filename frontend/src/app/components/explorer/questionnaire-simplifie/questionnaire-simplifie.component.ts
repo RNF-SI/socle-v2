@@ -145,7 +145,8 @@ export class QuestionnaireSimplifieComponent implements OnInit {
       eres: [],
       systemes: [],
       series: [],
-      etages: []
+      etages: [],
+      biblio: []
     }, { validators: this.validateStratotypeSelection });
   }
 
@@ -335,6 +336,7 @@ export class QuestionnaireSimplifieComponent implements OnInit {
           geologicalUnits: [],
           geologicalUnitsOther: site.infos_base.geological_units_other,
           geologicalUnitsOtherText: site.infos_base.geological_units_other,
+          biblio: site.infos_base.biblio
         });
 
         this.initGeologicalUnitsCheckboxes();

@@ -350,6 +350,7 @@ def update_t_infos_base_site(slug):
         site.infos_base.offers_geodiversity_activities = data.get('offers_geodiversity_activities', site.infos_base.offers_geodiversity_activities)
         site.infos_base.geological_units = data.get('geologicalUnits', site.infos_base.geological_units)
         site.infos_base.geological_units_other = data.get('geologicalUnitsOtherText', site.infos_base.geological_units_other)
+        site.infos_base.biblio = data.get('biblio', site.infos_base.biblio)
         # nouveaux_ages_dict = []
         # if 'eres' in data and data['eres'] is not None:
         #     for age in data['eres']:

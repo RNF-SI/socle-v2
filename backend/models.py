@@ -11,36 +11,15 @@ class TInfosBaseSite(db.Model):
     __tablename__ = 't_infos_base_site'
     
     id_site = db.Column(db.Integer, db.ForeignKey('site.id_site'), primary_key=True, nullable=False)
-    # reserve_created_on_geological_basis = db.Column(db.Boolean, nullable=False)
-    # protection_perimeter_contains_geological_heritage_inpg = db.Column(db.Boolean)
-    # protection_perimeter_contains_geological_heritage_other = db.Column(db.String)
-    # main_geological_interests_stratigraphic = db.Column(db.Boolean)
-    # main_geological_interests_paleontological = db.Column(db.Boolean)
-    # main_geological_interests_sedimentological = db.Column(db.Boolean)
-    # main_geological_interests_geomorphological = db.Column(db.Boolean)
-    # main_geological_interests_mineral_resource = db.Column(db.Boolean)
-    # main_geological_interests_mineralogical = db.Column(db.Boolean)
-    # main_geological_interests_metamorphism = db.Column(db.Boolean)
-    # main_geological_interests_volcanism = db.Column(db.Boolean)
-    # main_geological_interests_plutonism = db.Column(db.Boolean)
-    # main_geological_interests_hydrogeology = db.Column(db.Boolean)
-    # main_geological_interests_tectonics = db.Column(db.Boolean)
-    # contains_paleontological_heritage = db.Column(db.Boolean)
     contains_paleontological_heritage_vertebrates = db.Column(db.Boolean)
     contains_paleontological_heritage_invertebrates = db.Column(db.Boolean)
     contains_paleontological_heritage_plants = db.Column(db.Boolean)
     contains_paleontological_heritage_trace_fossils = db.Column(db.Boolean)
-    # contains_paleontological_heritage_other = db.Column(db.Boolean)
     contains_paleontological_heritage_other_details = db.Column(db.String)  
     reserve_has_geological_collections = db.Column(db.Boolean)
     reserve_has_exhibition = db.Column(db.Boolean)
     geological_units = db.Column(db.ARRAY(db.Integer))  # Ajoutez ce champ pour stocker les IDs des unités géologiques sélectionnées.
     geological_units_other = db.Column(db.String)
-    # reserve_contains_stratotype = db.Column(db.Boolean)
-    # stratotype_limit = db.Column(db.Boolean)   
-    # stratotype_limit_input = db.Column(db.String) 
-    # stratotype_stage = db.Column(db.Boolean)   
-    # stratotype_stage_input = db.Column(db.String)   
     contains_subterranean_habitats = db.Column(db.Boolean)
     subterranean_habitats_natural_cavities = db.Column(db.Boolean)
     subterranean_habitats_anthropogenic_cavities = db.Column(db.Boolean)
@@ -57,12 +36,8 @@ class TInfosBaseSite(db.Model):
     reserve_has_geological_site_for_visitors = db.Column(db.Boolean)
     site_for_visitors_free_access = db.Column(db.Boolean)
     offers_geodiversity_activities = db.Column(db.Boolean)
-    # slug = db.Column(db.String(255), unique=True)
+    biblio = db.Column(db.Text)
 
-# cor_site_inpg = db.Table('cor_site_inpg',
-#     db.Column('site_id', db.Integer, db.ForeignKey('site.id_site', ondelete="CASCADE")),
-#     db.Column('inpg_id', db.Integer, db.ForeignKey('inpg.id_inpg', ondelete="CASCADE"))
-# )
 
 cor_site_ages = db.Table('cor_site_ages',
     db.Column('site_id', db.Integer, db.ForeignKey('site.id_site', ondelete="CASCADE")),

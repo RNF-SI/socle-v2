@@ -204,11 +204,13 @@
           <mat-checkbox formControlName="traceFossils">Traces fossiles</mat-checkbox>
           <mat-checkbox formControlName="other">Autre</mat-checkbox>
         </div>
-        <mat-form-field appearance="fill"
-          *ngIf="tInfosBaseSiteForm.get('contains_paleontological_heritage')?.get('other')?.value">
-          <mat-label>Précisez</mat-label>
-          <input matInput formControlName="otherDetails">
-        </mat-form-field>
+        <div class="input-field">
+          <mat-form-field appearance="fill"
+            *ngIf="tInfosBaseSiteForm.get('contains_paleontological_heritage')?.get('other')?.value" class="full-width">
+            <mat-label>Précisez</mat-label>
+            <input matInput formControlName="otherDetails">
+          </mat-form-field>
+        </div>
       </div>
     </div>
 
@@ -257,8 +259,8 @@
         </mat-checkbox>
       </div>
     </div>
-    <div *ngIf="tInfosBaseSiteForm.get('geologicalUnitsOther')?.value">
-      <mat-form-field appearance="fill">
+    <div *ngIf="tInfosBaseSiteForm.get('geologicalUnitsOther')?.value" class="input-field">
+      <mat-form-field appearance="fill" class="full-width">
         <mat-label>Précisez</mat-label>
         <input matInput formControlName="geologicalUnitsOtherText">
       </mat-form-field>
@@ -433,6 +435,16 @@
           <mat-radio-button [value]="true">Oui</mat-radio-button>
           <mat-radio-button [value]="false">Non</mat-radio-button>
         </mat-radio-group>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>
+        <h6>Vous pouvez ajouter de la bibliographie associée à votre site si vous le souhaitez :</h6>
+      </label>
+      <div class="input-field">
+        <mat-form-field class="full-width">
+          <textarea matInput placeholder="Saisir ici de la bibliographie" formControlName="biblio"></textarea>
+        </mat-form-field>
       </div>
     </div>
     <div class="submit-button-container">
