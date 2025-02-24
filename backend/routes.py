@@ -4,7 +4,7 @@ from flask import Flask, request, Response, render_template, redirect, Blueprint
 import requests
 import json
 from app import app, db
-from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Nomenclature, BibNomenclatureType,Inpg, Site, CorSiteInpg, CorSiteSubstance, Stratotype, Parametres
+from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Nomenclature, BibNomenclatureType,Inpg, Site, CorSiteInpg, CorSiteSubstance, Stratotype, Parametres, Echelle, SFGeol
 from schemas import PatrimoineGeologiqueGestionnaireSchema, PerimetreProtectionSchema, TInfosBaseSiteSchema, SiteSchema, NomenclatureSchema, NomenclatureTypeSchema, SiteSchemaSimple, StratotypeSchema, ParametresSchema
 from pypnusershub import routes as fnauth
 import logging

@@ -5,7 +5,7 @@ import shapely
 
 
 from app import ma
-from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Inpg, Nomenclature, BibNomenclatureType, CorSiteSubstance, Stratotype, CorSiteInpg, Parametres
+from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Inpg, Nomenclature, BibNomenclatureType, CorSiteSubstance, Stratotype, CorSiteInpg, Parametres, SFGeol, Echelle
 
 
 class PerimetreProtectionSchema(ma.SQLAlchemyAutoSchema):
@@ -67,6 +67,7 @@ class SiteSchema(ma.SQLAlchemyAutoSchema):
     patrimoines_geologiques = ma.Nested(lambda: PatrimoineGeologiqueGestionnaireSchema, many=True)
     substances = ma.Nested(lambda:CorSiteSubstanceSchema, many = True)
     stratotypes = ma.Nested(lambda:StratotypeSchema, many = True)
+    sfgeol = ma.Nested(lambda:SFGeolSchema, many = True)
 
     def get_sorted_sites_inpg(self, obj):
         # Trier les sites_inpg par nombre_etoiles (desc) et lb_site (asc)
@@ -192,3 +193,18 @@ class CorSiteInpgSchema(ma.SQLAlchemyAutoSchema) :
 class ParametresSchema(ma.SQLAlchemyAutoSchema) :
     class Meta:
         model = Parametres
+
+class EchelleSchema(ma.SQLAlchemyAutoSchema) :
+    class Meta :
+        model = Echelle
+
+class SFGeolSchema(ma.SQLAlchemyAutoSchema) :
+    wkb_geometry = fields.Method('wkt_to_geojson')
+
+    def wkt_to_geojson(self, obj):
+        if obj.wkb_geometry:
+            return shapely.geometry.mapping(to_shape(obj.wkb_geometry))
+        else:
+            return None
+    class Meta :
+        model = SFGeol

@@ -49,6 +49,11 @@ cor_site_stratotype = db.Table('cor_site_stratotype',
     db.Column('stratotype_id', db.Integer, db.ForeignKey('t_stratotypes.id_stratotype', ondelete="CASCADE"))
 )
 
+cor_site_sfgeol = db.Table('cor_site_sfgeol',
+    db.Column('site_id', db.Integer, db.ForeignKey('site.id_site', ondelete="CASCADE")),
+    db.Column('sfgeol_id', db.Integer, db.ForeignKey('infoterre.s_fgeol.ogc_fid', ondelete="CASCADE"))
+)
+
 class Site(db.Model):
     __tablename__ = 'site'
 
@@ -77,7 +82,7 @@ class Site(db.Model):
 
     type_rn = db.Column(db.String(3), nullable=False)  # RNN, RNR, RNC etc.
     code = db.Column(db.String(10), nullable=True)  # Ajout du champ 'code'
-    region = db.Column(db.String(100), nullable=False)  # Nouveau champ pour la région
+    region = db.Column(db.String(100), nullable=True)  # Nouveau champ pour la région
     creation_geol = db.Column(db.Boolean) # Ajout d'un champ pour définir si la réserve a été créée pour son patrimoine géologique
 
 
@@ -110,6 +115,12 @@ class Site(db.Model):
         passive_deletes=True
     )
 
+    sfgeol = db.relationship(
+        'SFGeol',
+        secondary=cor_site_sfgeol,
+        passive_deletes=True
+    )
+
 
 class EntiteGeol(db.Model):
     __tablename__ = 'entite_geol'
@@ -138,17 +149,98 @@ class EntiteGeol(db.Model):
 
 class Inpg(db.Model):
     __tablename__ = 'inpg'
-
-    id_inpg = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
-    id_metier = db.Column(db.String(7), nullable=True)
-    lb_site = db.Column(db.String(254))
-    nombre_etoiles = db.Column(db.Integer)
+    __table_args__ = {'schema': 'public'}
+    
+    id_inpg = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
+    geom = db.Column(Geometry('MULTIPOLYGON', 4326))
+    id_metier = db.Column(db.String(200))
+    surface = db.Column(db.String(200))
+    lb_site = db.Column(db.String)
+    typologie_1 = db.Column(db.String)
+    typologie_2 = db.Column(db.String)
+    typologie_3 = db.Column(db.String)
+    accessibilite_1 = db.Column(db.String)
+    accessibilite_2 = db.Column(db.String)
+    region = db.Column(db.String)
+    departements = db.Column(db.String)
+    communes = db.Column(db.String)
+    niveau_de_diffusion = db.Column(db.String)
+    organismes_contacts = db.Column(db.String)
+    superficie_saisie = db.Column(db.Float)
+    justification_de_superficie = db.Column(db.String)
+    unite_de_superficie = db.Column(db.String)
+    etat_de_conservation = db.Column(db.String)
+    presentation_succinte = db.Column(db.String)
+    description_physique = db.Column(db.String)
+    description_geologique = db.Column(db.String)
+    itineraire_dacces = db.Column(db.String)
+    code_gilges = db.Column(db.String)
     phenomene_geologique = db.Column(db.String)
     interet_geol_principal = db.Column(db.String)
-    # age_des_terrains_le_plus_recent = db.Column(db.String)
-    # age_des_terrains_le_plus_ancien = db.Column(db.String)
-    niveau_de_diffusion = db.Column(db.String)
-    geom = db.Column(Geometry('MULTIPOLYGON', srid=4326), nullable=True)
+    justification_interet_geologique_principal = db.Column(db.String)
+    interets_geologiques_secondaires = db.Column(db.String)
+    interets_geologiques_secondaires_avec_justification = db.Column(db.String)
+    interets_pedagogiques = db.Column(db.String)
+    justification_interets_pedagogiques = db.Column(db.String)
+    interets_annexes = db.Column(db.String)
+    interets_annexes_avec_justification = db.Column(db.String)
+    interet_histoire_sciences_geologiques = db.Column(db.String)
+    rarete = db.Column(db.String)
+    informateurs = db.Column(db.String)
+    stratigraphie__ge_le_plus_ancien_du_phenomene = db.Column(db.String)
+    stratigraphie__ge_le_plus_recent_du_phenomene = db.Column(db.String)
+    stratigraphie__ge_le_plus_ancien_du_terrain = db.Column(db.String)
+    stratigraphie__ge_le_plus_recent_du_terrain = db.Column(db.String)
+    commentaire_sur_levaluation_du_site = db.Column(db.String)
+    vulnerabilite_naturelle = db.Column(db.String)
+    menace_anthropique = db.Column(db.String)
+    commentaire_besoin_de_protection = db.Column(db.String)
+    commentaire_general_sur_les_menaces = db.Column(db.String)
+    note_geologique_principale = db.Column(db.Integer)
+    note_geologique_secondaire = db.Column(db.Integer)
+    note_pedagogique = db.Column(db.Integer)
+    note_histoire_des_sciences = db.Column(db.Integer)
+    note_rarete = db.Column(db.Integer)
+    note_etat_conservation = db.Column(db.Integer)
+    note_interet_patrimonial = db.Column(db.Integer)
+    nombre_etoiles = db.Column(db.Integer)
+    note_vulnerabilite_naturelle = db.Column(db.Integer)
+    note_menace_anthropique = db.Column(db.Integer)
+    note_protection_effective = db.Column(db.Integer)
+    note_besoin_de_protection = db.Column(db.Integer)
+    lieudit = db.Column(db.String)
+    nombre_de_documentations = db.Column(db.Integer)
+    legendes_figures = db.Column(db.String)
+    cartes_geologiques_associees = db.Column(db.String)
+    cartes_ign_associees = db.Column(db.String)
+    cartes_marines_associees = db.Column(db.String)
+    zonages_de_reference = db.Column(db.String)
+    bibliographies_associees = db.Column(db.String)
+    collections_associees = db.Column(db.String)
+    associations_avec_dautres_sites = db.Column(db.String)
+    date_de_premiere_visite = db.Column(db.String)
+    date_de_derniere_visite = db.Column(db.String)
+    date_creation_du_site = db.Column(db.String)
+    statut_actuel_de_la_fiche = db.Column(db.String)
+    ancien_statut_de_la_fiche = db.Column(db.String)
+    statut_de_validation_metier = db.Column(db.String)
+    statut_de_validation_crpg = db.Column(db.String)
+    statut_de_validation_regionale = db.Column(db.String)
+    statut_de_validation_nationale = db.Column(db.String)
+    statut_de_dept_sig = db.Column(db.String)
+    statut_de_validation_sig = db.Column(db.String)
+    statut_de_diffusion_inpn = db.Column(db.String)
+    derniere_date_de_modification_de_la_fiche = db.Column(db.String)
+    date_de_validation_metier = db.Column(db.String)
+    date_de_validation_crpg_actuelle = db.Column(db.String)
+    date_de_premiere_validation_regionale = db.Column(db.String)
+    date_de_validation_regionale_actuelle = db.Column(db.String)
+    date_de_premiere_validation_nationale = db.Column(db.String)
+    date_de_validation_nationale_actuelle = db.Column(db.String)
+    date_de_premiere_diffusion = db.Column(db.String)
+    date_de_diffusion_actuelle = db.Column(db.String)
+
+    __table_args__ = (db.Index('sidx_import_inpg_geom', 'geom', postgresql_using='gist'),)
     
 class PatrimoineGeologiqueGestionnaire(db.Model):
     __tablename__ = 'patrimoine_geologique_gestionnaire'
@@ -229,3 +321,63 @@ class Parametres(db.Model) :
     id_parametre = db.Column(db.Integer, primary_key=True)
     libelle = db.Column(db.String)
     valeur = db.Column(db.String)
+
+class SFGeol(db.Model):
+    __tablename__ = 's_fgeol'
+    __table_args__ = (
+        db.Index('fki_fk_s_fgeol_age_deb', 'age_deb_id'),
+        db.Index('fki_fk_s_fgeol_age_fin', 'age_fin_id'),
+        db.Index('s_fgeol_wkb_geometry_geom_idx', 'wkb_geometry', postgresql_using='gist'),
+        {'schema': 'infoterre'}
+    )
+    
+    ogc_fid = db.Column(db.Integer, primary_key=True, nullable=False)
+    mi_prinx = db.Column(db.Integer)
+    code = db.Column(db.Integer)
+    code_leg = db.Column(db.Integer)
+    notation = db.Column(db.String(50))
+    descr = db.Column(db.String(254))
+    type_geol = db.Column(db.String(254))
+    ap_locale = db.Column(db.String(254))
+    type_ap = db.Column(db.String(254))
+    geol_nat = db.Column(db.String(254))
+    isopique = db.Column(db.String(254))
+    lithotec = db.Column(db.String(254))
+    emerge = db.Column(db.String(4))
+    sys_deb = db.Column(db.String(50))
+    sys_fin = db.Column(db.String(50))
+    age_min = db.Column(db.Numeric(6, 2))
+    age_max = db.Column(db.Numeric(6, 2))
+    age_absolu = db.Column(db.Numeric(6, 2))
+    toler_age = db.Column(db.Numeric(5, 2))
+    tech_dat = db.Column(db.String(254))
+    cat_dat = db.Column(db.String(254))
+    age_com = db.Column(db.String(254))
+    lithologie = db.Column(db.String(254))
+    durete = db.Column(db.String(254))
+    epaisseur = db.Column(db.String(254))
+    environmt = db.Column(db.String(254))
+    c_geodyn = db.Column(db.String(254))
+    geochimie = db.Column(db.String(254))
+    litho_com = db.Column(db.String(254))
+    wkb_geometry = db.Column(Geometry('POLYGON', 4326))
+    age_deb_id = db.Column(db.Integer, db.ForeignKey('infoterre.echelle.id'))
+    age_fin_id = db.Column(db.Integer, db.ForeignKey('infoterre.echelle.id'))
+
+class Echelle(db.Model):
+    __tablename__ = 'echelle'
+    __table_args__ = (
+        db.Index('fki_fk_echelle_auto', 'parent_id'),
+        db.Index('idx_echelle_label', 'label'),
+        {'schema': 'infoterre'}
+    )
+    
+    id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
+    label = db.Column(db.String(50), nullable=False, unique=True)
+    parent = db.Column(db.String(50))
+    parent_id = db.Column(db.Integer, db.ForeignKey('infoterre.echelle.id'))
+    age_deb = db.Column(db.Numeric)
+    age_fin = db.Column(db.Numeric)
+    pix_min = db.Column(db.Integer)
+    pix_max = db.Column(db.Integer)
+
