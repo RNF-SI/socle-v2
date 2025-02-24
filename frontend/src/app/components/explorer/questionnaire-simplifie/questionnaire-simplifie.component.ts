@@ -181,14 +181,28 @@ export class QuestionnaireSimplifieComponent implements OnInit {
     this.searchStratotypesLimiteTerm.valueChanges.subscribe((searchTerm: string | null) => {
       this.filterStratotypeLimite(searchTerm);
     })
+    this.resetFieldOnParentChange('contains_paleontological_heritage.answer', 'contains_paleontological_heritage.vertebrates');
+    this.resetFieldOnParentChange('contains_paleontological_heritage.answer', 'contains_paleontological_heritage.invertebrates');
+    this.resetFieldOnParentChange('contains_paleontological_heritage.answer', 'contains_paleontological_heritage.plants');
+    this.resetFieldOnParentChange('contains_paleontological_heritage.answer', 'contains_paleontological_heritage.traceFossils');
+    this.resetFieldOnParentChange('contains_paleontological_heritage.answer', 'contains_paleontological_heritage.other');
+    this.resetFieldOnParentChange('contains_paleontological_heritage.answer', 'contains_paleontological_heritage.otherDetails');
+    this.resetFieldOnParentChange('contains_paleontological_heritage.other', 'contains_paleontological_heritage.otherDetails');
     this.resetFieldOnParentChange('geologicalUnitsOther', 'geologicalUnitsOtherText');
-    this.resetFieldOnParentChange('reserve_has_geological_site_for_visitors', 'site_for_visitors_free_access');
     this.resetFieldOnParentChange('stratotype_limit', 'stratotypesLimite', true);
     this.resetFieldOnParentChange('stratotype_stage', 'stratotypesEtage', true);
     this.resetFieldOnParentChange('reserve_contains_stratotype', 'stratotypesLimite', true);
     this.resetFieldOnParentChange('reserve_contains_stratotype', 'stratotypesEtage', true);
     this.resetFieldOnParentChange('reserve_contains_stratotype', 'stratotype_limit');
     this.resetFieldOnParentChange('reserve_contains_stratotype', 'stratotype_stage');
+    this.resetFieldOnParentChange('contains_subterranean_habitats', 'subterranean_habitats_natural_cavities');
+    this.resetFieldOnParentChange('contains_subterranean_habitats', 'subterranean_habitats_anthropogenic_cavities');
+    this.resetFieldOnParentChange('reserve_has_geological_site_for_visitors', 'site_for_visitors_free_access');
+    this.resetFieldOnParentChange('associated_with_mineral_resources', 'quarry_extracted_materials', true);
+    this.resetFieldOnParentChange('associated_with_mineral_resources', 'mineral_resources_old_quarry');
+    this.resetFieldOnParentChange('associated_with_mineral_resources', 'mineral_resources_active_quarry');
+    this.resetFieldOnParentChange('associated_with_mineral_resources', 'mineral_resources_old_mine');
+    this.resetFieldOnParentChange('associated_with_mineral_resources', 'mineral_resources_active_mine');
   }
 
   private resetFieldOnParentChange(parentControlName: string, childControlName: string, isArray: boolean = false): void {
