@@ -147,7 +147,7 @@ export class QuestionnaireSimplifieComponent implements OnInit {
       series: [],
       etages: [],
       biblio: []
-    }, { validators: this.validateStratotypeSelection });
+    }, { validators: [this.validateStratotypeSelection, this.validatePaleontologicalHeritageSelection, this.validateSubterraneanHabitatsSelection, this.validateAssociatedWithMineralResources] });
   }
 
   private validateStratotypeSelection(form: FormGroup): { [key: string]: boolean } | null {
@@ -161,6 +161,54 @@ export class QuestionnaireSimplifieComponent implements OnInit {
 
     return null; // Pas d'erreur
   }
+
+  private validatePaleontologicalHeritageSelection(form: FormGroup): { [key: string]: boolean } | null {
+    const paleoGroup = form.get('contains_paleontological_heritage') as FormGroup;
+    if (!paleoGroup) return null;
+
+    const answer = paleoGroup.get('answer')?.value;
+    const vertebrates = paleoGroup.get('vertebrates')?.value;
+    const invertebrates = paleoGroup.get('invertebrates')?.value;
+    const plants = paleoGroup.get('plants')?.value;
+    const traceFossils = paleoGroup.get('traceFossils')?.value;
+    const other = paleoGroup.get('other')?.value;
+
+    // Vérifier si answer est vrai et si aucun des champs suivants n'est coché
+    if (answer && !vertebrates && !invertebrates && !plants && !traceFossils && !other) {
+      return { missingPaleontologicalSelection: true }; // Retourne une erreur
+    }
+
+    return null; // Aucune erreur
+  }
+
+  private validateSubterraneanHabitatsSelection(form: FormGroup): { [key: string]: boolean } | null {
+    const containsHabitats = form.get('contains_subterranean_habitats')?.value;
+    const naturalCavities = form.get('subterranean_habitats_natural_cavities')?.value;
+    const anthropogenicCavities = form.get('subterranean_habitats_anthropogenic_cavities')?.value;
+
+    // Vérifier si contains_subterranean_habitats est true et que les deux autres sont false
+    if (containsHabitats && !naturalCavities && !anthropogenicCavities) {
+      return { missingSubterraneanSelection: true }; // Retourne une erreur
+    }
+
+    return null; // Pas d'erreur
+  }
+
+  private validateAssociatedWithMineralResources(form: FormGroup): { [key: string]: boolean } | null {
+    const associated_with_mineral_resources = form.get('associated_with_mineral_resources')?.value;
+    const mineral_resources_old_quarry = form.get('mineral_resources_old_quarry')?.value;
+    const mineral_resources_active_quarry = form.get('mineral_resources_active_quarry')?.value;
+    const mineral_resources_old_mine = form.get('mineral_resources_old_mine')?.value;
+    const mineral_resources_active_mine = form.get('mineral_resources_active_mine')?.value;
+
+    // Vérifier si contains_subterranean_habitats est true et que les deux autres sont false
+    if (associated_with_mineral_resources && !mineral_resources_old_quarry && !mineral_resources_active_quarry && !mineral_resources_old_mine && !mineral_resources_active_mine) {
+      return { missingMineralResourcesSelection: true }; // Retourne une erreur
+    }
+
+    return null; // Pas d'erreur
+  }
+
 
 
   ngOnInit(): void {

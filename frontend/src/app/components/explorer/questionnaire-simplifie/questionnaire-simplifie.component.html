@@ -234,6 +234,10 @@
           </mat-form-field>
         </div>
       </div>
+      <mat-error *ngIf="tInfosBaseSiteForm.hasError('missingPaleontologicalSelection') && isFormSubmitted">
+        Vous devez sélectionner au moins un type de patrimoine paléontologique si la réserve en contient un ou cocher
+        non dans le cas contraire.
+      </mat-error>
     </div>
 
     <!-- Question 6 -->
@@ -370,6 +374,11 @@
             anthropiques</mat-checkbox>
         </div>
       </div>
+
+      <mat-error *ngIf="tInfosBaseSiteForm.hasError('missingSubterraneanSelection') && isFormSubmitted">
+        Vous devez sélectionner au moins un type de cavité si la réserve en contient un ou cocher non dans le cas
+        contraire.
+      </mat-error>
     </div>
     <!-- Question 11 modifiée avec un container -->
     <div class="form-group">
@@ -426,6 +435,10 @@
           </div>
         </div>
       </div>
+      <mat-error *ngIf="tInfosBaseSiteForm.hasError('missingMineralResourcesSelection') && isFormSubmitted">
+        Vous devez sélectionner au moins un type d'exploitation si la réserve en contient un ou cocher non dans le cas
+        contraire.
+      </mat-error>
     </div>
     <!-- Question 12 -->
     <div class="form-group">
