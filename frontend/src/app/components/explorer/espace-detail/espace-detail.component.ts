@@ -39,6 +39,7 @@ export class EspaceDetailComponent implements OnInit {
   substancesOptions: Nomenclature[] = [];
   uniqueInteretGeolPrincipal = [];
   rnId: string | null = null;
+  sfgeol: string[] = [];
 
   private map: L.Map | undefined;
   private layerControl = L.control.layers();
@@ -86,6 +87,12 @@ export class EspaceDetailComponent implements OnInit {
       this.siteService.getSiteBySlug(slug).subscribe((site: Site) => {
         this.site = site;
         console.log(this.site);
+
+        this.sfgeol = this.site?.sfgeol
+          ? Array.from(new Set(this.site.sfgeol.map(s => s.descr)))
+            .filter(descr => typeof descr === 'string' && descr.trim() !== '')
+            .sort((a, b) => a.localeCompare(b, 'fr', { sensitivity: 'base' }))
+          : [];
 
         this.rnId = this.site.code;
         this.authService.hasAccessToRn(this.rnId).subscribe(

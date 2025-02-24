@@ -40,6 +40,8 @@ export interface Site {
   surf_off: any;
   substances: any;
 
+  sfgeol: Sfgeol[];
+
   // WTF : je ne comprend pas du tout ce modèle, il ne correspond pas du tout à sites...
 }
 
@@ -71,4 +73,9 @@ export interface Stratotype {
   actif: boolean;
   costratotype: boolean;
   ancien: boolean;
+}
+
+export interface Sfgeol {
+  ogc_fid: number;
+  descr: string;
 }

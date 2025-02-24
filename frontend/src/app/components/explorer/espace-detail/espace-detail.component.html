@@ -410,6 +410,18 @@
     </div>
   </div>
 
+  <div #infoBlock class="entite-geol-section">
+    <div class="title-container">
+      <img src="assets/images/iconSynth.png" alt="Icone patrimoine" class="heritage-icon">
+      <h2 class="heritage-title">Entités géologiques sur la réserve</h2>
+    </div>
+    <div class="heritage-content">
+      <ul class="sfgeol-list">
+        <li *ngFor="let descr of sfgeol">{{ descr }}</li>
+      </ul>
+    </div>
+  </div>
+
 
   <!-- colonnes prévues pour accueillir les infos des blocs suivant leur taille -->
   <div class="row">
