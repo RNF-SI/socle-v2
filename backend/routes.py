@@ -10,6 +10,7 @@ from pypnusershub import routes as fnauth
 import logging
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload, load_only
+import datetime
 
 bp = Blueprint('routes', __name__)
 
@@ -351,6 +352,8 @@ def update_t_infos_base_site(slug):
         site.infos_base.geological_units = data.get('geologicalUnits', site.infos_base.geological_units)
         site.infos_base.geological_units_other = data.get('geologicalUnitsOtherText', site.infos_base.geological_units_other)
         site.infos_base.biblio = data.get('biblio', site.infos_base.biblio)
+        site.infos_base.id_user_update = data.get('id_user_update')
+        site.infos_base.date_update = datetime.datetime.now()
         # nouveaux_ages_dict = []
         # if 'eres' in data and data['eres'] is not None:
         #     for age in data['eres']:
@@ -484,7 +487,7 @@ def update_t_infos_base_site(slug):
                     db.session.delete(existing_substance)
 
         db.session.commit()
-        return jsonify({'type': 'success', 'msg': 'TInfosBaseSite mise à jour avec succès !'})
+        return jsonify({'type': 'success', 'msg': 'Informations géologiques de la réserve mises à jour avec succès !'})
 
     except Exception as e:
         print(f"Error: {str(e)}")  # Debugging log

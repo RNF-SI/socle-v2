@@ -37,6 +37,8 @@ class TInfosBaseSite(db.Model):
     site_for_visitors_free_access = db.Column(db.Boolean)
     offers_geodiversity_activities = db.Column(db.Boolean)
     biblio = db.Column(db.Text)
+    id_user_update = db.Column(db.Integer) # référence l'id utilisateur de UsersHub
+    date_update = db.Column(db.DateTime)
 
 
 cor_site_ages = db.Table('cor_site_ages',

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from 'src/app/home-rnf/services/auth-service.service';
 import { Nomenclature, NomenclatureType } from 'src/app/models/nomenclature.model';
 import { PatrimoineGeologique } from 'src/app/models/patrimoine-geologique.model';
 import { Stratotype } from 'src/app/models/site.model';
@@ -77,8 +78,10 @@ export class QuestionnaireSimplifieComponent implements OnInit {
     private siteService: SitesService,
     private patrimoineGeologiqueService: PatrimoineGeologiqueService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    public authService: AuthService
   ) {
+
     this.tInfosBaseSiteForm = this.fb.group({
       id_site: [''],
       geologicalUnits: this.fb.array([]), // Gère les ensembles géologiques sélectionnés
@@ -146,7 +149,8 @@ export class QuestionnaireSimplifieComponent implements OnInit {
       systemes: [],
       series: [],
       etages: [],
-      biblio: []
+      biblio: [],
+      id_user_update: [this.authService.getCurrentUser().id_role]
     }, { validators: [this.validateStratotypeSelection, this.validatePaleontologicalHeritageSelection, this.validateSubterraneanHabitatsSelection, this.validateAssociatedWithMineralResources] });
   }
 
