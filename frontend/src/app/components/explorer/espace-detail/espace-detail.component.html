@@ -19,6 +19,11 @@
     {{site.jonction_nom}}{{site.nom}}
   </h2>
 
+  <div class="infos-maj" *ngIf="hasAccessToRn && site.infos_base.date_update">
+    Dernière mise à jour effectuée le {{site.infos_base.date_update | date:'d MMMM y':'+0200':'fr' }} par
+    {{site.infos_base.user_update}}
+  </div>
+
   <div class="stats-container container">
     <div class="stat-item">
       <fa-icon [icon]="['fas', 'vector-square']"></fa-icon>

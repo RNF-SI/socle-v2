@@ -64,6 +64,8 @@ export interface Infos_base {
   reserve_has_geological_collections: boolean;
   reserve_has_geological_site_for_visitors: boolean;
   offers_geodiversity_activities: boolean;
+  user_update: string;
+  date_update: Date;
 }
 
 export interface Stratotype {
