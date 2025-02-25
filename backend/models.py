@@ -37,7 +37,7 @@ class TInfosBaseSite(db.Model):
     site_for_visitors_free_access = db.Column(db.Boolean)
     offers_geodiversity_activities = db.Column(db.Boolean)
     biblio = db.Column(db.Text)
-    id_user_update = db.Column(db.Integer) # référence l'id utilisateur de UsersHub
+    user_update = db.Column(db.String) # référence l'utilisateur de UsersHub qui a fait la modif
     date_update = db.Column(db.DateTime)
 
 

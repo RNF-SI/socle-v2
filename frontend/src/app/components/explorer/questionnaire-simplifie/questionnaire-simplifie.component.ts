@@ -82,6 +82,9 @@ export class QuestionnaireSimplifieComponent implements OnInit {
     public authService: AuthService
   ) {
 
+    console.log(this.authService.getCurrentUser());
+
+
     this.tInfosBaseSiteForm = this.fb.group({
       id_site: [''],
       geologicalUnits: this.fb.array([]), // Gère les ensembles géologiques sélectionnés
@@ -150,7 +153,7 @@ export class QuestionnaireSimplifieComponent implements OnInit {
       series: [],
       etages: [],
       biblio: [],
-      id_user_update: [this.authService.getCurrentUser().id_role]
+      user_update: [this.authService.getCurrentUser().nom_complet + " (" + this.authService.getCurrentUser().id_role + ")"]
     }, { validators: [this.validateStratotypeSelection, this.validatePaleontologicalHeritageSelection, this.validateSubterraneanHabitatsSelection, this.validateAssociatedWithMineralResources] });
   }
 
