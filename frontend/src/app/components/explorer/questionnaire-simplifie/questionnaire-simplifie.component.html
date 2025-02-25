@@ -217,7 +217,7 @@
         <mat-radio-group formControlName="answer">
           <mat-radio-button [value]="true">Oui</mat-radio-button>
           <mat-radio-button [value]="false">Non</mat-radio-button>
-          <mat-radio-button [value]="null">Sans réponse</mat-radio-button>
+          <mat-radio-button [value]="null">Non renseigné</mat-radio-button>
         </mat-radio-group>
         <div *ngIf="tInfosBaseSiteForm.get('contains_paleontological_heritage')?.get('answer')?.value">
           <mat-checkbox formControlName="vertebrates">Vertébrés</mat-checkbox>
@@ -249,7 +249,7 @@
         <mat-radio-group formControlName="reserve_has_geological_collections">
           <mat-radio-button [value]="true">Oui</mat-radio-button>
           <mat-radio-button [value]="false">Non</mat-radio-button>
-          <mat-radio-button [value]="null">Sans réponse</mat-radio-button>
+          <mat-radio-button [value]="null">Non renseigné</mat-radio-button>
         </mat-radio-group>
       </div>
     </div>
@@ -263,7 +263,7 @@
         <mat-radio-group formControlName="reserve_has_exhibition">
           <mat-radio-button [value]="true">Oui</mat-radio-button>
           <mat-radio-button [value]="false">Non</mat-radio-button>
-          <mat-radio-button [value]="null">Sans réponse</mat-radio-button>
+          <mat-radio-button [value]="null">Non renseigné</mat-radio-button>
         </mat-radio-group>
       </div>
     </div>
@@ -366,7 +366,7 @@
         <mat-radio-group formControlName="contains_subterranean_habitats">
           <mat-radio-button [value]="true">Oui</mat-radio-button>
           <mat-radio-button [value]="false">Non</mat-radio-button>
-          <mat-radio-button [value]="null">Sans réponse</mat-radio-button>
+          <mat-radio-button [value]="null">Non renseigné</mat-radio-button>
         </mat-radio-group>
         <div *ngIf="tInfosBaseSiteForm.get('contains_subterranean_habitats')?.value">
           <mat-checkbox formControlName="subterranean_habitats_natural_cavities">Cavités naturelles</mat-checkbox>
@@ -389,7 +389,7 @@
         <mat-radio-group formControlName="associated_with_mineral_resources">
           <mat-radio-button [value]="true">Oui</mat-radio-button>
           <mat-radio-button [value]="false">Non</mat-radio-button>
-          <mat-radio-button [value]="null">Sans réponse</mat-radio-button>
+          <mat-radio-button [value]="null">Non renseigné</mat-radio-button>
         </mat-radio-group>
         <div *ngIf="tInfosBaseSiteForm.get('associated_with_mineral_resources')?.value">
           <div>
@@ -449,7 +449,7 @@
         <mat-radio-group formControlName="reserve_has_geological_site_for_visitors">
           <mat-radio-button [value]="true">Oui</mat-radio-button>
           <mat-radio-button [value]="false">Non</mat-radio-button>
-          <mat-radio-button [value]="null">Sans réponse</mat-radio-button>
+          <mat-radio-button [value]="null">Non renseigné</mat-radio-button>
         </mat-radio-group>
       </div>
     </div>
@@ -461,7 +461,7 @@
         <mat-radio-group formControlName="site_for_visitors_free_access">
           <mat-radio-button [value]="true">Oui</mat-radio-button>
           <mat-radio-button [value]="false">Non</mat-radio-button>
-          <mat-radio-button [value]="null">Sans réponse</mat-radio-button>
+          <mat-radio-button [value]="null">Non renseigné</mat-radio-button>
         </mat-radio-group>
       </div>
     </div>
@@ -475,7 +475,7 @@
         <mat-radio-group formControlName="offers_geodiversity_activities">
           <mat-radio-button [value]="true">Oui</mat-radio-button>
           <mat-radio-button [value]="false">Non</mat-radio-button>
-          <mat-radio-button [value]="null">Sans réponse</mat-radio-button>
+          <mat-radio-button [value]="null">Non renseigné</mat-radio-button>
         </mat-radio-group>
       </div>
     </div>
