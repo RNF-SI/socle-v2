@@ -278,7 +278,7 @@
                 <ng-template #etoileVide3>
                   <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
                 </ng-template>
-                <a [href]="inpg.inpg.url" target="_blank"> {{
+                <a [href]="'https://inpn.mnhn.fr/site/inpg/' + inpg.inpg.id_metier" target="_blank"> {{
                   inpg.inpg.lb_site }}</a>
                 {{ inpg.inpg.interet_geol_principal }}
               </div>
