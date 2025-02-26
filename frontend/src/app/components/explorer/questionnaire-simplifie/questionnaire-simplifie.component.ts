@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/home-rnf/services/auth-service.service';
 import { Nomenclature, NomenclatureType } from 'src/app/models/nomenclature.model';
@@ -449,6 +449,10 @@ export class QuestionnaireSimplifieComponent implements OnInit {
     );
   }
 
+  getSearchTermControl(material: AbstractControl): FormControl {
+    return material.get('searchTerm') as FormControl;
+  }
+
   patchStratotypes(stratotypes: any[]): void {
     const stratotypesLimite = stratotypes
       .filter((stratotype: any) => stratotype.type === 'limite')
@@ -595,7 +599,8 @@ export class QuestionnaireSimplifieComponent implements OnInit {
     this.quarryExtractedMaterials.push(
       this.fb.group({
         substance: ['', Validators.required],
-        fossiliferous: [false]
+        fossiliferous: [false],
+        searchTerm: ['']
       })
     );
   }
@@ -779,6 +784,14 @@ export class QuestionnaireSimplifieComponent implements OnInit {
   filterSubstances(searchTerm: string | null): void {
     const term = (searchTerm || '').toLowerCase(); // Utilise une chaîne vide si searchTerm est null
     this.filteredSubstancesOptions = this.substancesOptions.filter(substance =>
+      substance.label.toLowerCase().includes(term)
+    );
+  }
+
+  getFilteredSubstances(material: AbstractControl): any {
+    const searchTerm: string = material.get('searchTerm')?.value || '';
+    const term = searchTerm.toLowerCase();
+    return this.substancesOptions.filter(substance =>
       substance.label.toLowerCase().includes(term)
     );
   }

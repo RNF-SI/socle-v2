@@ -407,28 +407,26 @@
                 </button>
                 <mat-form-field appearance="fill" class="substanceField">
                   <mat-select formControlName="substance">
-                    <!-- Champ de recherche dans le menu déroulant -->
                     <mat-option>
-                      <input type="text" placeholder="Rechercher..." [formControl]="searchSubstanceTerm"
+                      <input type="text" placeholder="Rechercher..." [formControl]="getSearchTermControl(material)"
                         (click)="$event.stopPropagation()" matInput class="search-input" />
                     </mat-option>
-
-                    <!-- Liste des options filtrées -->
-                    <mat-option *ngFor="let substance of filteredSubstancesOptions" [value]="substance.id_nomenclature">
+                    <mat-option *ngFor="let substance of getFilteredSubstances(material)"
+                      [value]="substance.id_nomenclature">
                       {{ substance.label }}
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
-
                 <label> Le matériau est-il fossilifère ? </label>
                 <mat-radio-group formControlName="fossiliferous">
                   <mat-radio-button [value]="true">Oui</mat-radio-button>
                   <mat-radio-button [value]="false">Non</mat-radio-button>
                 </mat-radio-group>
               </div>
+
             </div>
             <div class="button-container">
-              <button mat-raised-button color="primary" (click)="addExtractedMaterial()">
+              <button mat-raised-button color="primary" type="button" (click)="addExtractedMaterial()">
                 Ajouter une substance exploitée
               </button>
             </div>
