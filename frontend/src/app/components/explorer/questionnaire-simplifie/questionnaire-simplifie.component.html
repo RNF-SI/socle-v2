@@ -451,6 +451,20 @@
         </mat-radio-group>
       </div>
     </div>
+    <div class="form-groupe" *ngIf="tInfosBaseSiteForm.get('reserve_has_geological_site_for_visitors')?.value">
+      <label>
+        <h6>Précisez éventuellement le nombre de sites concernés :</h6>
+      </label>
+      <div>
+        <mat-form-field appearance="fill">
+          <input matInput type="number" (keydown)="validateNumberInput($event)" step="1" min="0"
+            formControlName="nb_sites_for_visitors">
+        </mat-form-field>
+      </div>
+      <mat-error *ngIf="tInfosBaseSiteForm.hasError('isSiteVisitButZero') && isFormSubmitted">
+        Le nombre de sites ne peut être égal à 0, sinon cochez non à la question précédente.
+      </mat-error>
+    </div>
     <div class="form-group" *ngIf="tInfosBaseSiteForm.get('reserve_has_geological_site_for_visitors')?.value">
       <label>
         <h6>Ce ou ces sites sont-ils en accès libre ?</h6>

@@ -146,6 +146,7 @@ export class QuestionnaireSimplifieComponent implements OnInit {
       mine_extracted_material: [''],
       mine_fossiliferous_material: [false],
       reserve_has_geological_site_for_visitors: [false],
+      nb_sites_for_visitors: [],
       site_for_visitors_free_access: [],
       offers_geodiversity_activities: [false],
       eres: [],
@@ -154,7 +155,15 @@ export class QuestionnaireSimplifieComponent implements OnInit {
       etages: [],
       biblio: [],
       user_update: [this.authService.getCurrentUser().nom_complet + " (" + this.authService.getCurrentUser().id_role + ")"]
-    }, { validators: [this.validateStratotypeSelection, this.validatePaleontologicalHeritageSelection, this.validateSubterraneanHabitatsSelection, this.validateAssociatedWithMineralResources] });
+    }, {
+      validators: [
+        this.validateStratotypeSelection,
+        this.validatePaleontologicalHeritageSelection,
+        this.validateSubterraneanHabitatsSelection,
+        this.validateAssociatedWithMineralResources,
+        this.validateNumberSitesVisites
+      ]
+    });
   }
 
   private validateStratotypeSelection(form: FormGroup): { [key: string]: boolean } | null {
@@ -216,8 +225,28 @@ export class QuestionnaireSimplifieComponent implements OnInit {
     return null; // Pas d'erreur
   }
 
+  private validateNumberSitesVisites(form: FormGroup): { [key: string]: boolean } | null {
+    const isSiteForVisitors = form.get('reserve_has_geological_site_for_visitors')?.value;
+    const nbSites = form.get('nb_sites_for_visitors')?.value;
+
+    if (isSiteForVisitors && nbSites == 0) {
+      return { isSiteVisitButZero: true };
+    }
+    return null;
+  }
 
 
+  // pour le champ numérique qu'il ne puisse pas y avoir de texte de saisi
+  validateNumberInput(event: KeyboardEvent): void {
+    const allowedKeys = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Tab'];
+    if (allowedKeys.includes(event.key)) {
+      return;
+    }
+    // On autorise uniquement les chiffres
+    if (!/^[0-9]$/.test(event.key)) {
+      event.preventDefault();
+    }
+  }
   ngOnInit(): void {
     this.siteIdLocal = this.route.snapshot.paramMap.get('id_rn')!;
     this.fetchSiteDetails(this.siteIdLocal);
@@ -258,6 +287,7 @@ export class QuestionnaireSimplifieComponent implements OnInit {
     this.resetFieldOnParentChange('associated_with_mineral_resources', 'mineral_resources_active_quarry');
     this.resetFieldOnParentChange('associated_with_mineral_resources', 'mineral_resources_old_mine');
     this.resetFieldOnParentChange('associated_with_mineral_resources', 'mineral_resources_active_mine');
+    this.resetFieldOnParentChange('reserve_has_geological_site_for_visitors', 'nb_sites_for_visitors')
   }
 
   private resetFieldOnParentChange(parentControlName: string, childControlName: string, isArray: boolean = false): void {
@@ -401,6 +431,7 @@ export class QuestionnaireSimplifieComponent implements OnInit {
           mine_fossiliferous_material: site.infos_base.mine_fossiliferous_material,
           reserve_has_geological_site_for_visitors: site.infos_base.reserve_has_geological_site_for_visitors,
           site_for_visitors_free_access: site.infos_base.site_for_visitors_free_access,
+          nb_sites_for_visitors: site.infos_base.nb_sites_for_visitors,
           offers_geodiversity_activities: site.infos_base.offers_geodiversity_activities,
           geologicalUnits: [],
           geologicalUnitsOther: site.infos_base.geological_units_other,

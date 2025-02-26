@@ -34,6 +34,7 @@ class TInfosBaseSite(db.Model):
     mine_extracted_material = db.Column(db.String)
     mine_fossiliferous_material = db.Column(db.Boolean)
     reserve_has_geological_site_for_visitors = db.Column(db.Boolean)
+    nb_sites_for_visitors = db.Column(db.Integer)
     site_for_visitors_free_access = db.Column(db.Boolean)
     offers_geodiversity_activities = db.Column(db.Boolean)
     biblio = db.Column(db.Text)

@@ -63,6 +63,7 @@ export interface Infos_base {
   mineral_resources_active_mine: boolean;
   reserve_has_geological_collections: boolean;
   reserve_has_geological_site_for_visitors: boolean;
+  nb_sites_for_visitors: number;
   offers_geodiversity_activities: boolean;
   user_update: string;
   date_update: Date;
