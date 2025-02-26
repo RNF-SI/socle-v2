@@ -49,7 +49,7 @@
         <div class="col-md-5 d-flex align-items-center">
           <div class="location-dropdown w-100">
             <mat-form-field appearance="outline">
-              <mat-label>Zoommer sur...</mat-label>
+              <mat-label>Zoomer sur...</mat-label>
               <mat-select [(ngModel)]="selectedLocation" (selectionChange)="onLocationChange()">
                 <mat-option *ngFor="let loc of locations" [value]="loc">
                   {{ loc.name }}
