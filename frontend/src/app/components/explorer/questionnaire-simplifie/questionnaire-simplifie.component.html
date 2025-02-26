@@ -37,14 +37,15 @@
               <ng-template #etoileVide2>
                 <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
               </ng-template>
-              <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 2; else etoileVide3" [icon]="['fas', 'star']" size="2xs">
+              <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 2; else etoileVide3" [icon]="['fas', 'star']" size="2xs"
+                class="spacing">
               </fa-icon>
               <ng-template #etoileVide3>
-                <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
+                <fa-icon [icon]="['far', 'star']" size="2xs" class="spacing"></fa-icon>
               </ng-template>
-              <a [href]="'https://inpn.mnhn.fr/site/inpg/' + inpg.inpg.id_metier" target="_blank"> {{
+              <a class="spacing" [href]="'https://inpn.mnhn.fr/site/inpg/' + inpg.inpg.id_metier" target="_blank"> {{
                 inpg.inpg.lb_site }}</a>
-              {{ inpg.inpg.interet_geol_principal }}
+              <span class="spacing">{{ inpg.inpg.interet_geol_principal }}</span>
               <fa-icon *ngIf="inpg.active != false" [icon]="['fas', 'times']" size="sm" class="delete-icon"
                 (click)="confirmDeletion(inpg.inpg.lb_site, site.id_site, inpg.inpg.id_inpg, false)"></fa-icon>
             </div>
@@ -133,14 +134,15 @@
               <ng-template #etoileVide2>
                 <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
               </ng-template>
-              <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 2; else etoileVide3" [icon]="['fas', 'star']" size="2xs">
+              <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 2; else etoileVide3" class="spacing" [icon]="['fas', 'star']"
+                size="2xs">
               </fa-icon>
               <ng-template #etoileVide3>
-                <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
+                <fa-icon [icon]="['far', 'star']" size="2xs" class="spacing"></fa-icon>
               </ng-template>
-              <a [href]="'https://inpn.mnhn.fr/site/inpg/' + inpg.inpg.id_metier" target="_blank"> {{
+              <a [href]="'https://inpn.mnhn.fr/site/inpg/' + inpg.inpg.id_metier" target="_blank" class="spacing"> {{
                 inpg.inpg.lb_site }}</a>
-              {{ inpg.inpg.interet_geol_principal }}
+              <span class="spacing">{{ inpg.inpg.interet_geol_principal }}</span>
               <fa-icon *ngIf="inpg.active != false" [icon]="['fas', 'times']" size="sm" class="delete-icon"
                 (click)="confirmDeletion(inpg.inpg.lb_site, site.perimetre_protection.id_site, inpg.inpg.id_inpg, true)">
               </fa-icon>
