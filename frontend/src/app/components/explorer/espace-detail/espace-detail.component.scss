@@ -262,10 +262,13 @@
 .legend-container {
   text-align: right;
   gap: 15px;
-  padding-bottom: 10px;
   font-size: 14px;
-  margin-top: 10px;
   align-items: center;
+}
+
+.legend-surcontainer {
+  padding-bottom: 10px;
+  margin-top: 10px;
 }
 
 span.legend-item {

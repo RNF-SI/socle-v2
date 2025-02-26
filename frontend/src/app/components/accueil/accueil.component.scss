@@ -248,6 +248,13 @@ a:hover {
   width: 100%;
 }
 
+.legend-container {
+  text-align: right;
+  gap: 15px;
+  font-size: 14px;
+  align-items: center;
+}
+
 .search-container {
   display: flex;
   justify-content: space-between;
