@@ -426,6 +426,15 @@
       </ul>
     </div>
   </div>
+  <div #infoBlock class="biblio-section" *ngIf="site.infos_base.biblio">
+    <div class="title-container">
+      <img src="assets/images/iconSynth.png" alt="Icone patrimoine" class="heritage-icon">
+      <h2 class="heritage-title">Bibliographie</h2>
+    </div>
+    <div class="heritage-content">
+      <div [innerHTML]="site.infos_base.biblio"></div>
+    </div>
+  </div>
 
 
   <!-- colonnes prévues pour accueillir les infos des blocs suivant leur taille -->

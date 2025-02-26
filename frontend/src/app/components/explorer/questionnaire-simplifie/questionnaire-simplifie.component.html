@@ -483,10 +483,13 @@
       <label>
         <h6>Vous pouvez ajouter de la bibliographie associée à votre site si vous le souhaitez :</h6>
       </label>
-      <div class="input-field">
-        <mat-form-field class="full-width">
+      <div class="biblio-field">
+        <!-- <mat-form-field class="full-width">
           <textarea matInput placeholder="Saisir ici de la bibliographie" formControlName="biblio"></textarea>
-        </mat-form-field>
+        </mat-form-field> -->
+        <quill-editor placeholder="          Saisir ici de la bibliographie selon les normes courantes. 
+          Par exemple pour un article : Auteur, Initiale. (Année de publication). Titre de l’article. Titre de la revue, Volume(Numéro), Plage de pages. DOI
+          N'hésitez pas à rajouter des liens directs vers la ressource." formControlName="biblio"></quill-editor>
       </div>
     </div>
     <div class="submit-button-container">

@@ -24,6 +24,7 @@ import { MatTableModule } from '@angular/material/table'; // Importer MatTableMo
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { NgbModule, NgbRatingModule } from '@ng-bootstrap/ng-bootstrap';
+import { QuillModule } from 'ngx-quill';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserModule } from 'node_modules/@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
@@ -92,7 +93,8 @@ registerLocaleData(localeFr, 'fr');
     BrowserAnimationsModule,
     MatGridListModule,
     MatPaginatorModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    QuillModule.forRoot()
   ],
 
   providers: [

@@ -66,6 +66,7 @@ export interface Infos_base {
   offers_geodiversity_activities: boolean;
   user_update: string;
   date_update: Date;
+  biblio: Text;
 }
 
 export interface Stratotype {
