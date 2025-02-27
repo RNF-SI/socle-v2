@@ -296,7 +296,7 @@ export class EspaceDetailComponent implements OnInit {
         }
       }));
 
-    if (inpgConfidentialLayers.length > 0) {
+    if (inpgConfidentialLayers.length > 0 && this.estConnecte()) {
       const confidentialGroup = L.layerGroup(inpgConfidentialLayers).addTo(this.map!);
       this.layerControl.addOverlay(confidentialGroup, "Sites INPG confidentiels");
       inpgConfidentialLayers.forEach((layer: { getBounds: () => L.LatLngExpression | L.LatLngBoundsExpression; }) => this.bounds.extend(layer.getBounds()));
@@ -365,7 +365,7 @@ export class EspaceDetailComponent implements OnInit {
           }
         }));
 
-      if (protectionInpgConfidentialLayers.length > 0) {
+      if (protectionInpgConfidentialLayers.length > 0 && this.estConnecte()) {
         const protectionConfidentialGroup = L.layerGroup(protectionInpgConfidentialLayers).addTo(this.map!);
         this.layerControl.addOverlay(protectionConfidentialGroup, "Sites INPG confidentiels du périmètre de protection");
         protectionInpgConfidentialLayers.forEach((layer: { getBounds: () => L.LatLngExpression | L.LatLngBoundsExpression; }) => this.bounds.extend(layer.getBounds()));
