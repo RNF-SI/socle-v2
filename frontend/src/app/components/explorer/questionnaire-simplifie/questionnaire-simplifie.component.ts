@@ -661,16 +661,17 @@ export class QuestionnaireSimplifieComponent implements OnInit {
             // Si la réponse est un succès, proposer des actions supplémentaires
             if (response.type === 'success') {
               this.router.navigate([`/site/${this.siteSlug}`]);
-              Swal.fire({
-                title: "Souhaitez-vous remplir le questionnaire détaillé ?",
-                showDenyButton: true,
-                confirmButtonText: "Allons-y !",
-                denyButtonText: `Pas cette fois.`
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  this.router.navigate([`/fiche-terrain/${this.siteSlug}`]);
-                }
-              });
+              // Renvoi vers le formulaire complet désactivé pour l'instant
+              // Swal.fire({
+              //   title: "Souhaitez-vous remplir le questionnaire détaillé ?",
+              //   showDenyButton: true,
+              //   confirmButtonText: "Allons-y !",
+              //   denyButtonText: `Pas cette fois.`
+              // }).then((result) => {
+              //   if (result.isConfirmed) {
+              //     this.router.navigate([`/fiche-terrain/${this.siteSlug}`]);
+              //   }
+              // });
             }
           });
         },

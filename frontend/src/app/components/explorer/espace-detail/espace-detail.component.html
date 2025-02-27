@@ -52,9 +52,10 @@
       <fa-icon [icon]="['fas', 'camera']"></fa-icon>
       <div class="stat-value" *ngIf="site.infos_base.nb_sites_for_visitors">{{ site.infos_base.nb_sites_for_visitors }}
       </div>
-      <div class="stat-label">Site<span *ngIf="site.infos_base.nb_sites_for_visitors">s</span> amménagé<span
-          *ngIf="site.infos_base.nb_sites_for_visitors">s</span></div>
-      <div class="stat-label">pour les visiteurs</div>
+      <div class="stat-label">Site<span *ngIf="site.infos_base.nb_sites_for_visitors">s</span> géologique<span
+          *ngIf="site.infos_base.nb_sites_for_visitors">s</span> </div>
+      <div class="stat-label">amménagé<span *ngIf="site.infos_base.nb_sites_for_visitors">s</span> pour</div>
+      <div class="stat-label">les visiteurs</div>
     </div>
     <!-- <div class="stat-item">
       <fa-icon [icon]="['fas', 'sort-numeric-down-alt']"></fa-icon>
