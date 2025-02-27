@@ -3,6 +3,7 @@ from app import db
 from geoalchemy2 import Geometry
 
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.dialects.postgresql import JSONB
 
 
 # db = SQLAlchemy()
@@ -384,3 +385,12 @@ class Echelle(db.Model):
     pix_min = db.Column(db.Integer)
     pix_max = db.Column(db.Integer)
 
+class SuivisModifs(db.Model):
+    __tablename__ = 'suivi_infos_base_site'
+
+    id_suivi = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
+    id_site = db.Column(db.Integer, db.ForeignKey('t_infos_base_site.id_site'))
+    date_update = db.Column(db.DateTime)
+    user_update = db.Column(db.String)
+    ancien = db.Column(JSONB)
+    nouveau = db.Column(JSONB)
