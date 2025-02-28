@@ -4,8 +4,8 @@ from flask import Flask, request, Response, render_template, redirect, Blueprint
 import requests
 import json
 from app import app, db
-from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Nomenclature, BibNomenclatureType,Inpg, Site, CorSiteInpg, CorSiteSubstance, Stratotype, Parametres, Echelle, SFGeol
-from schemas import PatrimoineGeologiqueGestionnaireSchema, PerimetreProtectionSchema, TInfosBaseSiteSchema, SiteSchema, NomenclatureSchema, NomenclatureTypeSchema, SiteSchemaSimple, StratotypeSchema, ParametresSchema
+from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Nomenclature, BibNomenclatureType,Inpg, Site, CorSiteInpg, CorSiteSubstance, Stratotype, Parametres, Echelle, SFGeol, SuivisModifs
+from schemas import PatrimoineGeologiqueGestionnaireSchema, PerimetreProtectionSchema, TInfosBaseSiteSchema, SiteSchema, NomenclatureSchema, NomenclatureTypeSchema, SiteSchemaSimple, StratotypeSchema, ParametresSchema, SuivisModifsSchema
 from pypnusershub import routes as fnauth
 import logging
 from sqlalchemy import func
@@ -153,6 +153,108 @@ def get_sites_in_bbox():
     ).all()
     schema = SiteSchemaSimple(only=('id_site','geom', 'nom','slug', 'sites_inpg','patrimoines_geologiques','creation_geol'),many=True)
     return schema.jsonify(sites)
+
+@bp.route('/sites-pour-admin', methods=['GET'])
+def get_sites_pour_admin():
+    # Récupérer les sites avec les champs souhaités
+    sites = (
+        Site.query
+        .options(load_only(Site.id_site, Site.nom, Site.slug, Site.code))
+        .filter(Site.perimetre_protection != True)
+        .order_by(Site.nom)
+        .all()
+    )
+
+    # Instance du schéma pour sérialiser les objets modifications si besoin,
+    # sinon on travaille directement avec le dump en dict.
+    result = []
+    for site in sites:
+        modifications = (
+            SuivisModifs.query
+            .filter(SuivisModifs.id_site == site.id_site)
+            .order_by(SuivisModifs.date_update.desc())
+            .limit(5)
+            .all()
+        )
+        # Sérialisation avec votre schéma (en assumant que SuivisModifsSchema.dump retourne un dict)
+        modifications_data = SuivisModifsSchema(many=True).dump(modifications)
+        # Transformation des modifications pour obtenir le format désiré
+        modifications_formattees = transform_modifications(modifications_data)
+        
+        result.append({
+            "id_site": site.id_site,
+            "nom": site.nom,
+            "slug": site.slug,
+            "code": site.code,
+            "modifications": modifications_formattees
+        })
+
+    return jsonify(result)
+
+
+def format_value(val):
+    """Transforme la valeur en libellé humain."""
+    if val is None:
+        return "Non renseigné"
+    if isinstance(val, str):
+        if val.lower() == "t":
+            return "Oui"
+        if val.lower() == "f":
+            return "Non"
+    return val
+
+def transform_modifications(modifications):
+    """Transforme la liste des modifications pour obtenir le format désiré."""
+    # Dictionnaire de correspondance : clé de modification -> libellé affiché
+    mapping_labels = {
+        "contains_paleontological_heritage_vertebrates": "Présence de patrimoine paléontologique - Vertébrés",
+        "contains_paleontological_heritage_invertebrates": "Présence de patrimoine paléontologique - Invertébrés",
+        "contains_paleontological_heritage_plants": "Présence de patrimoine paléontologique - Végétaux",
+        "contains_paleontological_heritage_trace_fossils": "Présence de patrimoine paléontologique - Traces fossiles",
+        "contains_paleontological_heritage_other_details": "Autre patrimoine paléontologique",
+        "reserve_has_geological_collections": "Possession de collections géologiques propres",
+        "reserve_has_exhibition": "Présence de lieu d'exposition",
+        "geological_units_other": "Autre ensemble géologique",
+        "subterranean_habitats_natural_cavities": "Présence de cavités naturelles",
+        "subterranean_habitats_anthropogenic_cavities": "Présence de cavités anthropiques",
+        "associated_with_mineral_resources": "Présence d'exploitation de ressource minérales",
+        "mineral_resources_old_quarry": "Présence d'anciennes carrières",
+        "mineral_resources_active_quarry": "Présence de carrières en activité",
+        "mineral_resources_old_mine": "Présence d'ancienne mine",
+        "mineral_resources_active_mine": "Présence de mine en activité",
+        "reserve_has_geological_site_for_visitors": "Présence de sites pour visiteurs",
+        "nb_sites_for_visitors": "Nombre de sites pour visiteurs",
+        "site_for_visitors_free_access": "Sites en accès libre",
+        "offers_geodiversity_activities": "Présence d'animations sur le géodiversité"
+    }
+
+    formatted_modifications = []
+    for mod in modifications:
+        # Récupérer les dictionnaires 'ancien' et 'nouveau'
+        ancien = mod.get("ancien", {})
+        nouveau = mod.get("nouveau", {})
+
+        # On considère l'ensemble des clés modifiées
+        keys_modifiees = set(ancien.keys()).union(nouveau.keys())
+        changements = []
+        for key in keys_modifiees:
+            if key not in mapping_labels:
+                continue
+            # On récupère le libellé à afficher
+            label = mapping_labels.get(key, key)
+            # Formatage des valeurs en utilisant la fonction helper
+            old_val = format_value(ancien.get(key))
+            new_val = format_value(nouveau.get(key))
+            changements.append(f'{label} : de "{old_val}" à "{new_val}"')
+        
+        formatted_modifications.append({
+            "date_update": mod.get("date_update"),
+            "user_update": mod.get("user_update"),
+            "changements": changements
+        })
+
+    return formatted_modifications
+
 
 
 # @bp.route('/sites/patrimoine', methods=['GET'])

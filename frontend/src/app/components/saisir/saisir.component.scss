@@ -2,6 +2,7 @@
   display: flex;
   justify-content: center;
   margin: 20px 0;
+  gap: 16px;
 }
 
 mat-form-field {
@@ -28,4 +29,88 @@ mat-form-field {
   text-align: justify;
   padding-left: 10%;
   padding-right: 10%;
+  margin-bottom: 40px;
+}
+
+// .custom-accordion .mat-expansion-panel-header {
+//   background-color: #f9f9f9;
+//   border-bottom: 1px solid #e0e0e0;
+//   padding: 0 16px;
+// }
+
+// .custom-accordion .mat-panel-description {
+//   color: #616161;
+//   font-size: 0.9rem;
+//   display: flex;
+//   align-items: center;
+// }
+
+.site-name {
+  color: mat-color($custom-primary, 500);
+  font-weight: 600;
+  font-size: large;
+}
+
+.modif-icon,
+.time-icon,
+.change-icon {
+  font-size: 18px;
+  margin-right: 4px;
+  color: #757575;
+}
+
+.modifications {
+  padding: 16px;
+  background-color: #fff;
+}
+
+.modif-item:not(:last-child) {
+  margin-bottom: 16px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+}
+
+.modif-item h4 {
+  margin: 0 0 8px 0;
+  font-size: 1.05rem;
+  color: #424242;
+}
+
+.user-name {
+  color: mat-color($custom-accent, 500);
+  font-weight: 500;
+}
+
+.modif-item ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.modif-item li {
+  display: flex;
+  align-items: center;
+  padding: 2px 0;
+  color: #555;
+}
+
+.custom-accordion .mat-panel-description,
+.modif-item li {
+  display: flex;
+  align-items: center;
+}
+
+.mat-icon {
+  vertical-align: middle;
+}
+
+.changements {
+  margin-left: 40px;
+}
+
+.panel-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 8px 16px;
 }

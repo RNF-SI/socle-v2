@@ -42,6 +42,8 @@ export interface Site {
 
   sfgeol: Sfgeol[];
 
+  modifications: Modifications[];
+
   // WTF : je ne comprend pas du tout ce modèle, il ne correspond pas du tout à sites...
 }
 
@@ -82,4 +84,10 @@ export interface Stratotype {
 export interface Sfgeol {
   ogc_fid: number;
   descr: string;
+}
+
+export interface Modifications {
+  changements: string[];
+  user_update: string;
+  date_update: Date;
 }

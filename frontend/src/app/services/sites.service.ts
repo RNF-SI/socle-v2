@@ -47,6 +47,10 @@ export class SitesService {
     return this._http.get<Site[]>(`${environment.apiUrl}/sites-simple-centroides`);
   }
 
+  getSitesPourAdmin(): Observable<Site[]> {
+    return this._http.get<Site[]>(`${environment.apiUrl}/sites-pour-admin`);
+  }
+
   // Charger les polygones des entités visibles dans une BBOX
   getPolygones(bbox: string): Observable<Site[]> {
     return this._http.get<Site[]>(`${environment.apiUrl}/sites-dans-bbox?bbox=${bbox}`);

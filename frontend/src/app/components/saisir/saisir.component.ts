@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
@@ -15,10 +16,14 @@ import { Site } from '../../models/site.model';
 export class SaisirComponent implements OnInit {
   espaces: Site[] = [];
   filteredEspaces: Site[] = [];
+  selectedDate: Date | null = null;
+  searchQuery: string = "";
 
   displayedColumns: string[] = ['nom', 'code', 'type'];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   dataSource = new MatTableDataSource();
+
+  panelOpenState = false;
 
   constructor(
     private router: Router,
@@ -40,7 +45,7 @@ export class SaisirComponent implements OnInit {
         const hasGlobalAccess = result.items[0]?.id_droit_max === 6;
 
         // Charger les sites en fonction des droits
-        this.sitesService.getSitesCentroid().subscribe(
+        this.sitesService.getSitesPourAdmin().subscribe(
           sites => {
             if (hasGlobalAccess) {
               // Si l'utilisateur a un accès global, charger tous les sites
@@ -76,12 +81,45 @@ export class SaisirComponent implements OnInit {
     this.router.navigate(['/t_infos_base_site', slug])
   }
 
+  // Méthode appelée lors de la saisie du nom
+  // Méthode appelée lors de la saisie du nom
   handleSearch(event: Event): void {
-    const query = (event.target as HTMLInputElement).value.toLowerCase();
-    this.filteredEspaces = this.espaces.filter(ep => ep.nom.toLowerCase().includes(query));
-    this.dataSource.data = this.filteredEspaces;
-    this.dataSource.paginator = this.paginator;
+    this.searchQuery = (event.target as HTMLInputElement).value.toLowerCase();
+    this.applyFilters();
   }
+
+  // Méthode appelée lorsque l'utilisateur sélectionne une date
+  handleDateFilter(event: MatDatepickerInputEvent<Date>): void {
+    this.selectedDate = event.value;
+    this.applyFilters();
+  }
+
+  // Méthode commune qui applique les filtres de texte et de date
+  applyFilters(): void {
+    this.filteredEspaces = this.espaces.filter(ep => {
+      // Filtrage par nom (recherche textuelle)
+      const matchesQuery = ep.nom.toLowerCase().includes(this.searchQuery);
+
+      // Filtrage par date de la dernière modification si une date est sélectionnée.
+      let matchesDate = true;
+      if (this.selectedDate) {
+        // Si le site n'a aucune modification, il est exclu.
+        if (!ep.modifications || ep.modifications.length === 0) {
+          matchesDate = false;
+        } else {
+          // On considère que la première modification est la plus récente.
+          const lastModificationDate = new Date(ep.modifications[0].date_update);
+          matchesDate = lastModificationDate > this.selectedDate;
+        }
+      }
+      return matchesQuery && matchesDate;
+    });
+
+    this.dataSource.data = this.filteredEspaces;
+    // Réassigner le paginator si nécessaire
+  }
+
+
 
   onRowClick(element: any): void {
     this.router.navigate(['/site', element.slug]);  // Utilisation du Router pour naviguer

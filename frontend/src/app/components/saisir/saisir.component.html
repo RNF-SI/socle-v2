@@ -5,22 +5,77 @@
       <mat-label>Rechercher un espace</mat-label>
       <input matInput (input)="handleSearch($event)" placeholder="Ex: Aiguilles Rouges">
     </mat-form-field>
-  </div>
-  <table mat-table [dataSource]="dataSource">
 
-    <!-- Position Column -->
+    <mat-form-field appearance="outline">
+      <mat-label>Modifications ultérieures à</mat-label>
+      <input matInput [matDatepicker]="picker" (dateChange)="handleDateFilter($event)"
+        placeholder="Choisissez une date">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+  </div>
+
+
+  <mat-accordion class="custom-accordion">
+    <mat-expansion-panel *ngFor="let site of filteredEspaces">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <span class="site-name">{{ site.nom }}</span>
+        </mat-panel-title>
+        <mat-panel-description *ngIf="site.modifications.length > 0">
+          <mat-icon class="modif-icon">edit</mat-icon>
+          <span>Dernière modification le
+            {{ site.modifications[0].date_update | date:"dd/MM/y 'à' HH'h'mm" }}
+            par <strong>{{ site.modifications[0].user_update }}</strong></span>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <div class="modifications">
+        <div *ngFor="let modif of site.modifications" class="modif-item">
+          <h4>
+            <mat-icon class="time-icon">access_time</mat-icon>
+            Le {{ modif.date_update | date:"dd/MM/y 'à' HH'h'mm" }} par
+            <span class="user-name">{{ modif.user_update }}</span>
+          </h4>
+          <div class="changements">
+            <ul>
+              <li *ngFor="let changement of modif.changements">
+                <mat-icon class="change-icon">change_history</mat-icon>
+                {{ changement }}
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div *ngIf="site.modifications.length == 0">
+          Aucune information n'a encore été saisie.
+        </div>
+      </div>
+      <div class="panel-footer">
+        <button mat-raised-button color="primary" [routerLink]="['/questionnaire-simplifie', site.code]">
+          Modifier les infos du site
+        </button>
+        <button mat-raised-button color="accent" [routerLink]="['/site', site.slug]">
+          Accéder à la fiche du site
+        </button>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+
+
+
+  <!-- <table mat-table [dataSource]="dataSource">
+
+
     <ng-container matColumnDef="nom">
       <th mat-header-cell *matHeaderCellDef> Nom du site </th>
       <td mat-cell *matCellDef="let element" (click)="onRowClick(element)"> {{element.nom}} </td>
     </ng-container>
 
-    <!-- Name Column -->
     <ng-container matColumnDef="code">
       <th mat-header-cell *matHeaderCellDef> Code RNF </th>
       <td mat-cell *matCellDef="let element" (click)="onRowClick(element)"> {{element.code}} </td>
     </ng-container>
 
-    <!-- Weight Column -->
     <ng-container matColumnDef="type">
       <th mat-header-cell *matHeaderCellDef> Type </th>
       <td mat-cell *matCellDef="let element"> {{element.type_rn}} </td>
@@ -28,5 +83,5 @@
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-  </table>
+  </table> -->
 </div>

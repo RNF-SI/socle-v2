@@ -5,7 +5,7 @@ import shapely
 
 
 from app import ma
-from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Inpg, Nomenclature, BibNomenclatureType, CorSiteSubstance, Stratotype, CorSiteInpg, Parametres, SFGeol, Echelle
+from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Inpg, Nomenclature, BibNomenclatureType, CorSiteSubstance, Stratotype, CorSiteInpg, Parametres, SFGeol, Echelle, SuivisModifs
 
 
 class PerimetreProtectionSchema(ma.SQLAlchemyAutoSchema):
@@ -102,6 +102,7 @@ class SiteSchemaSimple(ma.SQLAlchemyAutoSchema):
     sites_inpg = fields.Method('get_sorted_sites_inpg')
     patrimoines_geologiques = ma.Nested(lambda: PatrimoineGeologiqueGestionnaireSchema(only=("lb",)), many=True)
     stratotypes = ma.Nested(lambda:StratotypeSchema, many = True)
+    modifications = ma.Nested(lambda:SuivisModifsSchema, many = True)
 
     def get_sorted_sites_inpg(self, obj):
         # Trier les sites_inpg par nombre_etoiles (desc) et lb_site (asc)
@@ -208,3 +209,7 @@ class SFGeolSchema(ma.SQLAlchemyAutoSchema) :
             return None
     class Meta :
         model = SFGeol
+
+class SuivisModifsSchema(ma.SQLAlchemyAutoSchema) :
+    class Meta :
+        model = SuivisModifs

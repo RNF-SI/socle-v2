@@ -42,6 +42,8 @@ class TInfosBaseSite(db.Model):
     user_update = db.Column(db.String) # référence l'utilisateur de UsersHub qui a fait la modif
     date_update = db.Column(db.DateTime)
 
+    modifications = db.relationship('SuivisModifs', passive_deletes=True)
+
 
 cor_site_ages = db.Table('cor_site_ages',
     db.Column('site_id', db.Integer, db.ForeignKey('site.id_site', ondelete="CASCADE")),
