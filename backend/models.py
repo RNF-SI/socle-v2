@@ -12,6 +12,7 @@ class TInfosBaseSite(db.Model):
     __tablename__ = 't_infos_base_site'
     
     id_site = db.Column(db.Integer, db.ForeignKey('site.id_site'), primary_key=True, nullable=False)
+    contains_paleontological_heritage = db.Column(db.Boolean)
     contains_paleontological_heritage_vertebrates = db.Column(db.Boolean)
     contains_paleontological_heritage_invertebrates = db.Column(db.Boolean)
     contains_paleontological_heritage_plants = db.Column(db.Boolean)
@@ -24,7 +25,6 @@ class TInfosBaseSite(db.Model):
     contains_subterranean_habitats = db.Column(db.Boolean)
     subterranean_habitats_natural_cavities = db.Column(db.Boolean)
     subterranean_habitats_anthropogenic_cavities = db.Column(db.Boolean)
-    # TODO : ça sert à rien si les enfant sont true alors le parent est true et inversement
     associated_with_mineral_resources = db.Column(db.Boolean)
     mineral_resources_old_quarry = db.Column(db.Boolean)
     mineral_resources_active_quarry = db.Column(db.Boolean)
@@ -41,6 +41,7 @@ class TInfosBaseSite(db.Model):
     biblio = db.Column(db.Text)
     user_update = db.Column(db.String) # référence l'utilisateur de UsersHub qui a fait la modif
     date_update = db.Column(db.DateTime)
+    completion = db.Column(db.Float)
 
     modifications = db.relationship('SuivisModifs', passive_deletes=True)
 

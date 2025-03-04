@@ -82,9 +82,6 @@ export class QuestionnaireSimplifieComponent implements OnInit {
     public authService: AuthService
   ) {
 
-    console.log(this.authService.getCurrentUser());
-
-
     this.tInfosBaseSiteForm = this.fb.group({
       id_site: [''],
       geologicalUnits: this.fb.array([]), // Gère les ensembles géologiques sélectionnés
@@ -393,7 +390,6 @@ export class QuestionnaireSimplifieComponent implements OnInit {
       (site: any) => {
         this.site = site;
         this.siteSlug = this.site.slug;
-        console.log(this.site);
         if (this.site.sites_inpg.length < 6) {
           this.showInpg = true
         }
@@ -420,7 +416,7 @@ export class QuestionnaireSimplifieComponent implements OnInit {
           subterranean_habitats_natural_cavities: site.infos_base.subterranean_habitats_natural_cavities,
           subterranean_habitats_anthropogenic_cavities: site.infos_base.subterranean_habitats_anthropogenic_cavities,
           does_not_contain_subterranean_habitats: site.infos_base.does_not_contain_subterranean_habitats,
-          associated_with_mineral_resources: site.infos_base.mineral_resources_old_quarry || site.infos_base.mineral_resources_active_quarry || site.infos_base.mineral_resources_old_mine || site.infos_base.mineral_resources_active_mine,
+          associated_with_mineral_resources: site.infos_base.associated_with_mineral_resources,
           mineral_resources_old_quarry: site.infos_base.mineral_resources_old_quarry,
           mineral_resources_active_quarry: site.infos_base.mineral_resources_active_quarry,
           quarry_extracted_material: site.infos_base.quarry_extracted_material,
@@ -456,7 +452,7 @@ export class QuestionnaireSimplifieComponent implements OnInit {
         });
 
         this.tInfosBaseSiteForm.get('contains_paleontological_heritage')?.patchValue({
-          answer: site.infos_base.contains_paleontological_heritage_vertebrates || site.infos_base.contains_paleontological_heritage_invertebrates || site.infos_base.contains_paleontological_heritage_plants || site.infos_base.contains_paleontological_heritage_trace_fossils,
+          answer: site.infos_base.contains_paleontological_heritage,
           // no_answer: !site.infos_base.contains_paleontological_heritage,
           vertebrates: site.infos_base.contains_paleontological_heritage_vertebrates,
           invertebrates: site.infos_base.contains_paleontological_heritage_invertebrates,

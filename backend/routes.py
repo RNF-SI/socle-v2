@@ -207,6 +207,7 @@ def transform_modifications(modifications):
     """Transforme la liste des modifications pour obtenir le format désiré."""
     # Dictionnaire de correspondance : clé de modification -> libellé affiché
     mapping_labels = {
+        "contains_paleontological_heritage" : "Présence de patrimoine paléontologique",
         "contains_paleontological_heritage_vertebrates": "Présence de patrimoine paléontologique - Vertébrés",
         "contains_paleontological_heritage_invertebrates": "Présence de patrimoine paléontologique - Invertébrés",
         "contains_paleontological_heritage_plants": "Présence de patrimoine paléontologique - Végétaux",
@@ -333,6 +334,7 @@ def submitData():
     if not data or 'id_site' not in data:
         return jsonify({'type': 'error', 'msg': 'No data provided or id_site is missing'}), 400
     try:
+        print(data.get('contains_paleontological_heritage'));
         t_infos_base_site = TInfosBaseSite(
             # id_site=data.get('id_site'),
             reserve_created_on_geological_basis=data.get('reserve_created_on_geological_basis'),
@@ -421,7 +423,7 @@ def update_t_infos_base_site(slug):
         site.creation_geol = data.get('reserve_created_on_geological_basis')
 
         contains_paleontological_heritage = data.get('contains_paleontological_heritage', {})
-        # site.infos_base.contains_paleontological_heritage = contains_paleontological_heritage.get('answer', site.infos_base.contains_paleontological_heritage)
+        site.infos_base.contains_paleontological_heritage = contains_paleontological_heritage.get('answer', site.infos_base.contains_paleontological_heritage)
         site.infos_base.contains_paleontological_heritage_vertebrates = contains_paleontological_heritage.get('vertebrates', site.infos_base.contains_paleontological_heritage_vertebrates)
         site.infos_base.contains_paleontological_heritage_invertebrates = contains_paleontological_heritage.get('invertebrates', site.infos_base.contains_paleontological_heritage_invertebrates)
         site.infos_base.contains_paleontological_heritage_plants = contains_paleontological_heritage.get('plants', site.infos_base.contains_paleontological_heritage_plants)
