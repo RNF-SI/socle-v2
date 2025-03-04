@@ -5,7 +5,7 @@ export const AppConfig = {
     "SEARCH_ITEMS_ROUTE": "/sites-simple-centroides",
     "SEARCH_PREFIXE": "/site",
     "SEARCH_PLACEHOLDER": "Rechercher une réserve...",
-    "appName": "Socle2",
+    "appName": "SOCLE - Base de données géologiques des réserves naturelles",
     "appTitle": " SOCLE",
     "appSubTitle": " Base de données de la géodiversité des réserves naturelles",
     "creditHeaderImage": "Bouches de Bonifacio - © Olivier Bonnenfant, OEC",

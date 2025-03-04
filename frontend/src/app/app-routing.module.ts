@@ -10,6 +10,7 @@ import { QuestionnaireSimplifieComponent } from './components/explorer/questionn
 import { LiensComponent } from './components/liens/liens.component';
 import { SaisirComponent } from './components/saisir/saisir.component';
 import { AccessDeniedComponent } from './home-rnf/components/access-denied/access-denied.component';
+import { ForgotPasswordComponent } from './home-rnf/components/forgot-password/forgot-password.component';
 import { LoginComponent } from './home-rnf/components/login/login.component';
 import { LogoutComponent } from './home-rnf/components/logout/logout.component';
 import { NavHomeComponent } from './home-rnf/components/nav-home/nav-home.component';
@@ -35,6 +36,10 @@ const routes: Routes = [
         path: 'login',
         component: LoginComponent,
         canActivate: [LazyDialogLoader]
+      },
+      {
+        path: 'mot-de-passe-oublie',
+        component: ForgotPasswordComponent
       },
       {
         path: '',
