@@ -17,10 +17,10 @@ export const AppConfig = {
             "lien": ""
         },
         {
-            "nom": "saisir",
+            "nom": "Mes sites",
             "classFa": "fas" as const,
-            "nomFa": "pen" as const,
-            "lien": "saisir"  // Pas d'icône ici
+            "nomFa": "location-dot" as const,
+            "lien": "mes-sites"  // Pas d'icône ici
         },
 
         {

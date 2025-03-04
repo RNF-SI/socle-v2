@@ -74,7 +74,7 @@ const routes: Routes = [
       },
 
       {
-        path: 'saisir',
+        path: 'mes-sites',
         component: SaisirComponent,
         canActivate: [AuthGuardService]
       },
