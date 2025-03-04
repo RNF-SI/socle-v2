@@ -18,6 +18,11 @@ export class SaisirComponent implements OnInit {
   filteredEspaces: Site[] = [];
   selectedDate: Date | null = null;
   searchQuery: string = "";
+  selectedStartDate: Date | null = null;
+  selectedEndDate: Date | null = null;
+  // Valeurs en pourcentage
+  completionMin: number = 0;
+  completionMax: number = 100;
 
   displayedColumns: string[] = ['nom', 'code', 'type'];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -88,35 +93,50 @@ export class SaisirComponent implements OnInit {
     this.applyFilters();
   }
 
-  // Méthode appelée lorsque l'utilisateur sélectionne une date
-  handleDateFilter(event: MatDatepickerInputEvent<Date>): void {
-    this.selectedDate = event.value;
+  // Méthode appelée lors de la sélection de la date de début
+  handleStartDate(event: MatDatepickerInputEvent<Date>): void {
+    this.selectedStartDate = event.value;
     this.applyFilters();
   }
 
-  // Méthode commune qui applique les filtres de texte et de date
+  // Méthode appelée lors de la sélection de la date de fin
+  handleEndDate(event: MatDatepickerInputEvent<Date>): void {
+    this.selectedEndDate = event.value;
+    this.applyFilters();
+  }
+
+  // Méthode commune qui applique tous les filtres
   applyFilters(): void {
     this.filteredEspaces = this.espaces.filter(ep => {
-      // Filtrage par nom (recherche textuelle)
+      // Filtrage par nom
       const matchesQuery = ep.nom.toLowerCase().includes(this.searchQuery);
 
-      // Filtrage par date de la dernière modification si une date est sélectionnée.
+      // Filtrage par intervalle de dates pour la dernière modification
       let matchesDate = true;
-      if (this.selectedDate) {
-        // Si le site n'a aucune modification, il est exclu.
+      if (this.selectedStartDate || this.selectedEndDate) {
         if (!ep.modifications || ep.modifications.length === 0) {
           matchesDate = false;
         } else {
-          // On considère que la première modification est la plus récente.
+          // On considère que la première modification est la plus récente
           const lastModificationDate = new Date(ep.modifications[0].date_update);
-          matchesDate = lastModificationDate > this.selectedDate;
+          if (this.selectedStartDate && lastModificationDate < this.selectedStartDate) {
+            matchesDate = false;
+          }
+          if (this.selectedEndDate && lastModificationDate > this.selectedEndDate) {
+            matchesDate = false;
+          }
         }
       }
-      return matchesQuery && matchesDate;
+
+      // Filtrage par taux de complétion (conversion en pourcentage)
+      const completionRate = ep.completion * 100;
+      const matchesCompletion = completionRate >= this.completionMin && completionRate <= this.completionMax;
+
+      return matchesQuery && matchesDate && matchesCompletion;
     });
 
-    this.dataSource.data = this.filteredEspaces;
-    // Réassigner le paginator si nécessaire
+    // Par exemple, si vous utilisez un dataSource pour un table, mettez-le à jour :
+    // this.dataSource.data = this.filteredEspaces;
   }
 
 

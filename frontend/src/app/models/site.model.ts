@@ -39,6 +39,7 @@ export interface Site {
   jonction_nom: any;
   surf_off: any;
   substances: any;
+  completion: number;
 
   sfgeol: Sfgeol[];
 

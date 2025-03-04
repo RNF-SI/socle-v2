@@ -186,6 +186,7 @@ def get_sites_pour_admin():
             "nom": site.nom,
             "slug": site.slug,
             "code": site.code,
+            "completion": site.infos_base.completion if site.infos_base else None,
             "modifications": modifications_formattees
         })
 
