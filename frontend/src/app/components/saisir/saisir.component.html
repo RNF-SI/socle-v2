@@ -60,13 +60,16 @@
         <!-- On ajoute une classe personnalisée pour gérer le layout -->
         <mat-panel-description class="panel-description-custom">
           <!-- Bloc de gauche (dernière modification) -->
-          <div class="left-block" *ngIf="site.modifications.length > 0">
-            <mat-icon class="modif-icon">edit</mat-icon>
-            <span>
-              Dernière modification le
-              {{ site.modifications[0].date_update | date:"dd/MM/y 'à' HH'h'mm" }}
-              par <strong>{{ site.modifications[0].user_update }}</strong>
-            </span>
+          <div class="left-block">
+            <div *ngIf="site.modifications.length > 0">
+
+              <mat-icon class="modif-icon">edit</mat-icon>
+              <span>
+                Dernière modification le
+                {{ site.modifications[0].date_update | date:"dd/MM/y 'à' HH'h'mm" }}
+                par <strong>{{ site.modifications[0].user_update }}</strong>
+              </span>
+            </div>
           </div>
 
           <!-- Bloc de droite (spinner) -->
