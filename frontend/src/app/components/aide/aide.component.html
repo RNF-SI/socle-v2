@@ -10,73 +10,274 @@
 
 <body>
     <div class="container">
-        <object data="assets/tutoriel_socle2.pdf" type="application/pdf" width="100%" height="600">
+        <div class="intro">
+            Voici quelques questions couramment posées sur la plateforme SOCLE.
+            <br>
+            Cliquez sur une question pour afficher
+            sa réponse.
+            <br>
+            Vous pouvez également télécharger ces informations au format PDF.
+            <br><br>
+            <a mat-raised-button color="primary" href="assets/tutoriel_socle2.pdf" target="_blank">
+                <mat-icon>download</mat-icon> Télécharger
+            </a>
+            <br>
+            <br>
+        </div>
+        <mat-accordion>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        COMMENT ACCÉDER AU MODE ÉDITION ?
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div>
+                    <p>Vous pouvez librement consulter les données enregistrées dans Socle, soit par réserve (
+                        chaque RN dispose de sa fiche accessible en passant par la page
+                        d’accueil ou la barre de recherche), soit sous forme de synthèse et chiffres-clés en
+                        page
+                        d’accueil.
+                    </p>
+                    <p>Mais <span class="texte-highlight">pour pouvoir entrer des données dans Socle, vous devez au
+                            préalable vous
+                            <a href="https://plateformes.reserves-naturelles.org/inscription" target="_blank">créer un
+                                compte dans le système d’information de RNF</a></span>, si ce n’est déjà fait. Pas de
+                        panique,
+                        c’est
+                        très rapide et vous aurez un identifiant unique pour toutes les plateformes RNF. Avec ce compte,
+                        vous aurez accès en édition à la ou aux RN dont vous avez la responsabilité.</p>
+                    <p>
+                </div>
+                <div class="row image-row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4 gauche">
+                        Cliquez sur ce bouton pour vous connecter
+                    </div>
+                    <div class="col-md-4 droite">
+                        <img src="assets/images/aide/connexion.png">
+                    </div>
+                </div>
+                <div class="row image-row">
+
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4 gauche">
+                        <img src="assets/images/aide/editer.png">
+                    </div>
+                    <div class="col-md-4 droite">
+                        Ensuite, rendez-vous sur la page de la RN que vous souhaitez modifier et cliquez sur
+                        éditer les informations.
+                    </div>
+                </div>
+                <p>Pour accéder facilement à la liste des RN pour lesquelles vous
+                    avez les droits d’édition, passez par le menu <span class="texte-highlight">« Saisir »</span> du
+                    bandeau.</p>
+                <div class="row image-row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4 gauche">
+                        Pensez à enregistrer vos modifications avant de fermer la
+                        page, à l’aide du bouton
+                        à la fin du questionnaire.
+                    </div>
+                    <div class="col-md-4 droite">
+                        <img src="assets/images/aide/enregistrer.png">
+                    </div>
+                </div>
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        POURQUOI CERTAINES INFORMATIONS SONT-ELLES DÉJÀ RENSEIGNÉES ?
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <p>Pour vous aider et faciliter le remplissage, certaines données sont récupérées automatiquement, comme
+                    la présence ou non de sites de l’Inventaire National du Patrimoine Géologique (INPG) connue d’après
+                    les données cartographiques de PatriNat.</p>
+                <p>Cependant, <span class="texte-highlight">si vous considérez qu’un site INPG indiqué comme associé à
+                        la RN n’est pas pertinent par rapport aux enjeux de gestion</span> (par exemple si le
+                    recoupement ne se fait qu’à la marge entre le site INPG et la RN, ou bien parce qu’il s’agit d’un
+                    site INPG très étendu qui englobe un territoire nettement plus vaste que la RN), <span
+                        class="texte-highlight">vous pouvez choisir de le décocher</span>.</p>
+                <div class="row image-row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4 gauche">
+                        Pour cela, cliquez sur le bouton ci-dessous, placé au bout de la ligne du site INPG concerné :
+                    </div>
+                    <div class="col-md-4 droite">
+                        <img src="assets/images/aide/delete_inpg.png">
+                    </div>
+                </div>
+                <p>Il vous sera demandé de justifier votre choix, afin de conserver une trace de la raison pour laquelle
+                    la donnée a été retirée.</p>
+                <p><span class="texte-highlight">Vous pouvez cliquer sur le nom d’un site INPG pour accéder à la fiche
+                        correspondante</span>, publiée par PatriNat, qui vous sera très utile pour votre plan de
+                    gestion.</p>
+                <p>Le nombre d’étoiles correspond à l’indice de patrimonialité selon la nomenclature de l’INPG et le
+                    terme figurant après le nom du site correspond à l’intérêt géologique principal selon cette même
+                    nomenclature.</p>
+                <p>Pour les RN concernées, distinction est faite entre la RN au sens strict et le périmètre de
+                    protection.</p>
+                <p>Dans certains cas, vous verrez aussi une distinction entre les sites INPG publics et les sites INPG
+                    confidentiels
+                    Les sites INPG confidentiels n’apparaitront que si vous avez les droits d’édition sur la page
+                    Il s’agit de sites dont l’accès peut être convoité (pillage) ou dangereux et dont la localisation ne
+                    doit pas être accessible librement
+                </p>
+                <div class="row image-row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4 gauche">
+                        De base, la plupart des champs du questionnaire sont laissés en « non renseigné »
+                    </div>
+                    <div class="col-md-4 droite">
+                        <img src="assets/images/aide/non_renseigne.png">
+                    </div>
+                </div>
+                <p>Si vous avez coché une donnée et que vous souhaitez revenir en arrière, même après avoir enregistré,
+                    il vous suffit donc de recocher non renseigné pour vider le champ correspondant</p>
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        QU’EST-CE QUE LA FONCTION AJOUTER UN PATRIMOINE GÉOLOGIQUE ?
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div class="row image-row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4 gauche">
+                        Au début du questionnaire, sous les informations automatiquement récupérées depuis l’INPG, vous
+                        trouverez un bouton.
+                    </div>
+                    <div class="col-md-4 droite">
+                        <img src="assets/images/aide/ajout_patrimoine.png">
+                    </div>
+                </div>
+                <p>Ce bouton permet d’indiquer un patrimoine géologique que vous connaissez dans la RN et qui n’est pas
+                    listé dans l’INPG.</p>
+                <p>Vous aurez quelques informations de base à donner sur ce patrimoine.</p>
+                <img src="assets/images/aide/from_pat_geol.png">
+                <p>Les infos obligatoire sont :</p>
+                <ul>
+                    <li>Libellé (nom attribué à ce patrimoine)</li>
+                    <li>Intérêt géologique principal (liste déroulante basée sur la nomenclature de l’INPG)</li>
+                    <li>Bibliographie (préciser les références biblio qui établissent l’intérêt patrimonial)</li>
+                </ul>
+                <p>Vous pouvez également préciser l’âge des terrains associés à ce patrimoine géologique.</p>
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        EN CAS DE QUESTION SUR LE PATRIMOINE GÉOLOGIQUE
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <p>Chaque région dispose d’une <span class="texte-highlight">Commission Régionale du Patrimoine
+                        Géologique (CRPG)</span>, groupement
+                    d’experts rattaché au Conseil Scientifique Régional du Patrimoine Naturel (CSRPN). La CRPG est
+                    référente sur les questions de patrimoine géologique à cette échelle de territoire. En cas de
+                    besoin, vous pouvez la solliciter en passant par la DREAL (ou équivalent).</p>
+                <p><span class="texte-highlight">Si vous avez un ou des sites INPG confidentiels dans votre RN ou à
+                        proximité, adressez-vous à votre
+                        CRPG</span> pour récupérer les informations correspondantes, que vous ne pourrez pas trouver sur
+                    le site de
+                    l’INPN.</p>
+                <p>Le réseau RNF dispose aussi d’une <span class="texte-highlight">commission patrimoine
+                        géologique</span> que vous pouvez solliciter en
+                    passant par l’équipe RNF (contact : Corentin GUINAULT, chargé de projet géodiversité et animateur de
+                    la commission, <a href="mailto:corentin.guinault@rnfrance.org"
+                        target="_blank">corentin.guinault@rnfrance.org</a>) ou par <a
+                        href="https://www.portail.reserves-naturelles.org/page/1295662-commission-pg-gouvernance"
+                        target="_blank">le portail RNF</a>.</p>
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        C’EST QUOI UN STRATOTYPE ?
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div class="row image-row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4 gauche">
+                        Si vous avez des difficultés pour répondre à cette question
+                    </div>
+                    <div class="col-md-4 droite">
+                        <img src="assets/images/aide/stratotype.png">
+                    </div>
+                </div>
+                <p>Un <span class="texte-highlight">stratotype</span>, c'est un affleurement qui sert de référence à
+                    l’échelle mondiale pour caractériser un intervalle des temps géologiques.</p>
+                <p>Donc, si votre RN abritait un stratotype, il ferait nécessairement partie des sites INPG listés
+                    automatiquement par Socle.</p>
+
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        LA BIBLIOGRAPHIE
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <p>En fin de questionnaire, un champ texte vous est proposé pour lister les sources utilisées pour
+                    répondre aux questions.</p>
+                <p>C’est indispensable pour qu’un autre utilisateur puisse plus tard comprendre d’où viennent vos
+                    réponses. <span class="texte-highlight">Soyez aussi précis que possible pour que les données
+                        associées à votre RN soient bien vérifiables et retrouvables.</span></p>
+
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        LA CARTE DE LA FICHE DE SYNTHÈSE
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <p>Chaque RN dispose d’une fiche synthétique qui récapitule toutes les données enregistrées dans Socle
+                    et qui comporte également une carte.</p>
+                <img src="assets/images/aide/carte.png">
+                <div class="row image-row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4 gauche">
+                        Le fond de carte affiché peut être, au choix, la carte générale OpenStreetMap ou la carte
+                        géologique. Pour passer de l’une à l’autre, cliquez sur le bouton en haut à droite de la carte.
+                    </div>
+                    <div class="col-md-4 droite">
+                        <img src="assets/images/aide/couches.png">
+                    </div>
+                </div>
+                <p>La carte géologique est <span class="texte-highlight">celle imprimée au 1/50000 du BRGM</span>. Il
+                    s’agit donc d’un assemblage de cartes et votre RN peut se trouver au niveau de plusieurs d’entre
+                    elles.</p>
+                <p>Pour connaître la ou les cartes géologiques qui vous concernent et récupérer la légende et la notice
+                    associées, utilisez le visualiseur du BRGM nommé <a
+                        href="http://infoterre.brgm.fr/viewer/MainTileForward.do" target="_blank">InfoTerre</a>.</p>
+                <div class="row image-row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4 droite">
+                        <img src="assets/images/aide/inpg_viewer.png">
+                    </div>
+                    <div class="col-md-4 gauche">
+                        Dans les couches disponibles, vous retrouverez le tableau d’assemblage des cartes au 1/50000 et
+                        la carte géologique imprimée au 1/50000
+                        Les notices sont téléchargeables depuis le bouton légende, à droite du visualiseur
+                    </div>
+                </div>
+                <p>Sur la carte de la fiche synthétique de Socle figurent aussi les sites INPG. Une distinction est
+                    faite entre les
+                    sites INPG publics et les sites INPG confidentiels, ces derniers n’apparaissant que si vous avez les
+                    droits d’édition sur la page.</p>
+                <div class="row image-row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4 gauche">
+                        Vous pouvez choisir d’afficher ou non tous ces périmètres,
+                        toujours avec le bouton en haut à droite de la carte.
+                    </div>
+                    <div class="col-md-4 droite">
+                        <img src="assets/images/aide/select_couches.png">
+                    </div>
+                </div>
+
+            </mat-expansion-panel>
+        </mat-accordion>
+
+        <!-- <object data="assets/tutoriel_socle2.pdf" type="application/pdf" width="100%" height="600">
             <p>Votre navigateur ne supporte pas l’affichage des PDF. Vous pouvez <a
                     href="assets/tutoriel_socle2.pdf">télécharger le document</a>.</p>
-        </object>
-        <!-- <h1>Aide / F.A.Q.</h1>
-        
-        <div class="faq-section">
-            <h2>A qui s’adresse cette application ?</h2>
-            <p>L’application est un portail d’entrée vers la découverte du patrimoine géologique des réserves naturelles et des espaces naturels protégés français en général. Elle permet aux gestionnaires d’espaces protégés, géologues ou non de s’intéresser au patrimoine géologique de leur territoire et de le présenter dans un cadre commun.</p>
-        </div>
-
-        <div class="faq-section">
-            <h2>Je souhaite saisir des données, comment m’inscrire ?</h2>
-            <p>L’inscription se fait à partir du site en cliquant sur « s’inscrire » en haut à droite de la page. Une fois les renseignements saisis, l’administrateur recevra un mail et pourra valider le compte. Il créera l’espace, enregistrera son périmètre géographique s'il n’existe pas encore et donnera les autorisations pour saisir dans cet espace.</p>
-        </div>
-
-        <div class="faq-section">
-            <h2>Suis-je obligé de tout renseigner ?</h2>
-            <p>Aucune rubrique n’est obligatoire. Vous pouvez prendre le temps qu’il vous faut pour remplir les formulaires à votre rythme, les données sont toujours modifiables.</p>
-        </div>
-
-        <div class="faq-section">
-            <h2>Commencer la saisie des données</h2>
-            <p>Accédez à la fiche « de terrain » du site. Cette fiche détaille la marche à suivre pour renseigner les données selon un ordre précis. Elle est divisée en sous-rubriques accessibles par des panneaux déroulants. Cliquez sur un titre pour faire apparaître les éléments renseignés. Cliquez sur « éditer » pour modifier les informations. La plupart des informations à saisir se présentent sous la forme de cases à cocher.</p>
-            <p>Une fois la saisie de la rubrique effectuée, cliquez sur « enregistrer » pour sauvegarder les modifications.</p>
-        </div>
-
-        <div class="faq-section">
-            <h2>Visualisation et saisie des informations sur les entités géologiques</h2>
-            <p>Les entités géologiques (EG) sont accessibles dans la rubrique 3.1 de la fiche de terrain du site. À ce niveau, il est possible d’ajouter des entités géologiques.</p>
-            <p>Un formulaire permet de rentrer les caractéristiques générales de l’EG. Il faut tout d’abord pointer son emplacement approximatif sur la carte ; on peut marquer plusieurs points pour une même entité. Les champs d’identification sont remplis automatiquement lorsque l’on clique sur la carte. Ils sont modifiables par la suite. Renseignez l’âge des roches à l’aide de l’échelle des temps géologique jusqu’au niveau le plus précis possible. Cliquez sur « Enregistrer » pour sauvegarder l’EG.</p>
-            <p>Vous arrivez sur la fiche de l’entité. Celle-ci comporte des panneaux déroulants de la même façon que pour la fiche du site, éditables.</p>
-        </div>
-
-        <div class="faq-section">
-            <h2>Terminologie utilisée sur le site</h2>
-            <p>L’exploration de la géologie du territoire nécessite des approches à plusieurs niveaux, du plus large au plus localisé.</p>
-            <ul>
-                <li><strong>Espace naturel :</strong> L’ensemble du territoire géré par l’entité qui rentre les données : une réserve naturelle, un parc naturel régional…</li>
-                <li><strong>Site :</strong> Subdivision de l’espace naturel sur laquelle porte l’étude de la géologie. Le plus souvent (espace monosite), le site occupe l’intégralité du territoire de l’espace naturel. Les deux niveaux sont alors confondus. Si le territoire est fractionné et/ou très hétérogène, il peut être envisagé de délimiter plusieurs sites pour un même espace.</li>
-                <li><strong>Entité géologique :</strong> Correspond à une zone relativement homogène du point de vue géologique. Dans la pratique, on considère qu’une entité géologique correspond à une classe de légende sur la carte géologique au 1/50000 du BRGM. Pour Socle, elle est représentée par un ou plusieurs points sur la carte.</li>
-                <li><strong>Objet remarquable :</strong> Sert à matérialiser des éléments ponctuels importants pour l’étude : un affleurement, une formation rocheuse, un point de vue...</li>
-            </ul>
-        </div>
-
-        <div class="faq-section">
-            <h2>Espace monosite ou multisite ?</h2>
-            <p>L’option la plus courante est monosite : un seul site identifié pour un espace naturel donné (sachant que l’on peut ensuite différencier des entités géologiques au sein du site). Cependant, si l’espace naturel est étendu et présente de fortes hétérogénéités géologiques ou s’il est éclaté géographiquement, on peut le subdiviser en sous-sites, et effectuer la saisie pour chacun d’eux.</p>
-            <p>Pour créer un espace multisite : se rendre sur la page de l’espace à partir de l’accueil (« Explorer » pour avoir la liste de tous les espaces), cliquer sur « modifier » et décocher la case « cet espace ne contient qu’un seul site ». Sur la page de l’espace, vous pourrez ensuite créer les sites que vous souhaitez.</p>
-            <p>Pour créer un site, il est nécessaire de lui donner un nom. On peut ensuite en cartographier le contour directement sur la carte grâce aux outils situés à gauche.</p>
-        </div>
-
-        <div class="faq-section">
-            <h2>Comment ajouter des illustrations / des documents de référence ?</h2>
-            <p>Vous pouvez ajouter des photos et documents au format PDF à deux niveaux :</p>
-            <ul>
-                <li>celui du site</li>
-                <li>celui de l’entité géologique</li>
-            </ul>
-            <p>Au niveau du site : les photos s’ajoutent via le formulaire de la partie 1.0 : cliquez sur « éditer » et téléchargez votre photo ou document, ajoutez une légende de description.</p>
-            <p>La première photo associée au site sert d’illustration de référence (apparaît en page d’accueil) : fournissez donc de préférence une photo présentant une vue d’ensemble du site.</p>
-        </div>
-
-        <div class="faq-section">
-            <h2>Je ne comprends pas certains termes</h2>
-            <p>Certains termes peuvent être inconnus des non géologues. Si le terme est accompagné d’un signe ?, vous pouvez passer la souris et une définition s’affichera. Vous pouvez aussi vous référer au Dico des mots de la géologie, disponible sur le site de RNF.</p>
-        </div> -->
+        </object> -->
     </div>
 </body>
 

@@ -1,43 +1,44 @@
- body {
-     font-family: Arial, sans-serif;
-     line-height: 1.6;
- }
+@import 'src/styles/custom-theme.scss';
 
- .container {
-     width: 80%;
-     margin: 0 auto;
-     padding: 20px;
- }
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+}
 
- h1 {
-     color: #afb42b,;
-     text-align: center;
- }
+.texte-highlight {
+    color: mat-color($custom-primary, 500);
+    /* Exemple de couleur (bleu) à adapter */
+    font-weight: bold;
+}
 
- h2 {
-     color: #333;
-     border-bottom: 2px solid #afb42b,;
-     padding-bottom: 5px;
- }
+a {
+    font-weight: bold;
+    color: mat-color($custom-accent, 500);
+    text-decoration: none;
+    cursor: pointer;
 
- p {
-     margin-bottom: 15px;
- }
+}
 
- ul {
-     list-style-type: none;
-     padding: 0;
- }
+.image-row {
+    text-align: center;
+    flex: auto;
+}
 
- li {
-     margin-bottom: 10px;
- }
+.gauche,
+.droite {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
 
- .faq-section {
-     margin-bottom: 20px;
- }
+mat-panel-title {
+    font-weight: bold;
+    font-size: large;
+    color: mat-color($custom-primary, 500) !important;
+}
 
- .faq-section h3 {
-     margin-top: 0;
-     color: #0066cc;
- }
+.intro {
+    text-align: center;
+}
