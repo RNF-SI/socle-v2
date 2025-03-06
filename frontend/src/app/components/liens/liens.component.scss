@@ -99,3 +99,30 @@ h1 {
 .text-right {
     text-align: right;
 }
+
+.text-right button {
+
+    color: mat-color($custom-accent, 500);
+}
+
+mat-card-title {
+    color: mat-color($custom-accent, 500);
+}
+
+a {
+    color: mat-color($custom-primary, 500);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+:host ::ng-deep a.link-spacing {
+
+    color: mat-color($custom-primary, 500) !important;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+:host ::ng-deep a.link-spacing:hover {
+
+    text-decoration: underline;
+}

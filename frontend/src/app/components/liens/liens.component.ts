@@ -29,7 +29,7 @@ export class LiensComponent implements OnInit {
             "nom": "Inventaire National du Patrimoine Géologique",
             "url": "https://inpn.mnhn.fr/programme/patrimoine-geologique/presentation",
             "chemin_image": "https://inpn.mnhn.fr/css/images_template/logo_inpn.png",
-            "description": "Présentation de la démarche nationale d'inventaire du patrimoine géologique.<br>Pour explorer les données : <a href=\"https://inpn.mnhn.fr/site/inpg/recherche\" class=\"link-spacing\">Consulter les fiches</a><br><a href=\"https://inpn.mnhn.fr/telechargement/cartes-et-information-geographique/inpg/inpg\" class=\"link-spacing\">Télécharger les données SIG</a>"
+            "description": "Présentation de la démarche nationale d'inventaire du patrimoine géologique.<br>Pour explorer les données : <br><a href=\"https://inpn.mnhn.fr/site/inpg/recherche\" class=\"link-spacing\">&#x2794; Consulter les fiches</a><br><a href=\"https://inpn.mnhn.fr/telechargement/cartes-et-information-geographique/inpg/inpg\" class=\"link-spacing\">&#x2794; Télécharger les données SIG</a>"
         },
         {
             "nom": "Geodiversite.net : exploration du monde des cailloux",
@@ -44,7 +44,7 @@ export class LiensComponent implements OnInit {
             "description": "Base de données internationale sur la paléontologie et les fossiles."
         },
         {
-            "nom": "Dépliant Géodiversité, au couer de la nature",
+            "nom": "Dépliant Géodiversité, au coeur de la nature",
             "url": "http://www.pearltrees.com/t/geodiversite-patrimoine/depliant-geodiversite-2020/id61768287",
             "chemin_image": "assets/images/depliant-geo.png",
             "description": "Le dépliant Géodiversité, au coeur de la nature propose d'illustrer les liens existant entre géologie,<br>milieux naturels et activités humaines à partir d'exemples issus du réseau RNF autour d'un bloc diagramme dessiné.<br>Il permet aussi de comprendre les notions de géodiversité et de patrimoine géologique, ainsi que l'enjeu de conservation que ce dernier représente."
