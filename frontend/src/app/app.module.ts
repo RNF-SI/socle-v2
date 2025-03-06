@@ -47,6 +47,7 @@ import { getFrenchPaginatorIntl } from './home-rnf/shared/french-paginator-intl'
 import { CapitalizePipe } from './pipes/capitalize.pipe';
 import { TInfosBaseSiteService } from './services/t-infos-base-site.service';
 
+
 registerLocaleData(localeFr, 'fr');
 
 

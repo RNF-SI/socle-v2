@@ -1,41 +1,101 @@
- 
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            width: 80%;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        h1 {
-            color: #afb42b,;
-            text-align: center;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        td a {
-            text-decoration: none;
-            color: #afb42b,;
-        }
-        td a:hover {
-            text-decoration: underline;
-        }
-        .logo {
-            width: 80px;
-            height: auto;
-            vertical-align: middle;
-        }
-    
+@import 'src/styles/custom-theme.scss';
+
+// body {
+//     font-family: Arial, sans-serif;
+// }
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    color: mat-color($custom-primary, 500);
+    text-align: center;
+}
+
+.logo {
+    width: 80px;
+    height: auto;
+    vertical-align: middle;
+}
+
+/* 
+  1) Masonry layout :
+     - 3 colonnes sur large écran
+     - 2 colonnes sous 992px
+     - 1 colonne sous 576px
+     - On utilise column-count pour un effet “Pinterest”
+*/
+
+.masonry {
+    column-count: 3;
+    /* 3 colonnes */
+    column-gap: 1rem;
+    /* espace horizontal entre colonnes */
+
+    @media (max-width: 992px) {
+        column-count: 2;
+        /* 2 colonnes */
+    }
+
+    @media (max-width: 576px) {
+        column-count: 1;
+        /* 1 colonne */
+    }
+}
+
+/* Chaque card s’affiche en bloc dans la colonne */
+.masonry-item {
+    display: inline-block;
+    /* important pour le masonry */
+    width: 100%;
+    margin-bottom: 1rem;
+    vertical-align: top;
+    /* évite d'éventuels décalages */
+}
+
+/* 
+    2) Mise en page interne des cartes :
+       - Flex horizontal : image à gauche, texte/bouton à droite
+       - align-items: start => on aligne en haut
+  */
+
+.card-content {
+    display: flex;
+    align-items: center;
+}
+
+.card-content.d-flex.align-items-start {
+    align-items: center !important;
+}
+
+/* Image à gauche, dimension fixe ou adaptable */
+.image-wrapper {
+    display: flex;
+    align-items: center;
+    width: 120px;
+    margin: 10px;
+}
+
+.image-wrapper img {
+    width: 120px;
+    height: auto;
+}
+
+/* Partie de droite : titre, description, bouton en colonne */
+.text-wrapper {
+    margin-left: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.text-wrapper button {
+    margin: 10px;
+}
+
+/* Alignement du bouton à droite */
+.text-right {
+    text-align: right;
+}
