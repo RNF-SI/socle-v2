@@ -12,6 +12,8 @@ import { environment } from 'src/environments/environment';
 export class ContactsComponent implements OnInit {
   contactForm!: FormGroup;
 
+  submitted = false;
+
   constructor(
     private fb: FormBuilder,
     private _toasterService: ToastrService,
@@ -36,6 +38,7 @@ export class ContactsComponent implements OnInit {
   }
 
   onSubmit(): void {
+    this.submitted = true;
     if (this.contactForm!.valid) {
       // Envoi du formulaire via votre service (exemple simulé ici)
       console.log('Données du formulaire:', this.contactForm!.value);

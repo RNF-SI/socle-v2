@@ -70,11 +70,15 @@
 
     <!-- Captcha -->
     <div class="row">
-      <div class="col-md-12 text-right">
+      <div class="col-md-12 text-center">
         <div class="recaptcha-wrapper">
           <re-captcha siteKey={{captcha_key}} (resolved)="onCaptchaResolved($event)">
           </re-captcha>
         </div>
+        <mat-error
+          *ngIf="contactForm.get('recaptcha')?.invalid && (contactForm.get('recaptcha')?.touched || submitted)">
+          Veuillez compléter le captcha.
+        </mat-error>
       </div>
     </div>
     <br>
