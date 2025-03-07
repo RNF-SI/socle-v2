@@ -52,7 +52,7 @@
           <mat-select formControlName="sujet" required>
             <mat-option value="" disabled>Quel est votre sujet ?</mat-option>
             <mat-option value="technique">Question technique sur le site</mat-option>
-            <mat-option value="partenariat">Question sur le partenariat</mat-option>
+            <mat-option value="geologie">Question sur la géologie des réserves</mat-option>
             <mat-option value="autre">Autre question</mat-option>
           </mat-select>
         </mat-form-field>
@@ -67,6 +67,17 @@
         </mat-form-field>
       </div>
     </div>
+
+    <!-- Captcha -->
+    <div class="row">
+      <div class="col-md-12 text-right">
+        <div class="recaptcha-wrapper">
+          <re-captcha siteKey={{captcha_key}} (resolved)="onCaptchaResolved($event)">
+          </re-captcha>
+        </div>
+      </div>
+    </div>
+    <br>
 
     <div class="row">
       <div class="col-md-1"></div>
