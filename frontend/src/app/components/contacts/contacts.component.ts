@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { ContactFormData, ContactService } from 'src/app/services/contact.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -16,6 +17,7 @@ export class ContactsComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
+    private contactService: ContactService,
     private _toasterService: ToastrService,
     private router: Router
   ) { }
@@ -39,13 +41,17 @@ export class ContactsComponent implements OnInit {
 
   onSubmit(): void {
     this.submitted = true;
-    if (this.contactForm!.valid) {
-      // Envoi du formulaire via votre service (exemple simulé ici)
-      console.log('Données du formulaire:', this.contactForm!.value);
-
-      // Simule l'envoi et affiche un message via le toaster service
-      this._toasterService.info('Votre message a été envoyé avec succès.', 'Message envoyé!');
-      this.router.navigate(['/']);
+    if (this.contactForm.valid) {
+      const formData: ContactFormData = this.contactForm.value;
+      this.contactService.sendContactForm(formData).subscribe({
+        next: (res) => {
+          this._toasterService.info('Votre message a été envoyé avec succès.', 'Message envoyé!');
+          this.router.navigate(['/']);
+        },
+        error: (err) => {
+          this._toasterService.error(err.error.msg || 'Erreur lors de l\'envoi du message', '');
+        }
+      });
     }
   }
 

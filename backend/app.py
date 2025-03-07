@@ -16,6 +16,8 @@ from flask_login import current_user
 
 from pypnusershub.login_manager import login_manager
 
+from flask_mail import Mail
+
 app = Flask(__name__)
 app.config.from_object(Config)
 cors = CORS(app)
@@ -28,6 +30,8 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
 migrate = Migrate(app, db)
+
+mail = Mail(app)
 
 # blueprint relié au module usershub-authentification
 from pypnusershub import routes_register

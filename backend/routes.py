@@ -1,9 +1,9 @@
 import site
 from venv import logger
-from flask import Flask, request, Response, render_template, redirect, Blueprint, jsonify, g, abort
+from flask import Flask, request, Response, render_template, redirect, Blueprint, jsonify, g, abort, current_app
 import requests
 import json
-from app import app, db
+from app import app, db, mail
 from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Nomenclature, BibNomenclatureType,Inpg, Site, CorSiteInpg, CorSiteSubstance, Stratotype, Parametres, Echelle, SFGeol, SuivisModifs
 from schemas import PatrimoineGeologiqueGestionnaireSchema, PerimetreProtectionSchema, TInfosBaseSiteSchema, SiteSchema, NomenclatureSchema, NomenclatureTypeSchema, SiteSchemaSimple, StratotypeSchema, ParametresSchema, SuivisModifsSchema
 from pypnusershub import routes as fnauth
@@ -11,6 +11,7 @@ import logging
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload, load_only
 import datetime
+from flask_mail import Message
 
 bp = Blueprint('routes', __name__)
 
@@ -785,3 +786,32 @@ def get_parametre_by_libelle(libelle):
     parametre = Parametres.query.filter(Parametres.libelle == libelle).first()
     schema = ParametresSchema(many=False)
     return schema.jsonify(parametre)
+
+@bp.route('/contact', methods=['POST'])
+def send_contact_mail():
+    data = request.get_json()
+    if not data:
+        return jsonify({"msg": "Données invalides"}), 400
+
+    sujet = data.get('sujet', '').lower()
+    nom = data.get('nom', '')
+    email = data.get('email', '')
+    message_content = data.get('message', '')
+
+    # Déterminez le destinataire selon le sujet
+    if sujet == 'technique':
+        recipient = current_app.config.get('MAIL_DEST_TECHNIQUE')
+    else:
+        recipient = current_app.config.get('MAIL_DEST_GEOL')
+
+    # Préparez le message
+    msg = Message(subject=f"Mail depuis SOCLE",
+                  sender=current_app.config.get('MAIL_DEFAULT_SENDER'),
+                  recipients=[recipient])
+    msg.body = f"Nom: {nom}\nEmail: {email}\n\nMessage:\n{message_content}"
+    try:
+        mail.send(msg)
+        return jsonify({"msg": "Mail envoyé avec succès"}), 200
+    except Exception as e:
+        current_app.logger.error(f"Erreur lors de l'envoi du mail: {e}")
+        return jsonify({"msg": "Erreur lors de l'envoi du mail"}), 500
