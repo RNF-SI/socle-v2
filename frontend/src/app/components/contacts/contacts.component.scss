@@ -1,32 +1,28 @@
+@import 'src/styles/custom-theme.scss';
+
 .container {
-    margin-top: 20px;
-    font-family: Century Gothic, CenturyGothic, AppleGothic, sans-serif;
-  }
-  
-  h2 {
-    color: #355e01ff;
-  }
-  
-  ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  li {
-    background-color: #f5f5f5;
-    margin: 10px 0;
-    padding: 10px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  li h3 {
-    margin: 0;
-    color: #0B885D;
-  }
-  
-  li p {
-    margin: 5px 0;
-    color: #555;
-  }
-  
+  margin: 20px auto;
+}
+
+/* Assure que les champs de formulaire Material prennent toute la largeur dans leur colonne */
+.full-width {
+  width: 100%;
+}
+
+/* Optionnel : centre horizontalement le contenu textuel des boutons */
+.text-center {
+  text-align: center;
+}
+
+.img-fluid {
+  border-radius: 50%;
+}
+
+h3 {
+  color: mat-color($custom-primary, 500);
+  font-weight: bold;
+}
+
+h4 {
+  color: mat-color($custom-accent, 500);
+}

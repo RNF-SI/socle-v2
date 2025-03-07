@@ -1,21 +1,44 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
-  selector: 'app-contacts',
+  selector: 'app-contact',
   templateUrl: './contacts.component.html',
   styleUrls: ['./contacts.component.scss']
 })
 export class ContactsComponent implements OnInit {
+  contactForm!: FormGroup;
 
-  contacts: any[] = [
-    { name: 'En cas de question sur le projet Socle :', role:'Corentin Guinault: Chargé de projet Géodiversité ', email: 'corentin.guinault@rnfrance.org', phone: '03.80.48.94.77' },
-    { name: 'En cas de question sur les aspects informatiques et base de données :', role: ' Zacharie moulin: Chargé de mission Géomatique ', email: 'zacharie.moulin@rnfrance.org', phone: '0380489478' }
-    // Ajoute ici les contacts ou récupère-les depuis un service
-  ];
-
-  constructor() { }
+  constructor(
+    private fb: FormBuilder,
+    private _toasterService: ToastrService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
+    this.contactForm = this.fb.group({
+      nom: ['', Validators.required],
+      email: ['', Validators.required],
+      sujet: ['', Validators.required],
+      message: ['', Validators.required]
+    });
   }
 
+  onSubmit(): void {
+    if (this.contactForm!.valid) {
+      // Envoi du formulaire via votre service (exemple simulé ici)
+      console.log('Données du formulaire:', this.contactForm!.value);
+
+      // Simule l'envoi et affiche un message via le toaster service
+      this._toasterService.info('Votre message a été envoyé avec succès.', 'Message envoyé!');
+      this.router.navigate(['/']);
+    }
+  }
+
+  onCancel(): void {
+    // Redirige ou réinitialise le formulaire
+    this.router.navigate(['/']);
+  }
 }
