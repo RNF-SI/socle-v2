@@ -1,0 +1,478 @@
+<div *ngIf="site" class="bouttons">
+  <mat-button-toggle-group>
+    <mat-button-toggle *ngIf="hasAccessToRn" [routerLink]="['/questionnaire-simplifie', site.code]"
+      class="filled-toggle">
+      <fa-icon [icon]="['fas', 'edit']"></fa-icon> Editer les informations
+    </mat-button-toggle>
+    <mat-button-toggle (click)="exportData()" class="filled-toggle">
+      <fa-icon [icon]="['fas', 'download']"></fa-icon> Exporter la fiche
+    </mat-button-toggle>
+  </mat-button-toggle-group>
+</div>
+
+<div *ngIf="site" id="export-content" class="contenu">
+
+  <h2>Réserve Naturelle
+    <span *ngIf="site.type_rn == 'RNN'">Nationale</span>
+    <span *ngIf="site.type_rn == 'RNR'">Régionale</span>
+    <span *ngIf="site.type_rn == 'RNC'">de Corse</span>
+    {{site.jonction_nom}}{{site.nom}}
+  </h2>
+
+  <div class="infos-maj" *ngIf="hasAccessToRn && site.infos_base.date_update">
+    Dernière mise à jour effectuée le {{site.infos_base.date_update | date:'d MMMM y':'+0200':'fr' }} par
+    {{site.infos_base.user_update}}
+  </div>
+
+  <div class="stats-container container">
+    <div class="stat-item">
+      <fa-icon [icon]="['fas', 'vector-square']"></fa-icon>
+      <div class="stat-value">{{ site.surf_off | number: '1.0-0' }} ha</div>
+      <div class="stat-label">Superficie</div>
+    </div>
+    <div class="stat-item">
+      <fa-icon [icon]="['fas', 'map-marker']"></fa-icon>
+      <div class="stat-value">{{ site.sites_inpg.length }} </div>
+      <div class="stat-label">Site<span *ngIf="site.sites_inpg.length>1">s</span></div>
+      <div class="stat-label">INPG</div>
+    </div>
+    <div class="stat-item">
+      <fa-icon [icon]="['fas', 'map-marker-alt']"></fa-icon>
+      <div class="stat-value">{{ site.patrimoines_geologiques.length }} </div>
+      <div class="stat-label">Autre<span *ngIf="site.patrimoines_geologiques.length>1">s</span> site<span
+          *ngIf="site.patrimoines_geologiques.length>1">s</span></div>
+      <div class="stat-label">de géopatrimoine</div>
+    </div>
+    <div class="stat-item">
+      <fa-icon [icon]="['fas', 'stream']"></fa-icon>
+      <div class="stat-value">{{ site.stratotypes.length }}</div>
+      <div class="stat-label">Stratotype<span *ngIf="site.stratotypes.length>1">s</span></div>
+    </div>
+    <div class="stat-item" *ngIf="site.infos_base.reserve_has_geological_site_for_visitors">
+      <fa-icon [icon]="['fas', 'camera']"></fa-icon>
+      <div class="stat-value" *ngIf="site.infos_base.nb_sites_for_visitors">{{ site.infos_base.nb_sites_for_visitors }}
+      </div>
+      <div class="stat-label">Site<span *ngIf="site.infos_base.nb_sites_for_visitors">s</span> géologique<span
+          *ngIf="site.infos_base.nb_sites_for_visitors">s</span> </div>
+      <div class="stat-label">amménagé<span *ngIf="site.infos_base.nb_sites_for_visitors">s</span> pour</div>
+      <div class="stat-label">les visiteurs</div>
+    </div>
+    <!-- <div class="stat-item">
+      <fa-icon [icon]="['fas', 'sort-numeric-down-alt']"></fa-icon>
+      <div class="stat-value"></div>
+      <div class="stat-label">Terrains</div>
+      <div class="stat-label">les plus anciens</div>
+    </div>
+    <div class="stat-item">
+      <fa-icon [icon]="['fas', 'sort-numeric-up-alt']"></fa-icon>
+      <div class="stat-value"></div>
+      <div class="stat-label">Terrains</div>
+      <div class="stat-label">les plus récents</div>
+    </div> -->
+  </div>
+  <!-- Section de la carte -->
+  <div id="mapReserve">
+  </div>
+  <div class="legend-surcontainer">
+    <div id="legend" class="legend-container"></div>
+    <div class="legend-container"><a href="https://infoterre.brgm.fr/viewer/MainTileForward.do">Accéder au visualiseur
+        d'Infoterre pour explorer la
+        légende de la carte géologique</a></div>
+  </div>
+  <div #infoBlock class="geological-heritage-section">
+    <div class="title-container">
+      <img src="assets/images/iconSynth.png" alt="Icone patrimoine" class="heritage-icon">
+      <h2 class="heritage-title">Patrimoine géologique</h2>
+    </div>
+
+    <div class="heritage-content">
+      <p *ngIf="site.creation_geol === true">
+        La réserve a été créée sur le fondement d’un patrimoine géologique.
+      </p>
+      <div *ngIf="site.creation_geol != true">
+        <div *ngIf="site.sites_inpg && site.sites_inpg.length > 0; else noInpgData">
+          <p>La réserve abrite du patrimoine géologique, mais ce n’est pas ce dernier qui a motivé sa création.</p>
+        </div>
+        <ng-template #noInpgData>
+          <p>La réserve n’abrite pas de patrimoine géologique connu.</p>
+        </ng-template>
+      </div>
+      <!-- TODO: tableu de corespendance  -->
+      <p class="subsection-title">Ensemble géologique</p>
+      <div class="subsection-response">
+        <div *ngIf="filteredGeologicalUnits && filteredGeologicalUnits.length > 0; else noGeologicalUnits">
+          <ng-container *ngFor="let geol of filteredGeologicalUnits">
+            <span>{{ geol.label}}</span><br>
+          </ng-container>
+        </div>
+        <ng-template #noGeologicalUnits>
+          <p>Aucun ensemble géologique sélectionné.</p>
+        </ng-template>
+
+      </div>
+
+      <div>
+        <p class="subsection-title">Milieux souterrains d’intérêt patrimonial</p>
+        <div class="subsection-response">
+          <span *ngIf="site.infos_base.contains_subterranean_habitats">
+            <div *ngIf="site.infos_base.subterranean_habitats_natural_cavities">
+              <p>Cavités naturelles</p>
+            </div>
+            <div *ngIf="site.infos_base.subterranean_habitats_anthropogenic_cavities">
+              <p>Cavités anthropiques</p>
+            </div>
+          </span>
+          <p *ngIf="site.infos_base.contains_subterranean_habitats === false">
+            La réserve ne présente pas de milieu souterrain abritant un patrimoine naturel identifié, biologique
+            ou géologique.
+          </p>
+          <p *ngIf="site.infos_base.contains_subterranean_habitats === null">
+            Information non renseignée.
+          </p>
+        </div>
+      </div>
+
+      <p class="subsection-title">Intérêts géologiques principaux</p>
+      <p *ngIf="uniqueInteretGeolPrincipal" class="subsection-response">
+        <ng-container *ngFor="let interet of uniqueInteretGeolPrincipal">
+          <span>{{ interet }}</span><br />
+        </ng-container>
+      </p>
+      <ng-template #noGeologicalInterests>
+        <p>Aucun intérêt géologique identifié.</p>
+      </ng-template>
+
+      <p class="subsection-title">Stratotypes</p>
+      <div class="subsection-response">
+        <div *ngIf="stratotypesLimite.length > 0">
+          <p>
+            Stratotype<span *ngIf="stratotypesLimite.length > 1">s</span> de limite :
+          </p>
+          <ng-container *ngFor="let strato of stratotypesLimite">
+            <span>{{ strato.libelle }}</span><br />
+          </ng-container><br>
+        </div>
+        <div *ngIf="stratotypesEtage.length > 0">
+          <p>
+            Stratotype<span *ngIf="stratotypesEtage.length > 1">s</span> d'étage :
+          </p>
+          <ng-container *ngFor="let strato of stratotypesEtage">
+            <span>{{ strato.libelle }}</span><br />
+          </ng-container><br>
+        </div>
+        <p *ngIf="site.stratotypes.length == 0">
+          Aucun stratotype identifié.
+        </p>
+      </div>
+      <div>
+        <p class="subsection-title">Patrimoine paléontologique</p>
+        <div class="subsection-response">
+          <span>
+            <div *ngIf="site.infos_base.contains_paleontological_heritage_invertebrates">
+              <p>Invertébrés</p>
+            </div>
+            <div *ngIf="site.infos_base.contains_paleontological_heritage_vertebrates">
+              <p>Vertébrés</p>
+            </div>
+            <div *ngIf="site.infos_base.contains_paleontological_heritage_plants">
+              <p>Végétaux</p>
+            </div>
+            <div *ngIf="site.infos_base.contains_paleontological_heritage_trace_fossils">
+              <p>Traces fossiles</p>
+            </div>
+            <div *ngIf="site.infos_base.contains_paleontological_heritage_other_details">
+              <p>{{ site.infos_base.contains_paleontological_heritage_other_details }}</p>
+            </div>
+          </span>
+          <ng-template #noPaleontologicalData>
+            <p>Les terrains de la réserve ne renferment pas de patrimoine paléontologique.</p>
+          </ng-template>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div #infoBlock class="geological-sites-section">
+    <div class="title-container">
+      <img src="assets/images/iconSynth.png" alt="Icone patrimoine" class="heritage-icon">
+      <h2 class="heritage-title">Sites d'intérêt géologique</h2>
+    </div>
+    <div class="heritage-content sites-inpg">
+
+      <div class="subsection-title">
+        Sites INPG sur la réserve
+      </div>
+      <div class="subsection-response">
+        <div *ngIf="site.sites_inpg && site.sites_inpg.length > 0; else noInpgData">
+          <div *ngFor="let inpg of site.sites_inpg">
+            <div *ngIf="inpg.inpg.niveau_de_diffusion === 'Public'">
+              <fa-icon [icon]="['fas', 'star']" size="2xs"></fa-icon>
+              <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 1; else etoileVide2" [icon]="['fas', 'star']" size="2xs">
+              </fa-icon>
+              <ng-template #etoileVide2>
+                <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
+              </ng-template>
+              <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 2; else etoileVide3" [icon]="['fas', 'star']" size="2xs">
+              </fa-icon>
+              <ng-template #etoileVide3>
+                <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
+              </ng-template>
+              <a [href]="'https://inpn.mnhn.fr/site/inpg/' + inpg.inpg.id_metier" target="_blank"> {{
+                inpg.inpg.lb_site }}</a>
+              {{ inpg.inpg.interet_geol_principal }}
+            </div>
+          </div>
+          <div *ngIf="nbInpgConfidentielsReserve && !estConnecte()">
+            + {{nbInpgConfidentielsReserve}} site<span *ngIf="nbInpgConfidentielsReserve > 1">s</span> INPG
+            confidentiel<span *ngIf="nbInpgConfidentielsReserve > 1">s</span>
+          </div>
+        </div>
+        <ng-template #noInpgData>
+          <div>Aucun</div>
+        </ng-template>
+      </div>
+      <div *ngIf="nbInpgConfidentielsReserve > 0 && estConnecte()">
+        <div class="subsection-title">
+          Sites INPG confidentiels sur la réserve
+        </div>
+        <div class="subsection-response">
+          <div *ngIf="site.sites_inpg && site.sites_inpg.length > 0; else noInpgData">
+            <div *ngFor="let inpg of site.sites_inpg">
+              <div *ngIf="inpg.inpg.niveau_de_diffusion === 'Confidentiel'">
+                <fa-icon [icon]="['fas', 'star']" size="2xs"></fa-icon>
+                <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 1; else etoileVide2" [icon]="['fas', 'star']" size="2xs">
+                </fa-icon>
+                <ng-template #etoileVide2>
+                  <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
+                </ng-template>
+                <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 2; else etoileVide3" [icon]="['fas', 'star']" size="2xs">
+                </fa-icon>
+                <ng-template #etoileVide3>
+                  <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
+                </ng-template>
+                <a [href]="'https://inpn.mnhn.fr/site/inpg/' + inpg.inpg.id_metier" target="_blank"> {{
+                  inpg.inpg.lb_site }}</a>
+                {{ inpg.inpg.interet_geol_principal }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="site.perimetre_protection">
+        <div class="subsection-title">
+          Sites INPG sur le périmètre de protection
+        </div>
+        <div class="subsection-response">
+          <div
+            *ngIf="site.perimetre_protection.sites_inpg && site.perimetre_protection.sites_inpg.length > 0; else noInpgData">
+            <div *ngFor="let inpg of site.perimetre_protection.sites_inpg">
+              <div *ngIf="inpg.inpg.niveau_de_diffusion === 'Public'">
+                <fa-icon [icon]="['fas', 'star']" size="2xs"></fa-icon>
+                <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 1; else etoileVide2" [icon]="['fas', 'star']" size="2xs">
+                </fa-icon>
+                <ng-template #etoileVide2>
+                  <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
+                </ng-template>
+                <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 2; else etoileVide3" [icon]="['fas', 'star']" size="2xs">
+                </fa-icon>
+                <ng-template #etoileVide3>
+                  <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
+                </ng-template>
+                <a [href]="'https://inpn.mnhn.fr/site/inpg/' + inpg.inpg.id_metier" target="_blank"> {{
+                  inpg.inpg.lb_site }}</a>
+                {{ inpg.inpg.interet_geol_principal }}
+              </div>
+            </div>
+            <div *ngIf="nbInpgConfidentielsPP && !estConnecte()">
+              + {{nbInpgConfidentielsPP}} site<span *ngIf="nbInpgConfidentielsPP > 1">s</span> INPG
+              confidentiel<span *ngIf="nbInpgConfidentielsPP > 1">s</span>
+            </div>
+          </div>
+          <ng-template #noInpgData>
+            <div>Aucun</div>
+          </ng-template>
+        </div>
+      </div>
+      <div *ngIf="nbInpgConfidentielsPP > 0 && estConnecte()">
+        <div class="subsection-title">
+          Sites INPG confidentiels sur le périmètre de protection
+        </div>
+        <div class="subsection-response">
+          <div
+            *ngIf="site.perimetre_protection.sites_inpg && site.perimetre_protection.sites_inpg.length > 0; else noInpgData">
+            <div *ngFor="let inpg of site.perimetre_protection.sites_inpg">
+              <div *ngIf="inpg.inpg.niveau_de_diffusion === 'Confidentiel'">
+                <fa-icon [icon]="['fas', 'star']" size="2xs"></fa-icon>
+                <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 1; else etoileVide2" [icon]="['fas', 'star']" size="2xs">
+                </fa-icon>
+                <ng-template #etoileVide2>
+                  <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
+                </ng-template>
+                <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 2; else etoileVide3" [icon]="['fas', 'star']" size="2xs">
+                </fa-icon>
+                <ng-template #etoileVide3>
+                  <fa-icon [icon]="['far', 'star']" size="2xs"></fa-icon>
+                </ng-template>
+                <a [href]="inpg.inpg.url" target="_blank"> {{
+                  inpg.inpg.lb_site }}</a>
+                {{ inpg.inpg.interet_geol_principal }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="site.patrimoines_geologiques.length > 0">
+        <div class="subsection-title">
+          Autres sites de géopatrimoine sur la réserve
+        </div>
+        <div class="subsection-response">
+          <div *ngFor="let patrimoine of site.patrimoines_geologiques">
+            <div>
+              <span class="geopatrimoine-lb">{{patrimoine.lb}}</span>
+              {{ patrimoine.interet_geol_principal }}
+              (<span class="geopatrimoine-biblio">{{patrimoine.bibliographie}}</span>)
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="site.perimetre_protection && site.perimetre_protection.patrimoines_geologiques.length > 0">
+        <div class="subsection-title">
+          Autres sites de géopatrimoine du périmètre de protection
+        </div>
+        <div class="subsection-response">
+          <div *ngFor="let patrimoine of site.perimetre_protection.patrimoines_geologiques">
+            <div>
+              <span class="geopatrimoine-lb">{{patrimoine.lb}}</span>
+              {{ patrimoine.interet_geol_principal }}
+              (<span class="geopatrimoine-biblio">{{patrimoine.bibliographie}}</span>)
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- TODO: ajouter de tableu de corespendance pour stocker de donner  -->
+  <div #infoBlock class="mineral-resources-section">
+    <div class="title-container">
+      <img src="assets/images/iconSynth.png" alt="Icone patrimoine" class="heritage-icon">
+      <h2 class="heritage-title">Ressources minérales</h2>
+    </div>
+    <div class="heritage-content">
+
+      <div
+        *ngIf="!site.infos_base.mineral_resources_old_quarry && !site.infos_base.mineral_resources_active_quarry && !site.infos_base.mineral_resources_old_mine && !site.infos_base.mineral_resources_active_mine">
+        <p>Pas d’exploitation de ressource minérale connue</p>
+      </div>
+      <div>
+        <div *ngIf="site.infos_base.mineral_resources_old_quarry">
+          <p>Anciennes carrières</p>
+        </div>
+        <div *ngIf="site.infos_base.mineral_resources_active_quarry">
+          <p>Carrières en activité</p>
+        </div>
+        <div *ngIf="site.infos_base.mineral_resources_old_mine">
+          <p>Anciennes mines </p>
+        </div>
+        <div *ngIf="site.infos_base.mineral_resources_active_mine">
+          <p>Mines en activité </p>
+        </div>
+      </div>
+      <div *ngIf="site.substances.length > 0">
+        <div class="subsection-title">
+          Substances exploitées
+        </div>
+        <div class="subsection-response">
+          <ul>
+            <li *ngFor="let substance of site.substances">
+              {{ substance.substance.label }}<span *ngIf="substance.fossilifere"> (fossilifère)</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div #infoBlock class="collections-section">
+    <div class="title-container">
+      <img src="assets/images/iconSynth.png" alt="Icone patrimoine" class="heritage-icon">
+      <h2 class="heritage-title">Collections</h2>
+    </div>
+    <div class="heritage-content">
+      <div *ngIf="site.infos_base.reserve_has_geological_collections">
+        <p>La réserve dispose de collections géologiques propres</p>
+      </div>
+      <div *ngIf="!site.infos_base.reserve_has_geological_collections">
+        <p>La réserve ne dispose pas de collections géologiques propres</p>
+      </div>
+    </div>
+  </div>
+  <div #infoBlock class="sensibilisation-section">
+    <div class="title-container">
+      <img src="assets/images/iconSynth.png" alt="Icone patrimoine" class="heritage-icon">
+      <h2 class="heritage-title">Sensibilisation</h2>
+    </div>
+    <div class="heritage-content">
+      <!-- Première partie : Site géologique aménagé pour les visiteurs -->
+      <div *ngIf="site.infos_base.reserve_has_geological_site_for_visitors; else noSiteForVisitors">
+        <p>La réserve dispose d’un site géologique aménagé pour les visiteurs</p>
+      </div>
+      <ng-template #noSiteForVisitors>
+        <p>La réserve ne dispose pas de site géologique aménagé pour les visiteurs</p>
+      </ng-template>
+      <!-- Deuxième partie : Animations sur la thématique géodiversité / patrimoine géologique   -->
+      <div *ngIf="site.infos_base.offers_geodiversity_activities; else noGeodiversityActivities">
+        <p>La réserve propose des animations sur la thématique géodiversité / patrimoine géologique</p>
+      </div>
+      <ng-template #noGeodiversityActivities>
+        <p>La réserve ne propose pas d’animation sur la thématique géodiversité / patrimoine géologique</p>
+      </ng-template>
+    </div>
+  </div>
+
+  <div #infoBlock class="entite-geol-section" *ngIf="sfgeol.length > 0">
+    <div class="title-container">
+      <img src="assets/images/iconSynth.png" alt="Icone patrimoine" class="heritage-icon">
+      <h2 class="heritage-title">Formations géologiques sur la réserve</h2>
+    </div>
+    <div class="heritage-content">
+      <ul class="sfgeol-list">
+        <li *ngFor="let descr of sfgeol">{{ descr }}</li>
+      </ul>
+    </div>
+  </div>
+  <div #infoBlock class="biblio-section" *ngIf="site.infos_base.biblio">
+    <div class="title-container">
+      <img src="assets/images/iconSynth.png" alt="Icone patrimoine" class="heritage-icon">
+      <h2 class="heritage-title">Bibliographie</h2>
+    </div>
+    <div class="heritage-content">
+      <div [innerHTML]="site.infos_base.biblio"></div>
+    </div>
+  </div>
+
+
+  <!-- colonnes prévues pour accueillir les infos des blocs suivant leur taille -->
+  <div class="row">
+    <!-- Colonne de gauche avec identifiant pour ciblage dans Renderer2 -->
+    <div id="left-column" class="col-md-6 d-flex flex-column"></div>
+
+    <!-- Colonne de droite avec identifiant pour ciblage dans Renderer2 -->
+    <div id="right-column" class="col-md-6 d-flex flex-column"></div>
+  </div>
+
+  <ng-template #template let-nativeElement>
+    <div [attr.class]="nativeElement.className" [innerHTML]="nativeElement.innerHTML"></div>
+  </ng-template>
+  <br>
+</div>
+<div *ngIf="site" class="bouttons">
+  <mat-button-toggle-group>
+    <mat-button-toggle *ngIf="hasAccessToRn" [routerLink]="['/questionnaire-simplifie', site.code]"
+      class="filled-toggle">
+      <fa-icon [icon]="['fas', 'edit']"></fa-icon> Editer les informations
+    </mat-button-toggle>
+    <mat-button-toggle (click)="exportData()" class="filled-toggle">
+      <fa-icon [icon]="['fas', 'download']"></fa-icon> Exporter la fiche
+    </mat-button-toggle>
+  </mat-button-toggle-group>
+</div>

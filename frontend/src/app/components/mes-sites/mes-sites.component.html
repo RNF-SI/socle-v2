@@ -1,0 +1,117 @@
+<div class="contenu">
+  <div class="intro">
+    Retrouvez ici l'ensemble des sites auxquels vous êtes rattachés, les dernières modifications, et leur taux de
+    complétion du formulaire simplifié. <br>
+    Si un de vos sites n'apparait pas, vous pouvez aller modifier la liste des sites auxquels vous êtes rattachés sur <a
+      href="https://plateformes.reserves-naturelles.org/">plateformes.reserves-naturelles.org</a> rubrique
+    <span class="rubrique">Mon compte</span>
+  </div>
+
+  <div class="search-container">
+    <!-- Bloc 1 : Recherche par nom -->
+    <div class="filter-block">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Rechercher un espace</mat-label>
+        <input matInput (input)="handleSearch($event)" placeholder="Ex: Aiguilles Rouges">
+      </mat-form-field>
+    </div>
+
+    <!-- Bloc 2 : Intervalle de dates -->
+    <div class="filter-block">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Modifications entre</mat-label>
+        <mat-date-range-input [rangePicker]="picker">
+          <input matStartDate placeholder="Date début" (dateChange)="handleStartDate($event)">
+          <input matEndDate placeholder="Date fin" (dateChange)="handleEndDate($event)">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+      </mat-form-field>
+    </div>
+
+    <!-- Bloc 3 : Range slider pour le taux de complétion -->
+    <div class="filter-block slider-block">
+      <!-- Titre au-dessus du slider -->
+      <mat-label>Taux de complétion</mat-label>
+
+      <!-- Conteneur flex pour le min, le slider et le max -->
+      <div class="slider-wrapper">
+        <span class="slider-label">{{ completionMin }}%</span>
+        <mat-slider min="0" max="100" class="flex-grow">
+          <input value="0" matSliderStartThumb [(ngModel)]="completionMin" (change)="applyFilters()">
+          <input value="100" matSliderEndThumb [(ngModel)]="completionMax" (change)="applyFilters()">
+        </mat-slider>
+        <span class="slider-label">{{ completionMax }}%</span>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+  <mat-accordion class="custom-accordion">
+    <mat-expansion-panel *ngFor="let site of filteredEspaces">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <span class="site-name">{{ site.nom }}</span>
+        </mat-panel-title>
+
+        <!-- On ajoute une classe personnalisée pour gérer le layout -->
+        <mat-panel-description class="panel-description-custom">
+          <!-- Bloc de gauche (dernière modification) -->
+          <div class="left-block">
+            <div *ngIf="site.modifications.length > 0">
+
+              <mat-icon class="modif-icon">edit</mat-icon>
+              <span>
+                Dernière modification le
+                {{ site.modifications[0].date_update | date:"dd/MM/y 'à' HH'h'mm" }}
+                par <strong>{{ site.modifications[0].user_update }}</strong>
+              </span>
+            </div>
+          </div>
+
+          <!-- Bloc de droite (spinner) -->
+          <div class="progress-spinner-container">
+            <mat-progress-spinner [mode]="'determinate'" [value]="site.completion * 100" [strokeWidth]="5"
+              [diameter]="50" color="primary"></mat-progress-spinner>
+
+            <div class="completion-text">
+              {{ (site.completion * 100) | number:'1.0-0' }}%
+            </div>
+          </div>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <div class="modifications">
+        <div *ngFor="let modif of site.modifications" class="modif-item">
+          <h4>
+            <mat-icon class="time-icon">access_time</mat-icon>
+            Le {{ modif.date_update | date:"dd/MM/y 'à' HH'h'mm" }} par
+            <span class="user-name">{{ modif.user_update }}</span>
+          </h4>
+          <div class="changements">
+            <ul>
+              <li *ngFor="let changement of modif.changements">
+                <mat-icon class="change-icon">change_history</mat-icon>
+                {{ changement }}
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div *ngIf="site.modifications.length == 0">
+          Aucune information n'a encore été saisie.
+        </div>
+      </div>
+      <div class="panel-footer">
+        <button mat-raised-button color="primary" [routerLink]="['/questionnaire-simplifie', site.code]">
+          Modifier les infos du site
+        </button>
+        <button mat-raised-button color="accent" [routerLink]="['/site', site.slug]">
+          Accéder à la fiche du site
+        </button>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>

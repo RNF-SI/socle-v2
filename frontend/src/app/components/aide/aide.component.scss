@@ -1,0 +1,44 @@
+@import 'src/styles/custom-theme.scss';
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.texte-highlight {
+    color: mat-color($custom-primary, 500);
+    /* Exemple de couleur (bleu) à adapter */
+    font-weight: bold;
+}
+
+a {
+    font-weight: bold;
+    color: mat-color($custom-accent, 500);
+    text-decoration: none;
+    cursor: pointer;
+
+}
+
+.image-row {
+    text-align: center;
+    flex: auto;
+}
+
+.gauche,
+.droite {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+mat-panel-title {
+    font-weight: bold;
+    font-size: large;
+    color: mat-color($custom-primary, 500) !important;
+}
+
+.intro {
+    text-align: center;
+}

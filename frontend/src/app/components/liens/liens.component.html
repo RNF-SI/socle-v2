@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liens utiles / ressources</title>
+
+</head>
+
+<body>
+    <div class="container">
+
+        <p>Socle est une application web de saisie de données sur le patrimoine géologique et la géodiversité des
+            réserves naturelles, développée par le réseau des Réserves Naturelles de France (RNF). Chaque réserve
+            naturelle dispose de sa page sur l'application. Les gestionnaires disposant d'un compte peuvent vérifier les
+            informations préremplies pour leur site, les compléter si nécessaire et les exporter sous forme de fiche de
+            synthèse. Tout utilisateur peut consulter les données renseignées à l'échelle d'un site ou à l'échelle d'un
+            territoire donné. Rendez-vous sur la page d'accueil pour accéder à ces informations.</p>
+
+        <h1>Liens utiles / ressources</h1>
+        <p>Pour vous aider dans votre démarche, voici quelques ressources qui peuvent vous être utiles :</p>
+
+        <div class="masonry">
+            <mat-card class="masonry-item" *ngFor="let item of items">
+                <!-- Conteneur en flex pour séparer image (gauche) et texte (droite) -->
+                <div class="card-content d-flex align-items-start">
+                    <!-- Image à gauche -->
+                    <div class="image-wrapper">
+                        <img [src]="item.chemin_image" [alt]="item.nom" />
+                    </div>
+
+                    <!-- Titre, description et bouton à droite -->
+                    <div class="text-wrapper flex-grow-1">
+                        <mat-card-title>{{ item.nom }}</mat-card-title>
+
+                        <mat-card-content>
+                            <div [innerHTML]="item.description"></div>
+                        </mat-card-content>
+
+                        <!-- Bouton en dessous, aligné à droite -->
+                        <div class="text-right">
+                            <button mat-raised-button color="primary" (click)="goToUrl(item.url)">
+                                <mat-icon>arrow_right_alt</mat-icon> Accéder
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
+        </div>
+
+    </div>
+</body>
+
+</html>

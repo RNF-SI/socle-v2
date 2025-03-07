@@ -1,0 +1,218 @@
+@import 'src/styles/custom-theme.scss';
+
+.container {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+
+
+}
+
+
+
+
+
+.mat-form-field {
+  width: 100%;
+
+}
+
+.heritage-entry {
+  display: grid;
+  grid-template-columns: auto 1fr 1fr 1fr 1fr;
+  gap: 4px;
+  /* Réduit l'espace entre les champs */
+  align-items: center;
+  padding: 0;
+  /* Supprime les marges internes éventuelles */
+}
+
+.remove-button {
+  grid-row: span 2;
+  /* Place le bouton au centre verticalement des deux lignes */
+  justify-self: center;
+  color: mat-color($custom-accent, 500);
+  ;
+}
+
+.mat-form-field {
+  margin: 0;
+  /* Supprime les marges autour des champs Material */
+}
+
+.bibliographie-field {
+  grid-column: 2 / span 4;
+  /* Étend le champ "Bibliographie" sur quatre colonnes */
+}
+
+.bibliographie-field {
+  // margin: 20px auto;
+  /* Center the field */
+  display: block;
+  width: 100%;
+  /* Adjust width as needed */
+}
+
+.stratigraphie {
+  display: flex;
+  justify-content: center;
+  /* Centre les éléments horizontalement */
+  flex-wrap: wrap;
+  /* Permet de passer à la ligne si les éléments dépassent */
+  gap: 16px;
+  /* Espace entre les éléments */
+  margin-top: 16px;
+}
+
+.stratigraphie mat-form-field {
+  flex: 1;
+  /* Permet de répartir les éléments également */
+  min-width: 200px;
+  /* Largeur minimale pour chaque élément */
+}
+
+
+.submit-button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}
+
+.submit-button-container button {
+  background-color: mat-color($custom-accent, 500);
+  ;
+  color: white;
+  /* Couleur du texte en blanc */
+  margin-right: 10px;
+  /* Espace à droite du bouton, vous pouvez ajuster selon vos besoins */
+}
+
+.full-width {
+  width: 100%;
+  /* Assure que le champ prend toute la largeur disponible */
+  min-width: 300px;
+  /* Ou une autre largeur minimale adaptée */
+}
+
+.sites-inpg fa-icon {
+  color: gold;
+}
+
+.delete-icon {
+  color: red !important;
+  cursor: pointer;
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+.valid-icon {
+  color: green !important;
+  cursor: pointer;
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+.sites-inpg a {
+  color: mat-color($custom-primary, 500);
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.search-input::placeholder {
+  color: #999;
+  /* Couleur du placeholder */
+  font-style: italic;
+  opacity: 1;
+}
+
+.substanceField {
+  margin-right: 5px;
+}
+
+.ensemble-geol {
+  min-width: 500px;
+}
+
+.checkbox-geologicalUnits {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  /* 5 colonnes */
+  gap: 10px;
+  /* Espace entre les cases */
+}
+
+.search-container {
+  padding: 8px;
+  /* Ajuste l'espacement autour de l'input */
+  background: #fff;
+  /* Optionnel : arrière-plan blanc */
+  position: sticky;
+  top: 0;
+  /* Garde l'input en haut si la liste est longue */
+  z-index: 1;
+}
+
+.search-input {
+  width: 100%;
+  /* Assure que l'input occupe tout l'espace */
+  border: none;
+  /* Supprime les bordures si nécessaire */
+  outline: none;
+}
+
+.strikethrough {
+  text-decoration: line-through;
+  /* Barre le texte */
+  opacity: 0.5;
+  /* Rend les éléments semi-transparents (optionnel) */
+}
+
+.detail-sites-inpg {
+  display: flex;
+  /* Active Flexbox pour aligner les éléments */
+  align-items: center;
+  /* Aligne verticalement les éléments */
+}
+
+.detail-content {
+  display: inline-flex;
+  /* Gère le contenu interne en ligne */
+  align-items: center;
+  /* Centre les icônes et le texte */
+}
+
+.full-width {
+  width: 100%;
+}
+
+.input-field {
+  width: 50%;
+}
+
+.subsection-title {
+  color: mat-color($custom-accent, 500);
+  font-weight: bold;
+  margin-top: 15px;
+}
+
+.subsection-response {
+  padding-left: 20px;
+}
+
+
+
+quill-editor {
+  height: 180px;
+}
+
+.spacing {
+  margin-right: 8px;
+}

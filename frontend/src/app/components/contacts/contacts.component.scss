@@ -1,0 +1,40 @@
+@import 'src/styles/custom-theme.scss';
+
+.container {
+  margin: 20px auto;
+}
+
+/* Assure que les champs de formulaire Material prennent toute la largeur dans leur colonne */
+.full-width {
+  width: 100%;
+}
+
+/* Optionnel : centre horizontalement le contenu textuel des boutons */
+.text-center {
+  text-align: center;
+}
+
+.img-fluid {
+  border-radius: 50%;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.recaptcha-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+
+h3 {
+  color: mat-color($custom-primary, 500);
+  font-weight: bold;
+}
+
+h4 {
+  color: mat-color($custom-accent, 500);
+}

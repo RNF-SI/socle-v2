@@ -1,0 +1,79 @@
+@import '@angular/material/theming';
+
+// Define your primary and accent color palettes
+$custom-primary: mat-palette(mat-define-palette((50: #e3edf1, // Très clair
+        100: #b9d1dd, // Clair
+        200: #8bb4c8, // Légèrement plus clair que 500
+        300: #6a9eb5, // Moyen
+        400: #5987a1, // Plus proche de 500
+        500: #518196, // Custom primary color (couleur de base)
+        600: #4a7488, // Un peu plus sombre
+        700: #416675, // Plus sombre
+        800: #395862, // Plus sombre encore
+        900: #2b444a, // Très sombre
+        A100: #a6c5e1, // Accent clair
+        A200: #6ea4c3, // Accent moyen
+        A400: #35789a, // Accent plus foncé
+        A700: #295b72, // Accent très foncé
+        contrast: (50: rgba(0, 0, 0, 0.87),
+          100: rgba(0, 0, 0, 0.87),
+          200: rgba(0, 0, 0, 0.87),
+          300: rgba(0, 0, 0, 0.87),
+          400: rgba(0, 0, 0, 0.87),
+          500: white, // Texte blanc pour une bonne lisibilité sur la couleur principale
+          600: white, // Texte blanc sur les couleurs foncées
+          700: white,
+          800: white,
+          900: white,
+          A100: rgba(0, 0, 0, 0.87), // Contraste noir sur accents plus clairs
+          A200: rgba(0, 0, 0, 0.87),
+          A400: white, // Texte blanc sur accents plus foncés
+          A700: white,
+        ))));
+
+
+// Define custom accent palette
+$custom-accent: mat-palette(mat-define-palette((50: #fef3e3, // Très clair
+        100: #fde1ba, // Clair
+        200: #fccc8d, // Légèrement plus clair que 500
+        300: #fab664, // Couleur de base (accent)
+        400: #f8a854, // Plus proche de la couleur de base
+        500: #fabb64, // Custom accent color (couleur de base)
+        600: #f6a854, // Un peu plus sombre
+        700: #f39944, // Plus sombre
+        800: #ef8a34, // Plus sombre encore
+        900: #e67214, // Très sombre
+        A100: #ffebcc, // Accent très clair
+        A200: #ffd699, // Accent moyen clair
+        A400: #ffc266, // Accent moyen
+        A700: #ffb04d, // Accent plus foncé
+        contrast: (50: rgba(0, 0, 0, 0.87),
+          100: rgba(0, 0, 0, 0.87),
+          200: rgba(0, 0, 0, 0.87),
+          300: rgba(0, 0, 0, 0.87),
+          400: rgba(0, 0, 0, 0.87),
+          500: rgba(0, 0, 0, 0.87), // Contraste noir pour les teintes claires à moyennes
+          600: rgba(0, 0, 0, 0.87),
+          700: rgba(0, 0, 0, 0.87),
+          800: white, // Contraste blanc pour les teintes plus foncées
+          900: white,
+          A100: rgba(0, 0, 0, 0.87),
+          A200: rgba(0, 0, 0, 0.87),
+          A400: rgba(0, 0, 0, 0.87),
+          A700: rgba(0, 0, 0, 0.87),
+        ))));
+
+
+
+// Define your theme using the palettes
+$custom-theme: mat-light-theme((color: (primary: $custom-primary,
+        accent: $custom-accent,
+      )));
+
+
+
+// Include Angular Material's core styles
+@include mat-core();
+
+// Apply the custom theme
+@include angular-material-theme($custom-theme);
