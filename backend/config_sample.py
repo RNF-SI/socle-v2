@@ -12,6 +12,8 @@ class Config :
     MAIL_DEFAULT_SENDER = "si@rnfrance.org"
     MAIL_ASCII_ATTACHMENTS = False
     MAIL_USERNAME = ""
+    MAIL_DEST_TECHNIQUE = "mail@mail.fr" #mail du destinataire technique
+    MAIL_DEST_GEOL = "mail@mail.fr" #mail du destinataire thématique 
     URL_USERSHUB = 'https://usershub.reserves-naturelles.org' # sans slash final
     ID_APP = 11
     CODE_APPLICATION = "SOCLE"

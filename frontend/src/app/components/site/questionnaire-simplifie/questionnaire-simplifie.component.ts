@@ -6,7 +6,6 @@ import { Nomenclature, NomenclatureType } from 'src/app/models/nomenclature.mode
 import { PatrimoineGeologique } from 'src/app/models/patrimoine-geologique.model';
 import { Stratotype } from 'src/app/models/site.model';
 import { NomenclaturesService } from 'src/app/services/nomenclatures.service';
-import { PatrimoineGeologiqueService } from 'src/app/services/patrimoine-geologique.service';
 import { SitesService } from 'src/app/services/sites.service';
 import Swal from 'sweetalert2';
 
@@ -74,7 +73,6 @@ export class QuestionnaireSimplifieComponent implements OnInit {
     private fb: FormBuilder,
     private nomenclaturesService: NomenclaturesService,
     private siteService: SitesService,
-    private patrimoineGeologiqueService: PatrimoineGeologiqueService,
     private router: Router,
     private route: ActivatedRoute,
     public authService: AuthService

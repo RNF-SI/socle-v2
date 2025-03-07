@@ -5,7 +5,7 @@ import shapely
 
 
 from app import ma
-from models import PatrimoineGeologiqueGestionnaire, Site, EntiteGeol, TInfosBaseSite, Inpg, Nomenclature, BibNomenclatureType, CorSiteSubstance, Stratotype, CorSiteInpg, Parametres, SFGeol, Echelle, SuivisModifs
+from models import PatrimoineGeologiqueGestionnaire, Site, TInfosBaseSite, Inpg, Nomenclature, BibNomenclatureType, CorSiteSubstance, Stratotype, CorSiteInpg, Parametres, SFGeol, Echelle, SuivisModifs
 
 
 class PerimetreProtectionSchema(ma.SQLAlchemyAutoSchema):
@@ -57,8 +57,6 @@ class SiteSchema(ma.SQLAlchemyAutoSchema):
         model = Site
         exclude = ['geom_point']   
        
-
-    entites_geol = ma.Nested(lambda: EntiteGeolSchema, many=True)
     infos_base = ma.Nested(lambda: TInfosBaseSiteSchema, many=False)
     # sites_inpg = ma.Nested(lambda: CorSiteInpgSchema, many=True)
     sites_inpg = fields.Method('get_sorted_sites_inpg')
@@ -115,27 +113,7 @@ class SiteSchemaSimple(ma.SQLAlchemyAutoSchema):
         # Sérialiser avec CorSiteInpgSchema
         return CorSiteInpgSchema(only=("active","inpg.id_metier","inpg.lb_site", "inpg.niveau_de_diffusion"),many=True).dump(sorted_sites)
 
-class EntiteGeolSchema(ma.SQLAlchemyAutoSchema):
-    geom = fields.Method('wkt_to_geojson')
-
-    def wkt_to_geojson(self, obj):
-        if obj.geom:
-            return shapely.geometry.mapping(to_shape(obj.geom))
-        else:
-            return None
-
-    class Meta:
-        model = EntiteGeol
-         
-
 class TInfosBaseSiteSchema(ma.SQLAlchemyAutoSchema):
-    # geom = fields.Method('wkt_to_geojson')
-
-    # def wkt_to_geojson(self, obj):
-    #     if obj.geom:
-    #         return shapely.geometry.mapping(to_shape(obj.geom))
-    #     else:
-    #         return None
 
     class Meta:
         model = TInfosBaseSite

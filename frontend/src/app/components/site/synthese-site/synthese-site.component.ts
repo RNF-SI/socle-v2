@@ -5,11 +5,9 @@ import { toPng } from 'html-to-image';
 import jsPDF from 'jspdf';
 import * as L from 'leaflet';
 import { AuthService } from 'src/app/home-rnf/services/auth-service.service';
-import { GeologicalInterests } from 'src/app/models/geological-interests.model';
 import { Nomenclature } from 'src/app/models/nomenclature.model';
 import { Site } from 'src/app/models/site.model';
 import { NomenclaturesService } from 'src/app/services/nomenclatures.service';
-import { PatrimoineGeologiqueService } from 'src/app/services/patrimoine-geologique.service';
 import { SitesService } from 'src/app/services/sites.service';
 
 @Component({
@@ -64,7 +62,6 @@ export class SyntheseSiteComponent implements OnInit {
     private renderer: Renderer2,
     private route: ActivatedRoute,
     private siteService: SitesService,
-    private patrimoineGeologiqueService: PatrimoineGeologiqueService,
     public authService: AuthService,
     private nomenclaturesService: NomenclaturesService
   ) { }
@@ -380,99 +377,97 @@ export class SyntheseSiteComponent implements OnInit {
     }
   }
 
-  fetchPatrimoineGeologique(siteId: any): void {
-    this.patrimoineGeologiqueService.getPatrimoineGeologique(siteId).subscribe(
-      (data: any) => {
-        if (data && data.principal && data.protection) {
-          this.principalHeritage = data.principal;
-          this.protectionHeritage = data.protection;
+  // fetchPatrimoineGeologique(siteId: any): void {
+  //   this.patrimoineGeologiqueService.getPatrimoineGeologique(siteId).subscribe(
+  //     (data: any) => {
+  //       if (data && data.principal && data.protection) {
+  //         this.principalHeritage = data.principal;
+  //         this.protectionHeritage = data.protection;
 
-        } else {
-          console.error('Unexpected data format:', data);
-        }
-      },
-      (error: any) => {
-        console.error('Error fetching geological heritage data', error);
-      }
-    );
-  }
+  //       } else {
+  //         console.error('Unexpected data format:', data);
+  //       }
+  //     },
+  //     (error: any) => {
+  //       console.error('Error fetching geological heritage data', error);
+  //     }
+  //   );
+  // }
 
+  // setGeologicalHeritages(): void {
+  //   this.principalHeritage = this.patrimoineGeologique?.geologicalHeritages || [];
+  // }
 
-  // TODO : sdfsgfsdf
-  setGeologicalHeritages(): void {
-    this.principalHeritage = this.patrimoineGeologique?.geologicalHeritages || [];
-  }
-
-  setProtectionGeologicalHeritages(): void {
-    this.protectionHeritage = this.patrimoineGeologique?.protectionGeologicalHeritages || [];
-  }
+  // setProtectionGeologicalHeritages(): void {
+  //   this.protectionHeritage = this.patrimoineGeologique?.protectionGeologicalHeritages || [];
+  // }
 
 
 
-  setPaleontologicalLabels(): void {
-    this.paleontologicalLabels = []; // Réinitialiser les labels
+  // setPaleontologicalLabels(): void {
+  //   this.paleontologicalLabels = []; // Réinitialiser les labels
 
-    // On vérifie si la réponse à la question 5 est "Oui"
-    const heritage = this.tInfosBaseSiteForm.get('contains_paleontological_heritage');
+  //   // On vérifie si la réponse à la question 5 est "Oui"
+  //   const heritage = this.tInfosBaseSiteForm.get('contains_paleontological_heritage');
 
-    if (heritage?.get('answer')?.value === true) { // Vérifie si l'utilisateur a répondu "Oui"
-      if (heritage.get('vertebrates')?.value) {
-        this.paleontologicalLabels.push('Vertébrés');
-      }
-      if (heritage.get('invertebrates')?.value) {
-        this.paleontologicalLabels.push('Invertébrés');
-      }
-      if (heritage.get('plants')?.value) {
-        this.paleontologicalLabels.push('Végétaux');
-      }
-      if (heritage.get('traceFossils')?.value) {
-        this.paleontologicalLabels.push('Traces fossiles');
-      }
+  //   if (heritage?.get('answer')?.value === true) { // Vérifie si l'utilisateur a répondu "Oui"
+  //     if (heritage.get('vertebrates')?.value) {
+  //       this.paleontologicalLabels.push('Vertébrés');
+  //     }
+  //     if (heritage.get('invertebrates')?.value) {
+  //       this.paleontologicalLabels.push('Invertébrés');
+  //     }
+  //     if (heritage.get('plants')?.value) {
+  //       this.paleontologicalLabels.push('Végétaux');
+  //     }
+  //     if (heritage.get('traceFossils')?.value) {
+  //       this.paleontologicalLabels.push('Traces fossiles');
+  //     }
 
-    }
-  }
+  //   }
+  // }
 
-  setGeologicalInterests(patrimoineGeologique: any): void {
-    const interests: GeologicalInterests = {
-      stratigraphic: patrimoineGeologique?.main_geological_interests_stratigraphic,
-      paleontological: patrimoineGeologique?.main_geological_interests_paleontological,
-      sedimentological: patrimoineGeologique?.main_geological_interests_sedimentological,
-      geomorphological: patrimoineGeologique?.main_geological_interests_geomorphological,
-      mineral_resource: patrimoineGeologique?.main_geological_interests_mineral_resource,
-      mineralogical: patrimoineGeologique?.main_geological_interests_mineralogical,
-      metamorphism: patrimoineGeologique?.main_geological_interests_metamorphism,
-      volcanism: patrimoineGeologique?.main_geological_interests_volcanism,
-      plutonism: patrimoineGeologique?.main_geological_interests_plutonism,
-      hydrogeology: patrimoineGeologique?.main_geological_interests_hydrogeology,
-      tectonics: patrimoineGeologique?.main_geological_interests_tectonics
-    };
+  // setGeologicalInterests(patrimoineGeologique: any): void {
+  //   const interests: GeologicalInterests = {
+  //     stratigraphic: patrimoineGeologique?.main_geological_interests_stratigraphic,
+  //     paleontological: patrimoineGeologique?.main_geological_interests_paleontological,
+  //     sedimentological: patrimoineGeologique?.main_geological_interests_sedimentological,
+  //     geomorphological: patrimoineGeologique?.main_geological_interests_geomorphological,
+  //     mineral_resource: patrimoineGeologique?.main_geological_interests_mineral_resource,
+  //     mineralogical: patrimoineGeologique?.main_geological_interests_mineralogical,
+  //     metamorphism: patrimoineGeologique?.main_geological_interests_metamorphism,
+  //     volcanism: patrimoineGeologique?.main_geological_interests_volcanism,
+  //     plutonism: patrimoineGeologique?.main_geological_interests_plutonism,
+  //     hydrogeology: patrimoineGeologique?.main_geological_interests_hydrogeology,
+  //     tectonics: patrimoineGeologique?.main_geological_interests_tectonics
+  //   };
 
-    this.geologicalInterests = (Object.keys(interests) as (keyof GeologicalInterests)[])
-      .filter(key => interests[key])
-      .map(key => this.getInterestLabel(key));
-  }
+  //   this.geologicalInterests = (Object.keys(interests) as (keyof GeologicalInterests)[])
+  //     .filter(key => interests[key])
+  //     .map(key => this.getInterestLabel(key));
+  // }
 
-  getInterestLabel(key: keyof GeologicalInterests): string {
-    const labels: { [key in keyof GeologicalInterests]: string } = {
-      stratigraphic: 'Stratigraphique',
-      paleontological: 'Paléontologique',
-      sedimentological: 'Sédimentologique',
-      geomorphological: 'Géomorphologique',
-      mineral_resource: 'Ressource minérale',
-      mineralogical: 'Minéralogique',
-      metamorphism: 'Métamorphisme',
-      volcanism: 'Volcanisme',
-      plutonism: 'Plutonisme',
-      hydrogeology: 'Hydrogéologie',
-      tectonics: 'Tectonique'
-    };
-    return labels[key];
-  }
+  // getInterestLabel(key: keyof GeologicalInterests): string {
+  //   const labels: { [key in keyof GeologicalInterests]: string } = {
+  //     stratigraphic: 'Stratigraphique',
+  //     paleontological: 'Paléontologique',
+  //     sedimentological: 'Sédimentologique',
+  //     geomorphological: 'Géomorphologique',
+  //     mineral_resource: 'Ressource minérale',
+  //     mineralogical: 'Minéralogique',
+  //     metamorphism: 'Métamorphisme',
+  //     volcanism: 'Volcanisme',
+  //     plutonism: 'Plutonisme',
+  //     hydrogeology: 'Hydrogéologie',
+  //     tectonics: 'Tectonique'
+  //   };
+  //   return labels[key];
+  // }
 
-  getSelectedSubstances(): Nomenclature[] {
-    const selectedMnemonics = this.tInfosBaseSiteForm.get('substance')?.value || [];
-    return this.substancesOptions.filter(substance => selectedMnemonics.includes(substance.mnemonique));
-  }
+  // getSelectedSubstances(): Nomenclature[] {
+  //   const selectedMnemonics = this.tInfosBaseSiteForm.get('substance')?.value || [];
+  //   return this.substancesOptions.filter(substance => selectedMnemonics.includes(substance.mnemonique));
+  // }
 
   exportData() {
     const data = document.getElementById('export-content');
