@@ -11,14 +11,13 @@ import { Site } from 'src/app/models/site.model';
 import { NomenclaturesService } from 'src/app/services/nomenclatures.service';
 import { PatrimoineGeologiqueService } from 'src/app/services/patrimoine-geologique.service';
 import { SitesService } from 'src/app/services/sites.service';
-import { TInfosBaseSiteService } from 'src/app/services/t-infos-base-site.service';
 
 @Component({
-  selector: 'app-espace-detail',
-  templateUrl: './espace-detail.component.html',
-  styleUrls: ['./espace-detail.component.scss']
+  selector: 'app-synthese-site',
+  templateUrl: './synthese-site.component.html',
+  styleUrls: ['./synthese-site.component.scss']
 })
-export class EspaceDetailComponent implements OnInit {
+export class SyntheseSiteComponent implements OnInit {
   site: Site | undefined;
   tInfosBaseSite: any;
   patrimoineGeologique: any;
@@ -65,7 +64,6 @@ export class EspaceDetailComponent implements OnInit {
     private renderer: Renderer2,
     private route: ActivatedRoute,
     private siteService: SitesService,
-    private tInfosBaseSiteService: TInfosBaseSiteService,
     private patrimoineGeologiqueService: PatrimoineGeologiqueService,
     public authService: AuthService,
     private nomenclaturesService: NomenclaturesService

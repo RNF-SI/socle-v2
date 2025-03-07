@@ -9,11 +9,11 @@ import { environment } from 'src/environments/environment';
 import { Site } from '../../models/site.model';
 
 @Component({
-  selector: 'app-saisir',
-  templateUrl: './saisir.component.html',
-  styleUrls: ['./saisir.component.scss']
+  selector: 'app-mes-sites',
+  templateUrl: './mes-sites.component.html',
+  styleUrls: ['./mes-sites.component.scss']
 })
-export class SaisirComponent implements OnInit {
+export class MessitesComponent implements OnInit {
   espaces: Site[] = [];
   filteredEspaces: Site[] = [];
   selectedDate: Date | null = null;

@@ -3,12 +3,11 @@ import { RouterModule, Routes } from '@angular/router';
 import { AccueilComponent } from './components/accueil/accueil.component';
 import { AideComponent } from './components/aide/aide.component';
 import { ContactsComponent } from './components/contacts/contacts.component';
-import { EspaceDetailComponent } from './components/explorer/espace-detail/espace-detail.component';
 import { ExplorerComponent } from './components/explorer/explorer.component';
-import { FicheTerrainComponent } from './components/explorer/fiche-terrain/fiche-terrain.component';
-import { QuestionnaireSimplifieComponent } from './components/explorer/questionnaire-simplifie/questionnaire-simplifie.component';
 import { LiensComponent } from './components/liens/liens.component';
-import { SaisirComponent } from './components/saisir/saisir.component';
+import { MessitesComponent } from './components/mes-sites/mes-sites.component';
+import { QuestionnaireSimplifieComponent } from './components/site/questionnaire-simplifie/questionnaire-simplifie.component';
+import { SyntheseSiteComponent } from './components/site/synthese-site/synthese-site.component';
 import { AccessDeniedComponent } from './home-rnf/components/access-denied/access-denied.component';
 import { ForgotPasswordComponent } from './home-rnf/components/forgot-password/forgot-password.component';
 import { LoginComponent } from './home-rnf/components/login/login.component';
@@ -19,7 +18,6 @@ import { RnAuthGuardService } from './home-rnf/services/auth-guard-rn.service';
 import { AuthGuardService } from './home-rnf/services/auth-guard.service';
 import { LazyDialogLoader } from './home-rnf/services/lazy-dialog-loader.service';
 import { LogoutLinkService } from './home-rnf/services/logout-link.service';
-
 
 
 const routes: Routes = [
@@ -60,7 +58,7 @@ const routes: Routes = [
       },
       {
         path: 'site/:slug',
-        component: EspaceDetailComponent
+        component: SyntheseSiteComponent
       },
 
       {
@@ -69,13 +67,8 @@ const routes: Routes = [
         canActivate: [RnAuthGuardService]
       },
       {
-        path: 'fiche-terrain/:slug',
-        component: FicheTerrainComponent
-      },
-
-      {
         path: 'mes-sites',
-        component: SaisirComponent,
+        component: MessitesComponent,
         canActivate: [AuthGuardService]
       },
       {
@@ -97,9 +90,7 @@ const routes: Routes = [
 
 
     ]
-  },
-  { path: '', redirectTo: '/explorer', pathMatch: 'full' },
-  { path: 'fiche-terrain/:slug', component: FicheTerrainComponent }
+  }
 ];
 
 @NgModule({

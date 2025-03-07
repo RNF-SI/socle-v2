@@ -8,7 +8,6 @@ import { Stratotype } from 'src/app/models/site.model';
 import { NomenclaturesService } from 'src/app/services/nomenclatures.service';
 import { PatrimoineGeologiqueService } from 'src/app/services/patrimoine-geologique.service';
 import { SitesService } from 'src/app/services/sites.service';
-import { TInfosBaseSiteService } from 'src/app/services/t-infos-base-site.service';
 import Swal from 'sweetalert2';
 
 
@@ -73,7 +72,6 @@ export class QuestionnaireSimplifieComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private tInfosBaseSiteService: TInfosBaseSiteService,
     private nomenclaturesService: NomenclaturesService,
     private siteService: SitesService,
     private patrimoineGeologiqueService: PatrimoineGeologiqueService,
@@ -646,7 +644,7 @@ export class QuestionnaireSimplifieComponent implements OnInit {
       };
 
       // Envoi des données
-      this.tInfosBaseSiteService.updateSite(this.siteSlug!, formData).subscribe(
+      this.siteService.updateSite(this.siteSlug!, formData).subscribe(
         (response: any) => {
           // Affiche le message de la réponse du backend
           Swal.fire({

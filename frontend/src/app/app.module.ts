@@ -37,16 +37,14 @@ import { AppComponent } from './app.component';
 import { AccueilComponent } from './components/accueil/accueil.component';
 import { AideComponent } from './components/aide/aide.component';
 import { ContactsComponent } from './components/contacts/contacts.component';
-import { EspaceDetailComponent } from './components/explorer/espace-detail/espace-detail.component';
 import { ExplorerComponent } from './components/explorer/explorer.component';
-import { FicheTerrainComponent } from './components/explorer/fiche-terrain/fiche-terrain.component';
-import { QuestionnaireSimplifieComponent } from './components/explorer/questionnaire-simplifie/questionnaire-simplifie.component';
 import { LiensComponent } from './components/liens/liens.component';
-import { SaisirComponent } from './components/saisir/saisir.component';
+import { MessitesComponent } from './components/mes-sites/mes-sites.component';
+import { QuestionnaireSimplifieComponent } from './components/site/questionnaire-simplifie/questionnaire-simplifie.component';
+import { SyntheseSiteComponent } from './components/site/synthese-site/synthese-site.component';
 import { HomeRnfModule } from './home-rnf/home-rnf.module';
 import { getFrenchPaginatorIntl } from './home-rnf/shared/french-paginator-intl';
 import { CapitalizePipe } from './pipes/capitalize.pipe';
-import { TInfosBaseSiteService } from './services/t-infos-base-site.service';
 
 
 registerLocaleData(localeFr, 'fr');
@@ -60,11 +58,10 @@ registerLocaleData(localeFr, 'fr');
     LiensComponent,
     AideComponent,
     ExplorerComponent,
-    EspaceDetailComponent,
-    FicheTerrainComponent,
+    SyntheseSiteComponent,
     QuestionnaireSimplifieComponent,
     CapitalizePipe,
-    SaisirComponent,
+    MessitesComponent,
     ContactsComponent
   ],
   imports: [
@@ -109,7 +106,6 @@ registerLocaleData(localeFr, 'fr');
   ],
 
   providers: [
-    TInfosBaseSiteService,
     { provide: MatPaginatorIntl, useValue: getFrenchPaginatorIntl() },
     { provide: LOCALE_ID, useValue: 'fr' }
   ],
