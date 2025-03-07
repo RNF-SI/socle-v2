@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 
 
 @Component({
@@ -7,10 +7,7 @@ import { Component, OnInit } from "@angular/core";
     styleUrls: ['./liens.component.scss']
 })
 
-export class LiensComponent implements OnInit {
-    ngOnInit(): void {
-        throw new Error("Method not implemented.");
-    }
+export class LiensComponent {
 
     items = [
         {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 
 
 @Component({
@@ -7,7 +7,7 @@ import { Component, OnInit } from "@angular/core";
     styleUrls: ['./aide.component.scss']
 })
 
-export class AideComponent implements OnInit {
+export class AideComponent {
 
     sections = [
         {
@@ -39,9 +39,5 @@ export class AideComponent implements OnInit {
             "contenu": "<p>Chaque RN dispose d’une fiche synthétique qui récapitule toutes les données enregistrées dans Socle et qui comporte également une carte.</p>\n<p>Le fond de carte affiché peut être, au choix, la carte générale OpenStreetMap ou la carte géologique. Pour passer de l’une à l’autre, cliquez sur le bouton en haut à droite de la carte.</p>\n<p>La carte géologique est celle imprimée au 1/50000 du BRGM. Il s’agit donc d’un assemblage de cartes et votre RN peut se trouver au niveau de plusieurs d’entre elles.</p>\n<p>Pour connaître la ou les cartes géologiques qui vous concernent et récupérer la légende et la notice associées, utilisez le visualiseur du BRGM nommé <a class=\"lien-cliquable\" href=\"http://infoterre.brgm.fr/viewer/MainTileForward.do\" target=\"_blank\">InfoTerre</a>.</p>\n<p>Sur la fiche synthétique de Socle figurent aussi les sites INPG. Une distinction est faite entre les sites INPG publics et les sites INPG confidentiels, ces derniers n’apparaissant que si vous avez les droits d’édition sur la page.</p>\n<p>Vous pouvez choisir d’afficher ou non tous ces périmètres, toujours avec le bouton en haut à droite de la carte.</p>\n<p><img src=\"assets/images/aide/carte.png\" alt=\"Image de la carte\"></p>"
         }
     ];
-
-    ngOnInit(): void {
-        throw new Error("Method not implemented.");
-    }
 
 }
