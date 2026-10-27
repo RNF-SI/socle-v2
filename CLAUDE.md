@@ -4,15 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Projet
 
-SOCLE V2 : saisie et consultation des données de géodiversité des réserves naturelles françaises (RNF). Stack GeoNature : Flask 3 + Angular 19 + PostgreSQL/PostGIS. Interface, modèles et commentaires sont en français — garder cette langue pour les libellés, messages d'erreur utilisateur et noms de champs métier.
+SOCLE V2 : saisie et consultation des données de géodiversité des réserves naturelles françaises (RNF). Stack GeoNature : Flask 3 + Angular 22 + PostgreSQL/PostGIS. Interface, modèles et commentaires sont en français — garder cette langue pour les libellés, messages d'erreur utilisateur et noms de champs métier.
 
 ## Mise en route (obligatoire avant tout développement)
 
 Trois éléments ne sont pas versionnés et doivent exister :
 
-1. **Sous-module frontend** (`frontend/src/app/home-rnf`, dépôt `RNF-SI/home-rnf`) — vide dans un clone frais, mais le routing et `app.module.ts` en dépendent (auth, nav, login, guards) :
+1. **Node 22.22 minimum** — Angular 22 refuse de démarrer en deçà. Un `.nvmrc` fixe la version :
    ```bash
-   git submodule update --init --recursive
+   cd frontend && nvm use
    ```
 2. **`backend/config.py`** — copier `backend/config_sample.py` et renseigner la base, UsersHub et le mail.
 3. **`frontend/src/environments/environment.ts` et `environment.prod.ts`** — gitignorés, absents du dépôt, mais importés par les services de l'application **et du sous-module**. Les cinq clés effectivement lues dans le code sont :
@@ -41,6 +41,7 @@ FLASK_APP=wsgi.py flask run --port 5080   # variante VS Code (.vscode/launch.jso
 
 Frontend (depuis `frontend/`) :
 ```bash
+nvm use                     # Node 22, voir .nvmrc
 npm start                   # ng serve, http://127.0.0.1:4200
 npm run build               # build production dans dist/socle2
 npm test                    # Karma + Jasmine, Chrome
@@ -76,7 +77,7 @@ Sérialisation : Marshmallow (`schemas.py`) avec `SQLAlchemyAutoSchema`. Les gé
 
 `PUT /t_infos_base_site/<slug>` est la route centrale (~175 lignes) : elle reçoit le payload du questionnaire sous forme d'objets imbriqués (`contains_paleontological_heritage.answer`, `.vertebrates`, …), applique les champs un à un avec la valeur existante en défaut, puis reconstruit les relations (stratotypes, patrimoines, substances). Toute évolution du questionnaire touche conjointement cette route, `models.py`, le composant `questionnaire-simplifie` et son modèle TypeScript.
 
-### Frontend — Angular 19, modules eager, un seul NgModule
+### Frontend — Angular 22, modules eager, un seul NgModule
 
 `app.module.ts` déclare tout (pas de lazy loading). Les composants du projet portent `standalone: false` explicitement : en Angular 19 le défaut est l'inverse, et sans ce drapeau le NgModule refuse de les déclarer (NG6008). Les composants du sous-module, eux, sont standalone et sont importés dans le NgModule. Toutes les routes sont enfants de `NavHomeComponent`, qui vient du sous-module `home-rnf`.
 
@@ -84,18 +85,15 @@ Deux sources de configuration coexistent :
 - `src/environments/*.ts` (gitignoré) — les cinq clés listées plus haut, utilisées par les services de l'app et du sous-module.
 - `src/conf/app.config.ts` (versionné) pour le paramétrage de la coquille `home-rnf` : titres, menu, recherche, `API_ENDPOINT`, `ID_APPLICATION_GEONATURE`. Les deux dupliquent l'endpoint API et l'id d'application : les tenir synchronisés.
 
-### Le sous-module `home-rnf`
+### `src/app/core` — l'ancien socle `home-rnf`
 
-`frontend/src/app/home-rnf` est un dépôt Git distinct (`RNF-SI/home-rnf`), socle partagé entre les applications RNF. **Ne pas y faire d'édition depuis ce dépôt** : un correctif qui le concerne se fait en amont, puis le pointeur de sous-module est mis à jour ici. Il fournit `NavHomeComponent` (coquille, menu, recherche globale), `LoginComponent`, `LogoutComponent`, `ForgotPasswordComponent`, `NotFoundComponent`, `AccessDeniedComponent`, `LoadingSpinnerComponent`, `AuthService`, les guards, `ExcelService`, `RedirectService` et `InputErrorPipe`.
+`core/` contient ce qui venait du sous-module `RNF-SI/home-rnf` : coquille applicative (`nav-home`), pages de connexion, déconnexion, mot de passe oublié, 404 et accès refusé, les guards, `AuthService`, `ExcelService` et `SearchService`.
 
-Conventions qu'il impose, visibles dans son `README.md` et son dossier `install_files/` :
-- ses dépendances npm (Angular 19, Material, Font Awesome, ng-recaptcha-2, ngx-toastr) sont **recopiées** dans le `package.json` racine, pas installées par lui : son `package.json` fait foi lors d'une montée de version ;
-- il n'exporte plus que `LoadingSpinnerComponent` : `FontAwesomeModule` et consorts, autrefois ré-exportés, doivent être importés par `app.module.ts` ;
-- `src/conf/` et `src/assets/` de l'application sont partis d'une copie de `install_files/` ; en cas de doute sur un fichier de conf ou un asset attendu, regarder `install_files/` ;
-- `src/styles.scss` doit charger `styles/custom-theme.scss` puis `conf/custom.scss`, en `@use` (Material 19 n'expose plus l'API `@import '@angular/material/theming'`) ;
-- le `HomeRnfModule` ré-exporte `CommonModule`, `BrowserModule`, `BrowserAnimationsModule`, `AppRoutingModule` et `FontAwesomeModule` : il importe lui-même `AppRoutingModule`, d'où une dépendance croisée avec le routing de l'application.
+**Le sous-module a été supprimé, ne pas le remettre.** Ses branches avaient divergé en parallèle depuis plus d'un an — `angular-19` et `keycloak` ne partagent aucun commit — si bien qu'il ne jouait plus son rôle de base commune tout en bloquant les montées de version d'Angular. Seul ce que SOCLE utilise a été repris ; `mail.service`, le formulaire de contact du socle, `loading-spinner`, `input-error` et `redirect.service` ont été abandonnés.
 
-Le sous-module suit la branche **`angular-19`** (et non `main`, resté en Angular 15). Un `git submodule update` qui le ramènerait sur `main` casserait la compilation.
+L'authentification est isolée dans `core/auth/` : c'est la seule partie qu'il faudra re-synchroniser si RNF bascule sur Keycloak, travail qui existe en amont sur la branche `keycloak`, bâtie sur la ligne Angular 15.
+
+`src/conf/app.config.ts` reste le paramétrage de cette coquille : titres, menu, recherche, `displayFooter`, `displayPartners`.
 
 ### Authentification et droits (entièrement côté client)
 
@@ -111,9 +109,13 @@ Le paramètre de route `questionnaire-simplifie/:id_rn` est le `rn_id` GeoNature
 
 Les composants métier sont gros et autonomes (`questionnaire-simplifie` ~860 lignes, `synthese-site` ~600, `accueil` ~540) ; les services (`sites`, `nomenclatures`, `parametres`, `contact`) ne sont que des wrappers HTTP sans cache ni state. La logique d'affichage, de carte et de formulaire vit dans les composants.
 
+**Détection de changements.** Angular 22 démarre en zoneless par défaut, mais l'application n'utilise pas les signaux : `app.module.ts` fournit `provideZoneChangeDetection()`. Sans lui, les retours HTTP ne déclenchent plus de rendu et les vues restent vides **sans erreur** — symptôme déroutant, à connaître avant de le retirer. Les composants portent `ChangeDetectionStrategy.Eager`, posé par la migration officielle pour préserver l'ancien comportement.
+
+**TypeScript 6.** `moduleResolution` est en `bundler` : les paquets Angular 22 ne se résolvent pas en `node10`. `baseUrl` est remplacé par `paths` (`src/*`), et `downlevelIteration` supprimé — tous deux refusés par TS 6.
+
 Thème Material : les palettes SOCLE vivent dans `src/styles/_palettes.scss` (partiel sans effet de bord) ; `styles/custom-theme.scss` les consomme pour construire le thème, et les SCSS de composants font `@use 'styles/palettes' as palettes;` puis `palettes.couleur($palette, 500)`. Ne pas ré-importer `custom-theme.scss` depuis un composant : cela réémettrait tout le thème dans chaque feuille.
 
-**Le sous-module ne se colore pas tout seul.** `home-rnf` style sa navbar, son footer et ses pages d'erreur avec `var(--custom-primary-500)`, une variable CSS que l'application hôte doit déclarer — le thème Sass ne la produit pas. C'est le rôle du mixin `palettes.variables-css`, inclus par `custom-theme.scss`, qui émet `--custom-primary-*` et `--custom-accent-*` sur `:root` à partir des mêmes maps que les palettes. Sans lui le socle s'affiche sans les couleurs de la plateforme, sans la moindre erreur de compilation.
+**La coquille ne se colore pas toute seule.** `core/` style sa navbar, son footer et ses pages d'erreur avec `var(--custom-primary-500)`, une variable CSS que l'application hôte doit déclarer — le thème Sass ne la produit pas. C'est le rôle du mixin `palettes.variables-css`, inclus par `custom-theme.scss`, qui émet `--custom-primary-*` et `--custom-accent-*` sur `:root` à partir des mêmes maps que les palettes. Sans lui la navbar et le pied de page s'affichent sans les couleurs de la plateforme, sans la moindre erreur de compilation.
 
 Cartographie : Leaflet + `Leaflet.Deflate` + proj4/proj4leaflet. Les polygones sont chargés à la demande par emprise (`/sites-dans-bbox?bbox=xmin,ymin,xmax,ymax`, SRID 4326) tandis que les centroïdes de tous les sites sont chargés en une fois (`/sites-simple-centroides`). Exports : `xlsx`, `jspdf`, `html2canvas`/`html-to-image`, `file-saver`.
 
