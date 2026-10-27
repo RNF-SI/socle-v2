@@ -314,7 +314,7 @@
           <div *ngIf="tInfosBaseSiteForm.get('stratotype_limit')?.value">
             <mat-form-field appearance="fill">
               <mat-select formArrayName="stratotypesLimite" multiple
-                [value]="tInfosBaseSiteForm.get('stratotypesLimite')?.value"
+                [value]="$safeNavigationMigration(tInfosBaseSiteForm.get('stratotypesLimite')?.value)"
                 (selectionChange)="onStratotypesLimiteChange($event)">
                 <!-- Champ de recherche dans le menu déroulant -->
                 <div class="search-container" mat-select-header>
@@ -335,7 +335,7 @@
           <div *ngIf="tInfosBaseSiteForm.get('stratotype_stage')?.value">
             <mat-form-field appearance="fill">
               <mat-select formArrayName="stratotypesEtage" multiple
-                [value]="tInfosBaseSiteForm.get('stratotypesEtage')?.value"
+                [value]="$safeNavigationMigration(tInfosBaseSiteForm.get('stratotypesEtage')?.value)"
                 (selectionChange)="onStratotypesEtageChange($event)">
                 <!-- Champ de recherche dans le menu déroulant -->
                 <div class="search-container" mat-select-header>

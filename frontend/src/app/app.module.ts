@@ -1,7 +1,7 @@
 import { CommonModule, registerLocaleData } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import localeFr from '@angular/common/locales/fr';
-import { LOCALE_ID, NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule, provideZoneChangeDetection } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -24,11 +24,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSliderModule } from '@angular/material/slider';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table'; // Importer MatTableModule
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { QuillModule } from 'ngx-quill';
-import { ToastrModule } from 'ngx-toastr';
 import { BrowserModule } from '@angular/platform-browser';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { RecaptchaModule } from 'ng-recaptcha-2';
@@ -103,9 +103,7 @@ registerLocaleData(localeFr, 'fr');
     MatDividerModule,
     MatSlideToggleModule,
     MatFormFieldModule,
-    ToastrModule.forRoot({
-      timeOut: 15000
-    }),
+    MatSnackBarModule,
     MatIconModule,
     MatTableModule,
     BrowserAnimationsModule,
@@ -120,6 +118,11 @@ registerLocaleData(localeFr, 'fr');
   ],
 
   providers: [
+    // Angular 22 démarre en zoneless par défaut : sans ce fournisseur, les
+    // retours asynchrones (HTTP, setTimeout) ne déclenchent plus de détection
+    // de changements et les vues restent vides. L'application n'utilise pas
+    // encore les signaux, elle a donc besoin de la détection par zone.
+    provideZoneChangeDetection(),
     { provide: MAT_DIALOG_DATA, useValue: {} },
     { provide: MatDialogRef, useValue: {} },
     { provide: MatPaginatorIntl, useValue: getFrenchPaginatorIntl() },

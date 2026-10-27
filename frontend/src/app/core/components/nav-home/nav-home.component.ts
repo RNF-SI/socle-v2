@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, map, Observable, startWith, Subscription } from 'rxjs';
@@ -26,6 +26,7 @@ import { environment } from 'src/environments/environment';
     templateUrl: './nav-home.component.html',
     styleUrls: ['./nav-home.component.scss'],
     standalone: true,
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [CommonModule, FontAwesomeModule, RouterModule, MatMenuModule, MatFormFieldModule, ReactiveFormsModule, MatToolbarModule, MatInputModule, MatAutocompleteModule, MatOptionModule, MatIconModule],
 })
 export class NavHomeComponent implements OnInit,AfterViewInit,OnDestroy {
@@ -74,20 +75,26 @@ export class NavHomeComponent implements OnInit,AfterViewInit,OnDestroy {
     this.isHomePage = this.router.url === '/';
     this.init();
     
-    this.partSub = this.jsonService.getPartenairesJson().subscribe(partenaires =>{
-      this.partenaires = partenaires;
-     
-    })
+    // Le fichier des partenaires n'existe que si la bandeau est activé :
+    // le charger sans condition produit un 404 à chaque chargement de page.
+    if (this.displayPartners) {
+      this.partSub = this.jsonService.getPartenairesJson().subscribe(partenaires =>{
+        this.partenaires = partenaires;
+
+      })
+    }
   }
 
   ngAfterViewInit(): void {
-  
+
     if (this.searchInput && window.innerWidth >= 600){
       this.calculateWidthSearchBar();
     }
-    if(!AppConfig.displayPartners){
-      let elem = document.querySelector('.nav-grid-4-4-4') as HTMLElement;
-      elem.style.gridTemplateColumns = "50% 0% 50%";
+    if(!this.displayPartners){
+      const elem = document.querySelector<HTMLElement>('.nav-grid-4-4-4');
+      if (elem) {
+        elem.style.gridTemplateColumns = "50% 0% 50%";
+      }
     }
   }
 

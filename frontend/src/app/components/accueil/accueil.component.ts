@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewChecked, Component, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
@@ -37,6 +37,7 @@ interface Location {
   standalone: false,
   selector: 'app-accueil',
   templateUrl: './accueil.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./accueil.component.scss']
 })
 export class AccueilComponent implements OnInit, AfterViewChecked {

@@ -1,9 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
+import { NotificationService } from '../../services/notification.service';
 import { AuthService } from '../../auth/auth-service.service';
-import { RedirectService } from '../../services/redirect.service';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -14,6 +13,7 @@ import { MatInputModule } from '@angular/material/input';
     templateUrl: './forgot-password.component.html',
     styleUrls: ['./forgot-password.component.scss'],
     standalone: true,
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule],
 })
 export class ForgotPasswordComponent {
@@ -25,8 +25,7 @@ export class ForgotPasswordComponent {
 
   constructor(
     public _authService: AuthService,
-    private redirect: RedirectService,
-    private _toasterService: ToastrService,
+    private _toasterService: NotificationService,
     private router: Router
   ) {
     this.email = new UntypedFormControl(null, [Validators.required, Validators.email]);

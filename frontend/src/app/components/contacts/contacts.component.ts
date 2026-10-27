@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
+import { NotificationService } from '../../core/services/notification.service';
 import { ContactFormData, ContactService } from 'src/app/services/contact.service';
 import { environment } from 'src/environments/environment';
 
@@ -9,6 +9,7 @@ import { environment } from 'src/environments/environment';
   standalone: false,
   selector: 'app-contact',
   templateUrl: './contacts.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./contacts.component.scss']
 })
 export class ContactsComponent implements OnInit {
@@ -19,7 +20,7 @@ export class ContactsComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private contactService: ContactService,
-    private _toasterService: ToastrService,
+    private _toasterService: NotificationService,
     private router: Router
   ) { }
 

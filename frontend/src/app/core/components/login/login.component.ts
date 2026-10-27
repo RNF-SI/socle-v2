@@ -1,9 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, Inject, OnDestroy } from '@angular/core';
+import { Component, Inject, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
+import { NotificationService } from '../../services/notification.service';
 import { AppConfig } from 'src/conf/app.config';
 import { AuthService } from '../../auth/auth-service.service';
 import { CommonModule } from '@angular/common';
@@ -26,6 +26,7 @@ export interface LoginData {
     templateUrl: 'login.component.html',
     styleUrls: ['./login.component.scss'],
     standalone:true,
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports:[CommonModule,ReactiveFormsModule,MatFormFieldModule,MatInputModule,MatButtonModule,MatIconModule,MatProgressBarModule,FontAwesomeModule,InputErrorPipe]
 })
 export class LoginComponent implements OnDestroy {
@@ -51,7 +52,7 @@ export class LoginComponent implements OnDestroy {
     @Inject(MAT_DIALOG_DATA) private data: LoginData,
     public _authService: AuthService,
     private ref: MatDialogRef<LoginComponent>,
-    private _toasterService: ToastrService,
+    private _toasterService: NotificationService,
     private router: Router
   ) {
     // Initialisation des contrôles de formulaire

@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { map, Observable, startWith } from 'rxjs';
@@ -20,6 +20,7 @@ import { Subscription } from 'rxjs';
   imports: [CommonModule,MatFormFieldModule,ReactiveFormsModule,MatToolbarModule,MatInputModule,MatAutocompleteModule,MatOptionModule,MatIconModule,MatDialogModule],
   templateUrl: './search-bar-dialog.component.html',
   styleUrl: './search-bar-dialog.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone:true
 })
 export class SearchBarDialogComponent implements OnInit, OnDestroy{

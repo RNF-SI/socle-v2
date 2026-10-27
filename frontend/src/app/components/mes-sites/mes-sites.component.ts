@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
@@ -12,6 +12,7 @@ import { Site } from '../../models/site.model';
   standalone: false,
   selector: 'app-mes-sites',
   templateUrl: './mes-sites.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./mes-sites.component.scss']
 })
 export class MessitesComponent implements OnInit {
