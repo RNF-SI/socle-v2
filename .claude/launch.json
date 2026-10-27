@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "frontend",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["start"],
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-lc", "source \"$HOME/.nvm/nvm.sh\" && nvm use 22 >/dev/null && npm start"],
       "port": 4200,
       "cwd": "frontend"
     }

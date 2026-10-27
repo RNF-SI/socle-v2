@@ -289,8 +289,11 @@ mat-form-field {
   text-align: center;
 }
 
+// Hauteur minimale, pas fixe : les libellés tiennent sur deux ou trois lignes
+// avec la typographie de Material 22 et se chevauchaient à 40px imposés.
 .layer-toggles div {
-  height: 40px;
+  min-height: 40px;
+  margin-bottom: 8px;
 }
 
 ::ng-deep .mat-slide-toggle-label {
@@ -303,44 +306,41 @@ mat-form-field {
   justify-content: center;
 }
 
+// Couleurs des trois interrupteurs de calque, alignées sur les marqueurs de la
+// carte : piste = remplissage du marqueur, poignée = couleur de son contour.
+// Material 22 ne lit plus les variables --mdc-switch-* posées sur l'hôte (le
+// thème l'emporte et les trois interrupteurs ressortaient en couleur d'accent) :
+// on cible donc directement les éléments rendus.
+@mixin interrupteur-carte($contour, $remplissage) {
+  &.mat-mdc-slide-toggle-checked {
+    ::ng-deep .mdc-switch__track::after {
+      background-color: $remplissage !important;
+    }
+
+    ::ng-deep .mdc-switch__handle::after {
+      background-color: $contour !important;
+    }
+
+    ::ng-deep .mdc-switch__ripple::after {
+      background-color: $remplissage !important;
+    }
+
+    // La coche se détache mal en noir sur la poignée colorée.
+    ::ng-deep .mdc-switch__icon--on,
+    ::ng-deep .mdc-switch__icon--on path {
+      fill: white !important;
+    }
+  }
+}
+
 mat-slide-toggle.toggle-patrimoine {
-  --mdc-switch-selected-handle-color: #fcd6a2 !important;
-  --mdc-switch-selected-pressed-handle-color: #fabb64 !important;
-  --mdc-switch-selected-pressed-state-layer-color: #fcd6a2 !important;
-  --mdc-switch-selected-hover-state-layer-color: #fcd6a2 !important;
-  --mdc-switch-selected-hover-handle-color: #fabb64 !important;
-  --mdc-switch-selected-focus-state-layer-color: #fcd6a2 !important;
-  --mdc-switch-selected-focus-handle-color: #fabb64 !important;
-  --mdc-switch-selected-track-color: #fcd6a2 !important;
-  --mdc-switch-selected-pressed-track-color: #fcd6a2 !important;
-  --mdc-switch-selected-hover-track-color: #fcd6a2 !important;
-  --mdc-switch-selected-focus-track-color: #fcd6a2 !important;
+  @include interrupteur-carte(#fabb64, #fcd6a2);
 }
 
 mat-slide-toggle.toggle-contient {
-  --mdc-switch-selected-handle-color: #97b3c0 !important;
-  --mdc-switch-selected-pressed-handle-color: #518196 !important;
-  --mdc-switch-selected-pressed-state-layer-color: #97b3c0 !important;
-  --mdc-switch-selected-hover-state-layer-color: #97b3c0 !important;
-  --mdc-switch-selected-hover-handle-color: #518196 !important;
-  --mdc-switch-selected-focus-state-layer-color: #97b3c0 !important;
-  --mdc-switch-selected-focus-handle-color: #518196 !important;
-  --mdc-switch-selected-track-color: #97b3c0 !important;
-  --mdc-switch-selected-pressed-track-color: #97b3c0 !important;
-  --mdc-switch-selected-hover-track-color: #97b3c0 !important;
-  --mdc-switch-selected-focus-track-color: #97b3c0 !important;
+  @include interrupteur-carte(#518196, #97b3c0);
 }
 
 mat-slide-toggle.toggle-autres {
-  --mdc-switch-selected-handle-color: #dee5a5 !important;
-  --mdc-switch-selected-pressed-handle-color: #c8d469 !important;
-  --mdc-switch-selected-pressed-state-layer-color: #dee5a5 !important;
-  --mdc-switch-selected-hover-state-layer-color: #dee5a5 !important;
-  --mdc-switch-selected-hover-handle-color: #c8d469 !important;
-  --mdc-switch-selected-focus-state-layer-color: #dee5a5 !important;
-  --mdc-switch-selected-focus-handle-color: #c8d469 !important;
-  --mdc-switch-selected-track-color: #dee5a5 !important;
-  --mdc-switch-selected-pressed-track-color: #dee5a5 !important;
-  --mdc-switch-selected-hover-track-color: #dee5a5 !important;
-  --mdc-switch-selected-focus-track-color: #dee5a5 !important;
+  @include interrupteur-carte(#c8d469, #dee5a5);
 }

@@ -1,9 +1,9 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { AuthService } from 'src/app/home-rnf/services/auth-service.service';
+import { AuthService } from 'src/app/core/auth/auth-service.service';
 import { SitesService } from 'src/app/services/sites.service';
 import { environment } from 'src/environments/environment';
 import { Site } from '../../models/site.model';
@@ -12,6 +12,7 @@ import { Site } from '../../models/site.model';
   standalone: false,
   selector: 'app-mes-sites',
   templateUrl: './mes-sites.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./mes-sites.component.scss']
 })
 export class MessitesComponent implements OnInit {

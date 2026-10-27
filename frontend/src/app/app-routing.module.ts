@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { mapToCanActivate, RouterModule, Routes } from '@angular/router';
 import { AccueilComponent } from './components/accueil/accueil.component';
 import { AideComponent } from './components/aide/aide.component';
 import { ContactsComponent } from './components/contacts/contacts.component';
@@ -8,16 +8,16 @@ import { LiensComponent } from './components/liens/liens.component';
 import { MessitesComponent } from './components/mes-sites/mes-sites.component';
 import { QuestionnaireSimplifieComponent } from './components/site/questionnaire-simplifie/questionnaire-simplifie.component';
 import { SyntheseSiteComponent } from './components/site/synthese-site/synthese-site.component';
-import { AccessDeniedComponent } from './home-rnf/components/access-denied/access-denied.component';
-import { ForgotPasswordComponent } from './home-rnf/components/forgot-password/forgot-password.component';
-import { LoginComponent } from './home-rnf/components/login/login.component';
-import { LogoutComponent } from './home-rnf/components/logout/logout.component';
-import { NavHomeComponent } from './home-rnf/components/nav-home/nav-home.component';
-import { NotFoundComponent } from './home-rnf/components/not-found/not-found.component';
-import { RnAuthGuardService } from './home-rnf/services/auth-guard-rn.service';
-import { AuthGuardService } from './home-rnf/services/auth-guard.service';
-import { LazyDialogLoader } from './home-rnf/services/lazy-dialog-loader.service';
-import { LogoutLinkService } from './home-rnf/services/logout-link.service';
+import { AccessDeniedComponent } from './core/components/access-denied/access-denied.component';
+import { ForgotPasswordComponent } from './core/components/forgot-password/forgot-password.component';
+import { LoginComponent } from './core/components/login/login.component';
+import { LogoutComponent } from './core/components/logout/logout.component';
+import { NavHomeComponent } from './core/components/nav-home/nav-home.component';
+import { NotFoundComponent } from './core/components/not-found/not-found.component';
+import { RnAuthGuardService } from './core/auth/auth-guard-rn.service';
+import { authGuard } from './core/auth/auth-guard.service';
+import { LazyDialog } from './core/auth/lazy-dialog-loader.service';
+import { LogoutLinkService } from './core/auth/logout-link.service';
 
 
 const routes: Routes = [
@@ -28,12 +28,12 @@ const routes: Routes = [
       {
         path: 'logout', // Ici seulement pour angular, mais toujours redirigé dans le canActivate
         component: LogoutComponent,
-        canActivate: [LogoutLinkService]
+        canActivate: mapToCanActivate([LogoutLinkService])
       },
       {
         path: 'login',
         component: LoginComponent,
-        canActivate: [LazyDialogLoader]
+        canActivate: [LazyDialog]
       },
       {
         path: 'mot-de-passe-oublie',
@@ -64,12 +64,12 @@ const routes: Routes = [
       {
         path: 'questionnaire-simplifie/:id_rn',
         component: QuestionnaireSimplifieComponent,
-        canActivate: [RnAuthGuardService]
+        canActivate: mapToCanActivate([RnAuthGuardService])
       },
       {
         path: 'mes-sites',
         component: MessitesComponent,
-        canActivate: [AuthGuardService]
+        canActivate: [authGuard]
       },
       {
         path: 'contacts',

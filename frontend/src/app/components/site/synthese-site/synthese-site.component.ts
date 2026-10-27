@@ -1,10 +1,10 @@
-import { Component, ElementRef, OnInit, QueryList, Renderer2, ViewChildren } from '@angular/core';
+import { Component, ElementRef, OnInit, QueryList, Renderer2, ViewChildren, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { faArrowUpRightFromSquare, faKey, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { toPng } from 'html-to-image';
 import jsPDF from 'jspdf';
 import * as L from 'leaflet';
-import { AuthService } from 'src/app/home-rnf/services/auth-service.service';
+import { AuthService } from 'src/app/core/auth/auth-service.service';
 import { Nomenclature } from 'src/app/models/nomenclature.model';
 import { Site } from 'src/app/models/site.model';
 import { NomenclaturesService } from 'src/app/services/nomenclatures.service';
@@ -14,6 +14,7 @@ import { SitesService } from 'src/app/services/sites.service';
   standalone: false,
   selector: 'app-synthese-site',
   templateUrl: './synthese-site.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./synthese-site.component.scss']
 })
 export class SyntheseSiteComponent implements OnInit {

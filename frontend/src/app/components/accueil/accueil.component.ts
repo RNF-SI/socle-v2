@@ -1,10 +1,10 @@
-import { AfterViewChecked, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewChecked, Component, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import * as L from 'leaflet';
-import { AuthService } from 'src/app/home-rnf/services/auth-service.service';
-import { ExcelService } from 'src/app/home-rnf/services/excel.service';
+import { AuthService } from 'src/app/core/auth/auth-service.service';
+import { ExcelService } from 'src/app/core/services/excel.service';
 import { Parametre } from 'src/app/models/parametres.model';
 import { ParametresService } from 'src/app/services/parametres.service';
 // import 'Leaflet.Deflate';
@@ -37,6 +37,7 @@ interface Location {
   standalone: false,
   selector: 'app-accueil',
   templateUrl: './accueil.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./accueil.component.scss']
 })
 export class AccueilComponent implements OnInit, AfterViewChecked {

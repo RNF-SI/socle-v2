@@ -1,0 +1,7 @@
+@use 'src/styles/custom-theme.scss' as custom;
+
+div {
+  text-align: center;
+  font-weight: bold;
+  color: var(--custom-primary-500);
+}

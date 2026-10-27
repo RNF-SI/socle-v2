@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from 'src/app/home-rnf/services/auth-service.service';
+import { AuthService } from 'src/app/core/auth/auth-service.service';
 import { Nomenclature, NomenclatureType } from 'src/app/models/nomenclature.model';
 import { PatrimoineGeologique } from 'src/app/models/patrimoine-geologique.model';
 import { Stratotype } from 'src/app/models/site.model';
@@ -14,6 +14,7 @@ import Swal from 'sweetalert2';
   standalone: false,
   selector: 'app-questionnaire-simplifie',
   templateUrl: './questionnaire-simplifie.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./questionnaire-simplifie.component.scss']
 })
 export class QuestionnaireSimplifieComponent implements OnInit {

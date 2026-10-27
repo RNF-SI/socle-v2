@@ -1,7 +1,7 @@
 import { CommonModule, registerLocaleData } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import localeFr from '@angular/common/locales/fr';
-import { LOCALE_ID, NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule, provideZoneChangeDetection } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -24,11 +24,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSliderModule } from '@angular/material/slider';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table'; // Importer MatTableModule
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { QuillModule } from 'ngx-quill';
-import { ToastrModule } from 'ngx-toastr';
 import { BrowserModule } from '@angular/platform-browser';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { RecaptchaModule } from 'ng-recaptcha-2';
@@ -42,8 +42,18 @@ import { LiensComponent } from './components/liens/liens.component';
 import { MessitesComponent } from './components/mes-sites/mes-sites.component';
 import { QuestionnaireSimplifieComponent } from './components/site/questionnaire-simplifie/questionnaire-simplifie.component';
 import { SyntheseSiteComponent } from './components/site/synthese-site/synthese-site.component';
-import { HomeRnfModule } from './home-rnf/home-rnf.module';
-import { getFrenchPaginatorIntl } from './home-rnf/shared/french-paginator-intl';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import { fab } from '@fortawesome/free-brands-svg-icons';
+import { far } from '@fortawesome/free-regular-svg-icons';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+import { AccessDeniedComponent } from './core/components/access-denied/access-denied.component';
+import { ForgotPasswordComponent } from './core/components/forgot-password/forgot-password.component';
+import { LoginComponent } from './core/components/login/login.component';
+import { LogoutComponent } from './core/components/logout/logout.component';
+import { NavHomeComponent } from './core/components/nav-home/nav-home.component';
+import { NotFoundComponent } from './core/components/not-found/not-found.component';
+import { getFrenchPaginatorIntl } from './core/shared/french-paginator-intl';
 import { CapitalizePipe } from './pipes/capitalize.pipe';
 
 
@@ -68,7 +78,12 @@ registerLocaleData(localeFr, 'fr');
     BrowserModule,
     AppRoutingModule,
     RouterModule,
-    HomeRnfModule,
+    NavHomeComponent,
+    LoginComponent,
+    LogoutComponent,
+    ForgotPasswordComponent,
+    NotFoundComponent,
+    AccessDeniedComponent,
     FontAwesomeModule,
     RecaptchaModule,
     HttpClientModule,
@@ -88,9 +103,7 @@ registerLocaleData(localeFr, 'fr');
     MatDividerModule,
     MatSlideToggleModule,
     MatFormFieldModule,
-    ToastrModule.forRoot({
-      timeOut: 15000
-    }),
+    MatSnackBarModule,
     MatIconModule,
     MatTableModule,
     BrowserAnimationsModule,
@@ -105,9 +118,20 @@ registerLocaleData(localeFr, 'fr');
   ],
 
   providers: [
+    // Angular 22 démarre en zoneless par défaut : sans ce fournisseur, les
+    // retours asynchrones (HTTP, setTimeout) ne déclenchent plus de détection
+    // de changements et les vues restent vides. L'application n'utilise pas
+    // encore les signaux, elle a donc besoin de la détection par zone.
+    provideZoneChangeDetection(),
+    { provide: MAT_DIALOG_DATA, useValue: {} },
+    { provide: MatDialogRef, useValue: {} },
     { provide: MatPaginatorIntl, useValue: getFrenchPaginatorIntl() },
     { provide: LOCALE_ID, useValue: 'fr' }
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+  constructor(library: FaIconLibrary) {
+    library.addIconPacks(fab, fas, far);
+  }
+}

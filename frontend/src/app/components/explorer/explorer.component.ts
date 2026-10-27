@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { SitesService } from 'src/app/services/sites.service';
 import { Site } from '../../models/site.model';
@@ -7,6 +7,7 @@ import { Site } from '../../models/site.model';
   standalone: false,
   selector: 'app-explorer',
   templateUrl: './explorer.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./explorer.component.scss']
 })
 export class ExplorerComponent implements OnInit {
