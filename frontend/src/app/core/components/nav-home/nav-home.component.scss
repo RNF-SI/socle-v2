@@ -86,12 +86,12 @@ h6{
   font-family: Century Gothic, CenturyGothic, AppleGothic, sans-serif;
   font-size: 28px;
   font-weight: 600;
-  background-color: var(--custom-primary-500);
+  background-color: var(--custom-accent-500);
   line-height: 1.75;
   text-align: left;
   margin-inline: 5vw;
   padding: 5px;
-  color: white;
+  color: rgba(0, 0, 0, 0.87);
 }
 
 .nav-grid-4-4-4{
@@ -184,9 +184,17 @@ h6{
   color: white;
 }
 
-.contact div {
+.contact div,
+.contact a {
   color: white;
-  cursor:pointer;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.contact a:hover,
+.contact a:focus {
+  color: white;
+  text-decoration: underline;
 }
 
 .text-center {
