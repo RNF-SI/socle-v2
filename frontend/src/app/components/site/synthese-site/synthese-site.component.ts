@@ -11,6 +11,7 @@ import { NomenclaturesService } from 'src/app/services/nomenclatures.service';
 import { SitesService } from 'src/app/services/sites.service';
 
 @Component({
+  standalone: false,
   selector: 'app-synthese-site',
   templateUrl: './synthese-site.component.html',
   styleUrls: ['./synthese-site.component.scss']

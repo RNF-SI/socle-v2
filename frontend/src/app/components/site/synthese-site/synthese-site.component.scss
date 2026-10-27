@@ -1,4 +1,4 @@
-@import 'src/styles/custom-theme.scss';
+@use 'styles/palettes' as palettes;
 
 .links-container {
   margin: 0 10px;
@@ -40,7 +40,7 @@
 }
 
 .heritage-title {
-  color: mat-color($custom-primary, 500);
+  color: palettes.couleur(palettes.$custom-primary, 500);
   font-size: 1.5em;
   font-weight: bold;
   margin-top: 30px;
@@ -48,7 +48,7 @@
 }
 
 .heritage-title1 {
-  color: mat-color($custom-primary, 500);
+  color: palettes.couleur(palettes.$custom-primary, 500);
   font-size: 1.5em;
   font-weight: bold;
 }
@@ -72,7 +72,7 @@
 }
 
 .subsection-title {
-  color: mat-color($custom-accent, 500);
+  color: palettes.couleur(palettes.$custom-accent, 500);
   font-weight: bold;
   margin-top: 15px;
 }
@@ -235,13 +235,13 @@
 
 .stats-container fa-icon {
   font-size: 36px;
-  color: mat-color($custom-accent, 500);
+  color: palettes.couleur(palettes.$custom-accent, 500);
 }
 
 .stat-value {
   font-size: 24px;
   font-weight: bold;
-  color: mat-color($custom-primary, 500);
+  color: palettes.couleur(palettes.$custom-primary, 500);
 }
 
 .stat-label {
@@ -255,7 +255,7 @@
   right: 0;
   top: 50%;
   transform: translateY(-50%);
-  border-left: 3px solid mat-color($custom-primary, 500);
+  border-left: 3px solid palettes.couleur(palettes.$custom-primary, 500);
   height: 50px;
 }
 
@@ -280,7 +280,7 @@ span.legend-item {
 
 .leaflet-container a {
   text-decoration: none !important;
-  color: mat-color($custom-primary, 500) !important;
+  color: palettes.couleur(palettes.$custom-primary, 500) !important;
   font-weight: bold !important;
 }
 
@@ -292,7 +292,7 @@ span.legend-item {
 }
 
 .filled-toggle {
-  background-color: mat-color($custom-primary, 500);
+  background-color: palettes.couleur(palettes.$custom-primary, 500);
   color: white;
 }
 
@@ -301,7 +301,7 @@ span.legend-item {
 }
 
 .sites-inpg a {
-  color: mat-color($custom-primary, 500);
+  color: palettes.couleur(palettes.$custom-primary, 500);
   text-decoration: none;
   font-weight: bold;
 }
@@ -316,7 +316,7 @@ span.legend-item {
 }
 
 .geopatrimoine-lb {
-  color: mat-color($custom-primary, 500);
+  color: palettes.couleur(palettes.$custom-primary, 500);
   font-weight: bold;
 }
 

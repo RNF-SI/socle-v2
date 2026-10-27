@@ -1,4 +1,4 @@
-@import 'src/styles/custom-theme.scss';
+@use 'styles/palettes' as palettes;
 
 .container {
     width: 80%;
@@ -7,14 +7,14 @@
 }
 
 .texte-highlight {
-    color: mat-color($custom-primary, 500);
+    color: palettes.couleur(palettes.$custom-primary, 500);
     /* Exemple de couleur (bleu) à adapter */
     font-weight: bold;
 }
 
 a {
     font-weight: bold;
-    color: mat-color($custom-accent, 500);
+    color: palettes.couleur(palettes.$custom-accent, 500);
     text-decoration: none;
     cursor: pointer;
 
@@ -36,7 +36,7 @@ a {
 mat-panel-title {
     font-weight: bold;
     font-size: large;
-    color: mat-color($custom-primary, 500) !important;
+    color: palettes.couleur(palettes.$custom-primary, 500) !important;
 }
 
 .intro {

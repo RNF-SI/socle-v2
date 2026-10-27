@@ -1,4 +1,4 @@
-@import 'src/styles/custom-theme.scss';
+@use 'styles/palettes' as palettes;
 
 // body {
 //     font-family: Arial, sans-serif;
@@ -11,7 +11,7 @@
 }
 
 h1 {
-    color: mat-color($custom-primary, 500);
+    color: palettes.couleur(palettes.$custom-primary, 500);
     text-align: center;
 }
 
@@ -102,22 +102,22 @@ h1 {
 
 .text-right button {
 
-    color: mat-color($custom-accent, 500);
+    color: palettes.couleur(palettes.$custom-accent, 500);
 }
 
 mat-card-title {
-    color: mat-color($custom-accent, 500);
+    color: palettes.couleur(palettes.$custom-accent, 500);
 }
 
 a {
-    color: mat-color($custom-primary, 500);
+    color: palettes.couleur(palettes.$custom-primary, 500);
     font-weight: bold;
     text-decoration: none;
 }
 
 :host ::ng-deep a.link-spacing {
 
-    color: mat-color($custom-primary, 500) !important;
+    color: palettes.couleur(palettes.$custom-primary, 500) !important;
     font-weight: bold;
     text-decoration: none;
 }

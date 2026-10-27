@@ -9,6 +9,7 @@ import { environment } from 'src/environments/environment';
 import { Site } from '../../models/site.model';
 
 @Component({
+  standalone: false,
   selector: 'app-mes-sites',
   templateUrl: './mes-sites.component.html',
   styleUrls: ['./mes-sites.component.scss']

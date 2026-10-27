@@ -2,6 +2,7 @@ import { Component } from "@angular/core";
 
 
 @Component({
+  standalone: false,
     selector: 'app-aide',
     templateUrl: './aide.component.html',
     styleUrls: ['./aide.component.scss']

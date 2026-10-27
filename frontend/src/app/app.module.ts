@@ -27,11 +27,11 @@ import { MatSliderModule } from '@angular/material/slider';
 import { MatTableModule } from '@angular/material/table'; // Importer MatTableModule
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
-import { NgbModule, NgbRatingModule } from '@ng-bootstrap/ng-bootstrap';
-import { RecaptchaModule } from 'ng-recaptcha';
 import { QuillModule } from 'ngx-quill';
 import { ToastrModule } from 'ngx-toastr';
-import { BrowserModule } from 'node_modules/@angular/platform-browser';
+import { BrowserModule } from '@angular/platform-browser';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { RecaptchaModule } from 'ng-recaptcha-2';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AccueilComponent } from './components/accueil/accueil.component';
@@ -69,6 +69,8 @@ registerLocaleData(localeFr, 'fr');
     AppRoutingModule,
     RouterModule,
     HomeRnfModule,
+    FontAwesomeModule,
+    RecaptchaModule,
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
@@ -90,8 +92,6 @@ registerLocaleData(localeFr, 'fr');
       timeOut: 15000
     }),
     MatIconModule,
-    NgbRatingModule,
-    NgbModule,
     MatTableModule,
     BrowserAnimationsModule,
     MatGridListModule,
@@ -101,8 +101,7 @@ registerLocaleData(localeFr, 'fr');
     MatNativeDateModule,
     MatDatepickerModule,
     MatProgressSpinnerModule,
-    MatSliderModule,
-    RecaptchaModule
+    MatSliderModule
   ],
 
   providers: [

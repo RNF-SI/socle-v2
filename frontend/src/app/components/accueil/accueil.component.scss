@@ -1,4 +1,4 @@
-@import 'src/styles/custom-theme.scss';
+@use 'styles/palettes' as palettes;
 
 .contenu {
   font-family: Century Gothic, sans-serif;
@@ -11,7 +11,7 @@
 
 .main-title {
   text-align: center;
-  color: mat-color($custom-primary, 500);
+  color: palettes.couleur(palettes.$custom-primary, 500);
   font-size: 28px;
   font-weight: bold;
 }
@@ -187,7 +187,7 @@ p {
   text-align: center;
   font-size: 50px;
   font-weight: bold;
-  color: mat-color($custom-accent, 500);
+  color: palettes.couleur(palettes.$custom-accent, 500);
 }
 
 .icon-container {
@@ -221,7 +221,7 @@ p {
 
 
 .mat-mdc-header-row {
-  background-color: mat-color($custom-primary, 100);
+  background-color: palettes.couleur(palettes.$custom-primary, 100);
 }
 
 .mat-mdc-header-cell {
@@ -240,7 +240,7 @@ a {
 }
 
 a:hover {
-  color: mat-color($custom-primary, 300);
+  color: palettes.couleur(palettes.$custom-primary, 300);
 }
 
 #map {

@@ -49,5 +49,9 @@ export const AppConfig = {
             "nomFa": "right-from-bracket" as const,
             "lien": "logout"
         }
-    ]
+    ],
+    // Footer et bandeau partenaires fournis par home-rnf (branche angular-19).
+    // displayPartners attend assets/images/partenaires/ + son fichiers.json
+    "displayFooter": true,
+    "displayPartners": false
 }

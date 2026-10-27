@@ -1,4 +1,4 @@
-@import 'src/styles/custom-theme.scss';
+@use 'styles/palettes' as palettes;
 
 .container {
   max-width: 1500px;
@@ -37,7 +37,7 @@
   grid-row: span 2;
   /* Place le bouton au centre verticalement des deux lignes */
   justify-self: center;
-  color: mat-color($custom-accent, 500);
+  color: palettes.couleur(palettes.$custom-accent, 500);
   ;
 }
 
@@ -86,7 +86,7 @@
 }
 
 .submit-button-container button {
-  background-color: mat-color($custom-accent, 500);
+  background-color: palettes.couleur(palettes.$custom-accent, 500);
   ;
   color: white;
   /* Couleur du texte en blanc */
@@ -120,7 +120,7 @@
 }
 
 .sites-inpg a {
-  color: mat-color($custom-primary, 500);
+  color: palettes.couleur(palettes.$custom-primary, 500);
   text-decoration: none;
   font-weight: bold;
   cursor: pointer;
@@ -198,7 +198,7 @@
 }
 
 .subsection-title {
-  color: mat-color($custom-accent, 500);
+  color: palettes.couleur(palettes.$custom-accent, 500);
   font-weight: bold;
   margin-top: 15px;
 }
