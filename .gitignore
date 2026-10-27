@@ -64,3 +64,6 @@ Thumbs.db
 
 /backend/record.log
 
+
+sbom/
+.sbom-tools/
