@@ -34,9 +34,8 @@ migrate = Migrate(app, db)
 mail = Mail(app)
 
 # blueprint relié au module usershub-authentification
-from pypnusershub import routes_register
-app.register_blueprint(routes_register.bp, url_prefix='/pypn/register')
-
+# pypnusershub 3 a supprimé routes_register : il n'y a plus de blueprint
+# d'inscription à monter sous /pypn/register.
 from pypnusershub.routes import routes
 app.register_blueprint(routes, url_prefix='/auth')
  

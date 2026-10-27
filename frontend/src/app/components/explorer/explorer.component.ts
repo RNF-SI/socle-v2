@@ -4,6 +4,7 @@ import { SitesService } from 'src/app/services/sites.service';
 import { Site } from '../../models/site.model';
 
 @Component({
+  standalone: false,
   selector: 'app-explorer',
   templateUrl: './explorer.component.html',
   styleUrls: ['./explorer.component.scss']

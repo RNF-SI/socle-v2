@@ -1,4 +1,4 @@
-@import 'src/styles/custom-theme.scss';
+@use 'styles/palettes' as palettes;
 
 .container {
   margin: 20px auto;
@@ -31,10 +31,10 @@
 
 
 h3 {
-  color: mat-color($custom-primary, 500);
+  color: palettes.couleur(palettes.$custom-primary, 500);
   font-weight: bold;
 }
 
 h4 {
-  color: mat-color($custom-accent, 500);
+  color: palettes.couleur(palettes.$custom-accent, 500);
 }

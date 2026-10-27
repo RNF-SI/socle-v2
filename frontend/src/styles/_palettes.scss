@@ -1,0 +1,95 @@
+// Palettes SOCLE, partagées entre le thème global et les styles de composants.
+// Ce fichier ne produit aucun CSS tant que `variables-css` n'est pas inclus :
+// il peut être @use depuis n'importe quel composant sans dupliquer le thème.
+@use 'sass:map';
+@use '@angular/material' as mat;
+
+// Teintes de la palette primaire SOCLE (bleu ardoise #518196)
+$primary-tons: (50: #e3edf1,
+  100: #b9d1dd,
+  200: #8bb4c8,
+  300: #6a9eb5,
+  400: #5987a1,
+  500: #518196,
+  600: #4a7488,
+  700: #416675,
+  800: #395862,
+  900: #2b444a,
+  A100: #a6c5e1,
+  A200: #6ea4c3,
+  A400: #35789a,
+  A700: #295b72,
+);
+
+// Teintes de la palette accent SOCLE (orange sable #fabb64)
+$accent-tons: (50: #fef3e3,
+  100: #fde1ba,
+  200: #fccc8d,
+  300: #fab664,
+  400: #f8a854,
+  500: #fabb64,
+  600: #f6a854,
+  700: #f39944,
+  800: #ef8a34,
+  900: #e67214,
+  A100: #ffebcc,
+  A200: #ffd699,
+  A400: #ffc266,
+  A700: #ffb04d,
+);
+
+$noir: rgba(0, 0, 0, 0.87);
+
+$custom-primary: mat.m2-define-palette(map.merge($primary-tons,
+      (contrast: (50: $noir,
+          100: $noir,
+          200: $noir,
+          300: $noir,
+          400: $noir,
+          500: white,
+          600: white,
+          700: white,
+          800: white,
+          900: white,
+          A100: $noir,
+          A200: $noir,
+          A400: white,
+          A700: white,
+        ))));
+
+$custom-accent: mat.m2-define-palette(map.merge($accent-tons,
+      (contrast: (50: $noir,
+          100: $noir,
+          200: $noir,
+          300: $noir,
+          400: $noir,
+          500: $noir,
+          600: $noir,
+          700: $noir,
+          800: white,
+          900: white,
+          A100: $noir,
+          A200: $noir,
+          A400: $noir,
+          A700: $noir,
+        ))));
+
+// Raccourci : mat.m2-get-color-from-palette avec le nommage d'avant Material 19
+@function couleur($palette, $teinte: 500) {
+  @return mat.m2-get-color-from-palette($palette, $teinte);
+}
+
+// home-rnf style sa navbar, son footer et ses pages d'erreur avec
+// var(--custom-primary-500). Ces variables viennent de l'application hôte :
+// sans ce bloc, le socle s'affiche sans les couleurs de la plateforme.
+@mixin variables-css {
+  :root {
+    @each $ton, $valeur in $primary-tons {
+      --custom-primary-#{$ton}: #{$valeur};
+    }
+
+    @each $ton, $valeur in $accent-tons {
+      --custom-accent-#{$ton}: #{$valeur};
+    }
+  }
+}

@@ -2,6 +2,7 @@ import { Component } from "@angular/core";
 
 
 @Component({
+  standalone: false,
     selector: 'app-liens',
     templateUrl: './liens.component.html',
     styleUrls: ['./liens.component.scss']

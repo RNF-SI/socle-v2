@@ -11,6 +11,7 @@ import Swal from 'sweetalert2';
 
 
 @Component({
+  standalone: false,
   selector: 'app-questionnaire-simplifie',
   templateUrl: './questionnaire-simplifie.component.html',
   styleUrls: ['./questionnaire-simplifie.component.scss']

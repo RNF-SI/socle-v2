@@ -6,6 +6,7 @@ import { ContactFormData, ContactService } from 'src/app/services/contact.servic
 import { environment } from 'src/environments/environment';
 
 @Component({
+  standalone: false,
   selector: 'app-contact',
   templateUrl: './contacts.component.html',
   styleUrls: ['./contacts.component.scss']
@@ -34,7 +35,8 @@ export class ContactsComponent implements OnInit {
     });
   }
 
-  onCaptchaResolved(captchaResponse: string): void {
+  // ng-recaptcha-2 émet null quand le jeton expire ou que le widget est réinitialisé
+  onCaptchaResolved(captchaResponse: string | null): void {
     // On peut mettre à jour le champ recaptcha si besoin
     this.contactForm.patchValue({ recaptcha: captchaResponse });
   }

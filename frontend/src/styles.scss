@@ -1,4 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
+@use 'styles/custom-theme.scss';
+@use 'conf/custom.scss';
+@use 'bootstrap/scss/bootstrap' as bootstrap;
+@use 'quill/dist/quill.snow.css';
 
 html,
 body {
@@ -10,18 +14,10 @@ body {
     font-family: Century Gothic, sans-serif;
 }
 
-/* Importing Bootstrap SCSS file. */
-// @import '~bootstrap/scss/bootstrap';
-@import "../node_modules/bootstrap/scss/bootstrap";
-@import '~quill/dist/quill.snow.css';
-
-@import 'styles/custom-theme.scss';
-@import 'conf/custom.scss';
-
 /* Bouton Confirm (OK) */
 .swal2-confirm {
-    background-color: mat-color($custom-primary, 500) !important;
-    /* Vert */
+    background-color: #518196 !important;
+    /* Primaire SOCLE */
     color: white !important;
     border: none !important;
     border-radius: 4px !important;
@@ -29,8 +25,8 @@ body {
 
 /* Bouton Deny */
 .swal2-deny {
-    background-color: mat-color($custom-accent, 500) !important;
-    /* Rouge */
+    background-color: #fabb64 !important;
+    /* Accent SOCLE */
     color: white !important;
     border: none !important;
     border-radius: 4px !important;

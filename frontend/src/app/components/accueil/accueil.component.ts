@@ -34,6 +34,7 @@ interface Location {
 }
 
 @Component({
+  standalone: false,
   selector: 'app-accueil',
   templateUrl: './accueil.component.html',
   styleUrls: ['./accueil.component.scss']

@@ -17,6 +17,40 @@ SOCLE 2 est construit avec les technologies de l'ecosystème GeoNature:
 - **Angular**: Framework Frontend en TypeScript
 - **PostgreSQL**: Base de données 
 
+## Suivi des dépendances (SBOM)
+
+Les dépendances de SOCLE sont inventoriées au format CycloneDX et suivies dans le
+[Dependency-Track de RNF](https://dependencytrack.reserves-naturelles.org), qui
+remonte les vulnérabilités connues des bibliothèques utilisées.
+
+L'envoi est automatique à la **publication d'une release** GitHub
+(`.github/workflows/sbom.yml`) : on inventorie ce qui est publié, pas chaque
+commit. Deux projets sont alimentés, `socle-v2-backend` (pip) et
+`socle-v2-frontend` (npm, hors dépendances de développement).
+
+Pour régénérer les SBOM à la main, dans `sbom/` :
+
+```bash
+./scripts/generate-sbom.sh              # génère seulement
+./scripts/generate-sbom.sh --envoi      # génère puis envoie
+./scripts/generate-sbom.sh --avec-dev   # inclut les dépendances npm de dev
+```
+
+L'envoi depuis un poste demande une clé d'API dans
+`~/.config/dependency-track/api.key` (mode 600) ; en CI elle vient du secret
+`DT_API_KEY`.
+
+Deux notions de version cohabitent, qu'on confond vite :
+
+| Variable | Défaut | Rôle |
+|---|---|---|
+| `DT_VERSION` | `prod` | version des projets Dependency-Track — **fixe**, c'est l'environnement déployé |
+| `APP_VERSION` | dernier tag Git | version applicative inscrite dans les SBOM |
+
+`DT_VERSION` reste volontairement fixe : une version de projet par release
+créerait deux projets neufs à chaque publication, à re-tagger et re-rattacher à
+la main. Le numéro de release est tracé par le composant racine du SBOM.
+
 ## Licence
 
 Ce projet est sous licence **GNU Affero General Public License v3 (AGPL-3.0)**. Cela signifie que :
