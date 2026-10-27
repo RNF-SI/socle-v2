@@ -1,0 +1,144 @@
+<div [ngClass]="{'panel-heading-home': isHomePage, 'panel-heading': !isHomePage}">
+  <div [ngClass]="{'title-home': isHomePage, 'title': !isHomePage}">
+    {{ title | uppercase }}
+  </div>
+  <div>
+    <span class="subtitle"> {{ subtitle | uppercase }} </span>
+  </div>
+  <div class="credit">
+    {{credit}}
+  </div>
+</div>
+<mat-toolbar>
+  <!-- Liens du menu -->
+  <div *ngIf="!isMobile" class="menu">
+    <div *ngFor="let e of menu">
+      <a [routerLink]="e.lien">
+        <fa-icon [icon]="[e.classFa, e.nomFa]"></fa-icon> {{ e.nom | uppercase }}
+      </a>
+    </div>
+  </div>
+
+  <button *ngIf="isMobile" mat-icon-button [matMenuTriggerFor]="menuBurger" class="burger">
+    <mat-icon>menu</mat-icon>
+  </button>
+  
+  <mat-menu #menuBurger="matMenu" >
+    <button mat-menu-item *ngFor="let e of menu" [routerLink]="e.lien">
+      <fa-icon [icon]="[e.classFa, e.nomFa]"></fa-icon> {{ e.nom }}
+    </button>
+  </mat-menu>
+ 
+   <!-- Barre de recherche -->
+  <div class="search-bar" *ngIf="!isMobile && searchInput">
+    <mat-form-field>
+      <mat-label>Recherche</mat-label>
+      <input type="text" matInput [formControl]="searchControl" [matAutocomplete]="auto" [placeholder]=placeholder>
+      <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn"
+        (optionSelected)="onSearchItemSelected($event)">
+        <mat-option *ngFor="let item of filteredSearchItems | async" [value]="item">
+          {{ item.nom }}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+  </div>
+  <button class="loupe" mat-icon-button *ngIf="searchInput && isMobile" (click)="toggleSearchBar()" #searchButton>
+    <fa-icon [icon]="['fas', 'magnifying-glass']"></fa-icon>
+  </button>
+
+  <span class="example-spacer"></span>
+
+  <!-- Liens connexion / utilisateur -->
+  <a [routerLink]="'login'" *ngIf="!signedIn">
+    <fa-icon [icon]="['fas', 'right-to-bracket']" size="2x"></fa-icon>
+  </a>
+  <a [matMenuTriggerFor]="menuSettings" *ngIf="signedIn" class="user menuCompte">
+    {{ user!.prenom_role | titlecase }} {{ user!.nom_role | titlecase }}
+    <fa-icon [icon]="['fas', 'user']"></fa-icon>
+  </a>
+  <mat-menu #menuSettings="matMenu" >
+    <div *ngFor="let i of menucompte">
+      <button mat-menu-item [routerLink]="[i.lien]">
+        <fa-icon [icon]="[i.classFa, i.nomFa]"></fa-icon> {{ i.texte }}
+      </button>
+    </div>
+  </mat-menu>
+</mat-toolbar>
+
+<div class="app-content">
+  <div>
+    <router-outlet></router-outlet>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<footer class="text-center" *ngIf="displayFooter">
+  <!-- Section: Links  -->
+  <section class="panel-footer ">
+    <div class="nav-grid-4-4-4">
+      <!-- Grid row -->
+      
+        <!-- Grid column -->
+        <div>
+          <!-- Content -->
+          <h6>
+            <!-- <i class="fas fa-gem me-3 text-secondary"></i> -->Réserves Naturelles de France
+          </h6>
+          <p>
+            2 allée Pierre Lacroute <br>
+            CS 67524 <br>
+            21075 Dijon cedex <br>
+            03 80 48 91 00
+          </p>
+        </div>
+        <!-- Grid column -->
+
+        @if(displayPartners){
+          <div class="partenaires">
+            <div>Ce projet a été soutenu par : 
+              <p>
+              @for(part of partenaires;track part){
+                <img class ="partenaire" src="assets/images/partenaires/{{part}}"/>
+              }
+              </p>
+            </div>
+          </div>
+        }@else{
+          <div></div>
+        }
+        <!-- Grid column -->
+        <div>
+          <!-- Links -->
+          <h6>Réseaux Sociaux</h6>
+          <div class="social">
+            <div><a href="https://www.facebook.com/rn.de.france" target="_blank">
+                <fa-icon [icon]="['fab', 'facebook']" size="3x" class="white-icon"></fa-icon>
+              </a></div>
+            <div><a href="https://www.instagram.com/reserves_naturelles_de_france/"
+                target="_blank">
+                <fa-icon [icon]="['fab', 'instagram']" size="3x" class="white-icon"></fa-icon>
+              </a></div>
+            <div><a href="https://www.linkedin.com/company/50041043" target="_blank">
+                <fa-icon [icon]="['fab', 'linkedin']" size="3x" class="white-icon"></fa-icon>
+              </a> </div>
+            <div><a href="https://github.com/RNF-SI" target="_blank">
+                <fa-icon [icon]="['fab', 'github']" size="3x" class="white-icon"></fa-icon>
+              </a></div>
+          </div>
+          <div class="contact">
+            <br>
+            <a routerLink="/contacts">Besoin d'aide ?</a>
+          </div>
+        </div>
+
+        <!-- Grid column -->
+      
+      <!-- Grid row -->
+    </div>
+    
+    
+  </section>
+  <!-- Section: Links  -->
+</footer>
+<!-- Footer -->

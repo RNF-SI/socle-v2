@@ -42,8 +42,18 @@ import { LiensComponent } from './components/liens/liens.component';
 import { MessitesComponent } from './components/mes-sites/mes-sites.component';
 import { QuestionnaireSimplifieComponent } from './components/site/questionnaire-simplifie/questionnaire-simplifie.component';
 import { SyntheseSiteComponent } from './components/site/synthese-site/synthese-site.component';
-import { HomeRnfModule } from './home-rnf/home-rnf.module';
-import { getFrenchPaginatorIntl } from './home-rnf/shared/french-paginator-intl';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import { fab } from '@fortawesome/free-brands-svg-icons';
+import { far } from '@fortawesome/free-regular-svg-icons';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+import { AccessDeniedComponent } from './core/components/access-denied/access-denied.component';
+import { ForgotPasswordComponent } from './core/components/forgot-password/forgot-password.component';
+import { LoginComponent } from './core/components/login/login.component';
+import { LogoutComponent } from './core/components/logout/logout.component';
+import { NavHomeComponent } from './core/components/nav-home/nav-home.component';
+import { NotFoundComponent } from './core/components/not-found/not-found.component';
+import { getFrenchPaginatorIntl } from './core/shared/french-paginator-intl';
 import { CapitalizePipe } from './pipes/capitalize.pipe';
 
 
@@ -68,7 +78,12 @@ registerLocaleData(localeFr, 'fr');
     BrowserModule,
     AppRoutingModule,
     RouterModule,
-    HomeRnfModule,
+    NavHomeComponent,
+    LoginComponent,
+    LogoutComponent,
+    ForgotPasswordComponent,
+    NotFoundComponent,
+    AccessDeniedComponent,
     FontAwesomeModule,
     RecaptchaModule,
     HttpClientModule,
@@ -105,9 +120,15 @@ registerLocaleData(localeFr, 'fr');
   ],
 
   providers: [
+    { provide: MAT_DIALOG_DATA, useValue: {} },
+    { provide: MatDialogRef, useValue: {} },
     { provide: MatPaginatorIntl, useValue: getFrenchPaginatorIntl() },
     { provide: LOCALE_ID, useValue: 'fr' }
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+  constructor(library: FaIconLibrary) {
+    library.addIconPacks(fab, fas, far);
+  }
+}

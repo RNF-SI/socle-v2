@@ -4,7 +4,7 @@ import { faArrowUpRightFromSquare, faKey, faUserPlus } from '@fortawesome/free-s
 import { toPng } from 'html-to-image';
 import jsPDF from 'jspdf';
 import * as L from 'leaflet';
-import { AuthService } from 'src/app/home-rnf/services/auth-service.service';
+import { AuthService } from 'src/app/core/auth/auth-service.service';
 import { Nomenclature } from 'src/app/models/nomenclature.model';
 import { Site } from 'src/app/models/site.model';
 import { NomenclaturesService } from 'src/app/services/nomenclatures.service';
