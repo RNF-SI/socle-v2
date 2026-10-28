@@ -36,7 +36,7 @@ export class SyntheseSiteComponent implements OnInit {
   faArrowUpRightFromSquare = faArrowUpRightFromSquare;
   selectedSite: any = {};
   substancesOptions: Nomenclature[] = [];
-  uniqueInteretGeolPrincipal = [];
+  uniqueInteretGeolPrincipal: string[] = [];
   rnId: string | null = null;
   sfgeol: string[] = [];
 
@@ -88,6 +88,27 @@ export class SyntheseSiteComponent implements OnInit {
    * qu'un ensemble saisi librement s'affichait « Aucun ensemble géologique
    * sélectionné ».
    */
+  /**
+   * Sites INPG encore retenus par le gestionnaire.
+   *
+   * Un site décoché reste rattaché à la réserve — pour garder la trace et la
+   * raison — mais ne compte plus comme patrimoine.
+   */
+  get inpgActifs(): any[] {
+    return (this.site?.sites_inpg ?? []).filter((inpg: any) => inpg.active !== false);
+  }
+
+  /**
+   * La réserve abrite-t-elle du patrimoine géologique connu ?
+   *
+   * Les sites ajoutés à la main par le gestionnaire comptent autant que les
+   * sites INPG : ne regarder que l'INPG faisait passer pour dépourvues des
+   * réserves dont tout le patrimoine avait été saisi manuellement.
+   */
+  get aDuPatrimoineGeologique(): boolean {
+    return this.inpgActifs.length > 0 || (this.site?.patrimoines_geologiques?.length ?? 0) > 0;
+  }
+
   get ensembleGeologiqueAutre(): string {
     return (this.site?.infos_base?.geological_units_other ?? '').trim();
   }
@@ -117,10 +138,15 @@ export class SyntheseSiteComponent implements OnInit {
           error => this.hasAccessToRn = false // En cas d'erreur, refuse l'accès      
         );
         setTimeout(() => (this.initMap(), this.addLayers(), this.zoomToExtent()), 1);
+        // Les intérêts se lisent sur les sites INPG encore retenus et sur le
+        // patrimoine ajouté à la main, jusqu'ici ignoré.
         this.uniqueInteretGeolPrincipal = Array.from(
-          new Set(this.site.sites_inpg.map((inpg: any) => inpg.inpg.interet_geol_principal))
+          new Set([
+            ...this.inpgActifs.map((inpg: any) => inpg.inpg.interet_geol_principal),
+            ...(this.site.patrimoines_geologiques ?? []).map((p: any) => p.interet_geol_principal),
+          ].filter((interet: any) => !!interet))
         );
-        this.nbInpgConfidentielsReserve = this.site.sites_inpg.filter((inpg: { inpg: { niveau_de_diffusion: string; }; }) => inpg.inpg.niveau_de_diffusion === 'Confidentiel').length;
+        this.nbInpgConfidentielsReserve = this.inpgActifs.filter((inpg: { inpg: { niveau_de_diffusion: string; }; }) => inpg.inpg.niveau_de_diffusion === 'Confidentiel').length;
         if (this.site.perimetre_protection) {
           this.nbInpgConfidentielsPP = this.site.perimetre_protection.sites_inpg.filter((inpg: { inpg: { niveau_de_diffusion: string; }; }) => inpg.inpg.niveau_de_diffusion === 'Confidentiel').length;
         }

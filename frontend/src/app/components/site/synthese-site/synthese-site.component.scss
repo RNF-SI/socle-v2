@@ -334,3 +334,10 @@ span.legend-item {
   font-style: italic;
   opacity: 0.7;
 }
+
+// Site INPG écarté par le gestionnaire : conservé dans la liste pour garder la
+// trace, mais barré comme dans le questionnaire.
+.strikethrough {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
