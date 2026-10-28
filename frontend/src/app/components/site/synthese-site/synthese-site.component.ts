@@ -2,7 +2,7 @@ import { Component, ElementRef, OnInit, QueryList, Renderer2, ViewChildren, Chan
 import { ActivatedRoute } from '@angular/router';
 import { faArrowUpRightFromSquare, faKey, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { toPng } from 'html-to-image';
-import jsPDF from 'jspdf';
+import { ExportFicheService } from 'src/app/services/export-fiche.service';
 import * as L from 'leaflet';
 import { AuthService } from 'src/app/core/auth/auth-service.service';
 import { Nomenclature } from 'src/app/models/nomenclature.model';
@@ -65,7 +65,8 @@ export class SyntheseSiteComponent implements OnInit {
     private route: ActivatedRoute,
     private siteService: SitesService,
     public authService: AuthService,
-    private nomenclaturesService: NomenclaturesService
+    private nomenclaturesService: NomenclaturesService,
+    private exportFiche: ExportFicheService
   ) { }
 
   estConnecte() {
@@ -524,67 +525,69 @@ export class SyntheseSiteComponent implements OnInit {
   //   return this.substancesOptions.filter(substance => selectedMnemonics.includes(substance.mnemonique));
   // }
 
-  exportData() {
-    const data = document.getElementById('export-content');
+  /**
+   * Exporte la fiche en PDF.
+   *
+   * Le PDF est composé à partir des données par ExportFicheService ; seule la
+   * carte est capturée en image. Si la capture échoue — une feuille de style
+   * distante qui refuse d'être lue suffit — l'export se poursuit sans elle
+   * plutôt que de ne rien produire.
+   */
+  async exportData(): Promise<void> {
+    const carte = await this.capturerCarte();
+
+    this.exportFiche.genererPdf({
+      site: this.site,
+      inpgActifs: this.inpgActifs,
+      ensemblesGeologiques: this.filteredGeologicalUnits ?? [],
+      ensembleGeologiqueAutre: this.ensembleGeologiqueAutre,
+      interetsGeologiques: this.uniqueInteretGeolPrincipal ?? [],
+      stratotypesLimite: this.stratotypesLimite ?? [],
+      stratotypesEtage: this.stratotypesEtage ?? [],
+      inpgActifsPerimetre: this.inpgActifsPerimetre,
+      formationsGeologiques: this.sfgeol ?? [],
+      carte,
+    });
+  }
+
+  /** Capture la carte seule, recentrée sur la réserve et sans ses contrôles. */
+  private async capturerCarte(): Promise<string | null> {
     const map = this.map;
+    if (!map) {
+      return null;
+    }
 
-    if (data && map) {
-      // Cacher les contrôles de zoom et de couches en appliquant `display: none` directement
-      const layerControl = document.querySelector('.leaflet-control-layers');
-      const zoomControl = document.querySelector('.leaflet-control-zoom');
-      if (layerControl) (layerControl as HTMLElement).style.display = 'none';
-      if (zoomControl) (zoomControl as HTMLElement).style.display = 'none';
+    const controles = Array.from(
+      document.querySelectorAll<HTMLElement>('.leaflet-control-layers, .leaflet-control-zoom'));
+    controles.forEach(c => (c.style.visibility = 'hidden'));
 
+    let fondInitial: L.Layer | null = null;
+    map.eachLayer(couche => {
+      if (couche === this.osm || couche === this.geologie) {
+        fondInitial = couche;
+      }
+    });
+
+    try {
       this.zoomToExtent();
-
-      // Sauvegarder la couche de fond actuelle (osm ou geologie)
-      let currentBaseLayer: L.Layer | null | undefined = null;
-      map.eachLayer(layer => {
-        if (layer === this.osm || layer === this.geologie) {
-          currentBaseLayer = layer;
-        }
-      });
-
-      // Activer temporairement la couche OpenStreetMap pour l'export
-      if (currentBaseLayer !== this.osm) {
-        map.removeLayer(currentBaseLayer!);
+      // Le fond OpenStreetMap s'exporte mieux que les tuiles du BRGM, qui
+      // n'autorisent pas toujours la lecture depuis un canvas.
+      if (fondInitial && fondInitial !== this.osm) {
+        map.removeLayer(fondInitial);
         this.osm?.addTo(map);
       }
-
-      // Forcer le rechargement des tuiles pour garantir que la couche OSM est bien chargée
       map.invalidateSize();
-
-      // Attendre un moment pour s'assurer que tout est bien chargé avant l'exportation
-      setTimeout(() => {
-        toPng(data).then((dataUrl) => {
-          const imgWidth = 208;
-          const marginTop = 10;  // Marge en haut de la page
-          const marginBottom = 10;  // Marge en bas de la page
-          const img = new Image();
-          img.src = dataUrl;
-          img.onload = () => {
-            const imgHeight = (img.height * imgWidth) / img.width;
-
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            let position = marginTop;
-
-            pdf.addImage(dataUrl, 'PNG', 0, position, imgWidth, imgHeight);
-            pdf.save('site-details.pdf');
-          };
-        }).catch((error) => {
-          console.error("Erreur lors de l'exportation :", error);
-        }).finally(() => {
-          // Rétablir la couche de fond initiale
-          if (currentBaseLayer && currentBaseLayer !== this.osm) {
-            map.removeLayer(this.osm!);
-            currentBaseLayer.addTo(map);
-          }
-
-          // Réafficher les contrôles de zoom et de sélection de couche
-          if (layerControl) (layerControl as HTMLElement).style.display = '';
-          if (zoomControl) (zoomControl as HTMLElement).style.display = '';
-        });
-      }, 2000);
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      return await toPng(map.getContainer(), { cacheBust: true });
+    } catch (erreur) {
+      console.error("Carte non exportée :", erreur);
+      return null;
+    } finally {
+      if (fondInitial && fondInitial !== this.osm) {
+        map.removeLayer(this.osm!);
+        (fondInitial as L.Layer).addTo(map);
+      }
+      controles.forEach(c => (c.style.visibility = ''));
     }
   }
 
