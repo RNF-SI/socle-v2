@@ -95,6 +95,26 @@ L'authentification est isolée dans `core/auth/` : c'est la seule partie qu'il f
 
 `src/conf/app.config.ts` reste le paramétrage de cette coquille : titres, menu, recherche, `displayFooter`, `displayPartners`.
 
+### Formulaire de contact — ticket Zammad
+
+`POST /contact` vérifie le jeton Cloudflare Turnstile puis ouvre un ticket Zammad, sur le modèle de `cicada_vitrine`. Le jeton d'API Zammad et le secret Turnstile ne quittent jamais le serveur : le frontend ne connaît que cette route.
+
+Quatre clés dans `config.py` (documentées dans `config_sample.py`) : `ZAMMAD_URL`, `ZAMMAD_TOKEN`, `ZAMMAD_GROUP`, `TURNSTILE_SECRET`. Si l'une manque, la route répond 500 plutôt que d'envoyer sans vérification — elle **échoue volontairement fermée**.
+
+**Les droits Zammad sont par groupe.** Le jeton doit appartenir à un agent ayant `create` sur le groupe visé ; un jeton d'une autre application RNF liste bien les groupes mais reçoit un 403 « Not authorized » à la création. Le détail du refus est journalisé côté serveur, le client ne voit qu'un message générique : en cas de 502, lire les logs du backend.
+
+**Le nom du groupe est un chemin complet.** Zammad imbrique les groupes avec `::` et l'API attend le nom exact : c'est `Support SI RNF::Support SOCLE`, pas `Support SOCLE`. Un nom partiel fait refuser la création du ticket.
+
+Le ticket est créé avec `customer_id: guess:<email>`, qui laisse Zammad créer le demandeur à la volée.
+
+L'article porte `sender: Customer`, qui l'attribue au demandeur et non à l'agent du jeton.
+
+**Ne pas basculer l'article en `type: email` pour préremplir le destinataire d'une réponse.** Essayé : Zammad refuse en 422 `email_recipient — Sending an email without a valid recipient is not possible`, car il valide un destinataire dès que le type est `email`, y compris avec `sender: Customer`. Le faire passer demanderait de renseigner aussi `to` avec l'adresse du support, au risque d'un envoi sortant réel. Les `MAIL_DEST_TECHNIQUE` / `MAIL_DEST_GEOL` ne servent plus : le routage par sujet se fait dans Zammad, pas dans le code.
+
+**Turnstile plutôt que reCAPTCHA** : pas de cookie de pistage, pas de puzzle dans la plupart des cas, conforme au RGPD sans bandeau de consentement. Le widget vit dans `core/components/captcha/`, adapté de celui de `cicada_vitrine`.
+
+**Les clés Turnstile sont liées à des noms d'hôte.** Une clé d'un autre site renvoie l'erreur `110200` (domaine non autorisé) et le widget ne s'affiche pas. En développement, `environment.ts` utilise la paire de test Cloudflare (`1x00000000000000000000AA` côté client, `1x0000000000000000000000000000000AA` côté serveur), qui accepte tout. La production exige un widget Turnstile déclaré pour le domaine de SOCLE.
+
 ### Authentification et droits (entièrement côté client)
 
 `AuthService` poste sur `${environment.apiGeoNature}/auth/login` avec `AppConfig.ID_APPLICATION_GEONATURE`, puis stocke dans le **localStorage** : `current_user`, `tk_id_token`, `expires_at` et `rnsUser` (la liste des réserves rattachées à l'utilisateur, obtenue de l'export GeoNature `/exports/api/3`). Les droits viennent de `/exports/api/4` ; ces deux exports exigent `environment.token`.
@@ -122,6 +142,6 @@ Cartographie : Leaflet + `Leaflet.Deflate` + proj4/proj4leaflet. Les polygones s
 ## Conventions
 
 - Noms de tables, colonnes et champs métier en français ou en anglais selon l'existant — s'aligner sur la table concernée plutôt que d'uniformiser.
-- Côté backend, les routes retournent soit `schema.jsonify(...)`, soit un dict `{type, msg}` (`'success'` / `'bug'`) consommé par `ngx-toastr` ; conserver cette forme pour les mutations.
+- Côté backend, les routes retournent soit `schema.jsonify(...)`, soit un dict `{type, msg}` (`'success'` / `'bug'`) ; conserver cette forme pour les mutations. Les notifications passent par `core/services/notification.service.ts` (MatSnackBar), ngx-toastr ayant été retiré en Angular 22.
 - Branche d'intégration : `dev`, fusionnée vers `main` par pull request.
 - Licence AGPL-3.0.

@@ -13,7 +13,18 @@ class Config :
     MAIL_ASCII_ATTACHMENTS = False
     MAIL_USERNAME = ""
     MAIL_DEST_TECHNIQUE = "mail@mail.fr" #mail du destinataire technique
-    MAIL_DEST_GEOL = "mail@mail.fr" #mail du destinataire thématique 
+    MAIL_DEST_GEOL = "mail@mail.fr" #mail du destinataire thématique
+
+    # --- Formulaire de contact : ouverture d'un ticket Zammad ---
+    # Le jeton et la clé secrète du captcha restent côté serveur : le frontend
+    # ne connaît que la route /contact.
+    ZAMMAD_URL = "https://zammad.reserves-naturelles.org"  # sans slash final
+    # Jeton d'API d'un agent ayant le droit « create » SUR LE GROUPE CI-DESSOUS.
+    # Un jeton d'une autre application ne suffit pas : les droits sont par
+    # groupe, et Zammad répond 403 « Not authorized » à la création.
+    ZAMMAD_TOKEN = ""
+    ZAMMAD_GROUP = "Support SI RNF::Support SOCLE"  # nom exact, groupes imbriqués avec ::
+    TURNSTILE_SECRET = ""  # clé secrète Cloudflare Turnstile, pendant de turnstileSiteKey côté front
     URL_USERSHUB = 'https://usershub.reserves-naturelles.org' # sans slash final
     ID_APP = 11
     CODE_APPLICATION = "SOCLE"

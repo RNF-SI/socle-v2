@@ -3,7 +3,8 @@ from venv import logger
 from flask import Flask, request, Response, render_template, redirect, Blueprint, jsonify, g, abort, current_app
 import requests
 import json
-from app import app, db, mail
+import re
+from app import app, db
 from models import PatrimoineGeologiqueGestionnaire, Site, TInfosBaseSite, Nomenclature, BibNomenclatureType,Inpg, Site, CorSiteInpg, CorSiteSubstance, Stratotype, Parametres, Echelle, SFGeol, SuivisModifs
 from schemas import PatrimoineGeologiqueGestionnaireSchema, PerimetreProtectionSchema, TInfosBaseSiteSchema, SiteSchema, NomenclatureSchema, NomenclatureTypeSchema, SiteSchemaSimple, StratotypeSchema, ParametresSchema, SuivisModifsSchema
 from pypnusershub import routes as fnauth
@@ -11,7 +12,6 @@ import logging
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload, load_only
 import datetime
-from flask_mail import Message
 
 bp = Blueprint('routes', __name__)
 
@@ -430,31 +430,132 @@ def get_parametre_by_libelle(libelle):
     schema = ParametresSchema(many=False)
     return schema.jsonify(parametre)
 
+# Libellés des sujets du formulaire, repris pour composer le titre du ticket.
+LIBELLES_SUJET = {
+    'technique': 'Question technique sur le site',
+    'geologie': 'Question sur la géologie des réserves',
+    'autre': 'Autre question',
+}
+
+
+def _captcha_valide(jeton, secret, ip=None):
+    """Vérifie le jeton auprès de Cloudflare Turnstile.
+
+    Turnstile plutôt que reCAPTCHA : pas de cookie de pistage, pas de puzzle
+    dans la grande majorité des cas, et conforme au RGPD sans bandeau de
+    consentement.
+    """
+    donnees = {'secret': secret, 'response': jeton}
+    if ip:
+        donnees['remoteip'] = ip
+    try:
+        reponse = requests.post(
+            'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+            data=donnees,
+            timeout=10,
+        )
+        return bool(reponse.json().get('success'))
+    except (requests.RequestException, ValueError) as e:
+        # Service de vérification injoignable : on refuse plutôt que d'ouvrir
+        # la porte au spam.
+        current_app.logger.error(f"Vérification du captcha impossible : {e}")
+        return False
+
+
 @bp.route('/contact', methods=['POST'])
 def send_contact_mail():
-    data = request.get_json()
+    """Ouvre un ticket Zammad depuis le formulaire de contact.
+
+    Le jeton d'API Zammad et la clé secrète du captcha ne quittent jamais le
+    serveur : le frontend ne connaît que cette route.
+    """
+    config = current_app.config
+    zammad_url = (config.get('ZAMMAD_URL') or '').rstrip('/')
+    zammad_token = config.get('ZAMMAD_TOKEN')
+    captcha_secret = config.get('TURNSTILE_SECRET')
+
+    if not zammad_url or not zammad_token or not captcha_secret:
+        current_app.logger.error(
+            "Configuration incomplète : ZAMMAD_URL, ZAMMAD_TOKEN ou TURNSTILE_SECRET absent."
+        )
+        return jsonify({"msg": "Le service de contact n'est pas configuré"}), 500
+
+    data = request.get_json(silent=True)
     if not data:
         return jsonify({"msg": "Données invalides"}), 400
 
-    sujet = data.get('sujet', '').lower()
-    nom = data.get('nom', '')
-    email = data.get('email', '')
-    message_content = data.get('message', '')
+    nom = (data.get('nom') or '').strip()[:120]
+    email = (data.get('email') or '').strip().lower()[:254]
+    sujet = (data.get('sujet') or '').strip()[:32]
+    message_content = (data.get('message') or '').strip()[:4000]
+    captcha = (data.get('captchaToken') or '').strip()[:2048]
 
-    # Déterminez le destinataire selon le sujet
-    if sujet == 'technique':
-        recipient = current_app.config.get('MAIL_DEST_TECHNIQUE')
-    else:
-        recipient = current_app.config.get('MAIL_DEST_GEOL')
+    # Validation volontairement souple : écarter les saisies qui n'ont aucune
+    # chance d'être valides, sans réimplémenter la RFC 5322.
+    if not nom or not re.match(r'^[^\s@]+@[^\s@]+\.[^\s@]{2,}$', email) \
+            or not message_content or not captcha:
+        return jsonify({"msg": "Formulaire incomplet ou invalide"}), 400
 
-    # Préparez le message
-    msg = Message(subject=f"Mail depuis SOCLE",
-                  sender=current_app.config.get('MAIL_DEFAULT_SENDER'),
-                  recipients=[recipient])
-    msg.body = f"Nom: {nom}\nEmail: {email}\n\nMessage:\n{message_content}"
+    # Cloudflare recommande de transmettre l'IP d'origine quand on la connaît.
+    ip = request.headers.get('CF-Connecting-IP') or request.headers.get('X-Forwarded-For')
+    if not _captcha_valide(captcha, captcha_secret, ip):
+        return jsonify({"msg": "La vérification anti-robot a échoué"}), 400
+
+    libelle = LIBELLES_SUJET.get(sujet, LIBELLES_SUJET['autre'])
+    groupe = config.get('ZAMMAD_GROUP') or 'Support SOCLE'
+
+    # Corps en texte brut : lisible dans Zammad comme dans la notification par
+    # courriel, et aucun risque d'injection HTML.
+    corps = "\n".join([
+        f"Nom : {nom}",
+        f"Adresse : {email}",
+        f"Objet : {libelle}",
+        "",
+        message_content,
+        "",
+        "— Envoyé depuis le formulaire de contact de SOCLE.",
+    ])
+
     try:
-        mail.send(msg)
-        return jsonify({"msg": "Mail envoyé avec succès"}), 200
-    except Exception as e:
-        current_app.logger.error(f"Erreur lors de l'envoi du mail: {e}")
-        return jsonify({"msg": "Erreur lors de l'envoi du mail"}), 500
+        reponse = requests.post(
+            f"{zammad_url}/api/v1/tickets",
+            headers={
+                'Authorization': f"Token token={zammad_token}",
+                'Content-Type': 'application/json',
+            },
+            json={
+                'title': f"[SOCLE] {libelle} — {nom}",
+                'group': groupe,
+                # Zammad crée l'utilisateur à la volée s'il ne connaît pas
+                # l'adresse, ce qui rattache l'échange au bon demandeur.
+                'customer_id': f"guess:{email}",
+                'article': {
+                    'subject': libelle,
+                    'type': 'web',
+                    # sender « Customer » attribue l'article au demandeur et non
+                    # à l'agent du jeton. Sans lui, « Répondre » ne retrouve pas
+                    # l'adresse à qui écrire.
+                    'sender': 'Customer',
+                    'from': f"{nom} <{email}>",
+                    'reply_to': email,
+                    'body': corps,
+                    'internal': False,
+                    'content_type': 'text/plain',
+                },
+            },
+            timeout=15,
+        )
+    except requests.RequestException as e:
+        current_app.logger.error(f"Zammad injoignable : {e}")
+        return jsonify({"msg": "Erreur lors de l'envoi du message"}), 502
+
+    if not reponse.ok:
+        # Le détail reste côté serveur : la réponse de Zammad peut contenir
+        # des informations internes.
+        current_app.logger.error(
+            f"Zammad a refusé la création du ticket ({reponse.status_code}) : {reponse.text}"
+        )
+        return jsonify({"msg": "Erreur lors de l'envoi du message"}), 502
+
+    numero = (reponse.json() or {}).get('number')
+    return jsonify({"msg": "Message envoyé avec succès", "ticketNumber": numero}), 200

@@ -72,12 +72,11 @@
     <div class="row">
       <div class="col-md-12 text-center">
         <div class="recaptcha-wrapper">
-          <re-captcha siteKey={{captcha_key}} (resolved)="onCaptchaResolved($event)">
-          </re-captcha>
+          <app-captcha (token)="onCaptchaResolved($event)"></app-captcha>
         </div>
         <mat-error
-          *ngIf="contactForm.get('recaptcha')?.invalid && (contactForm.get('recaptcha')?.touched || submitted)">
-          Veuillez compléter le captcha.
+          *ngIf="contactForm.get('captchaToken')?.invalid && (contactForm.get('captchaToken')?.touched || submitted)">
+          Veuillez compléter la vérification anti-robot.
         </mat-error>
       </div>
     </div>
