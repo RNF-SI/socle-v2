@@ -105,7 +105,9 @@ Quatre clés dans `config.py` (documentées dans `config_sample.py`) : `ZAMMAD_U
 
 **Le nom du groupe est un chemin complet.** Zammad imbrique les groupes avec `::` et l'API attend le nom exact : c'est `Support SI RNF::Support SOCLE`, pas `Support SOCLE`. Un nom partiel fait refuser la création du ticket.
 
-Le ticket est créé avec `customer_id: guess:<email>`, qui laisse Zammad créer le demandeur à la volée. Les `MAIL_DEST_TECHNIQUE` / `MAIL_DEST_GEOL` ne servent plus : le routage par sujet se fait dans Zammad, pas dans le code.
+Le ticket est créé avec `customer_id: guess:<email>`, qui laisse Zammad créer le demandeur à la volée.
+
+**Le premier article est un courriel entrant** (`type: email`, `sender: Customer`, avec `from` et `reply_to`), et non un article `web`. Un article `web` ne porte aucune enveloppe de courriel : le demandeur est bien créé, mais quand un agent clique sur « Répondre », le champ destinataire reste vide. `sender: Customer` marque l'article comme entrant, donc Zammad l'enregistre sans rien envoyer. Les `MAIL_DEST_TECHNIQUE` / `MAIL_DEST_GEOL` ne servent plus : le routage par sujet se fait dans Zammad, pas dans le code.
 
 **Turnstile plutôt que reCAPTCHA** : pas de cookie de pistage, pas de puzzle dans la plupart des cas, conforme au RGPD sans bandeau de consentement. Le widget vit dans `core/components/captcha/`, adapté de celui de `cicada_vitrine`.
 

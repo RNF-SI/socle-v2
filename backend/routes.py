@@ -531,9 +531,16 @@ def send_contact_mail():
                 'customer_id': f"guess:{email}",
                 'article': {
                     'subject': libelle,
+                    # Article de type « email » entrant plutôt que « web » : sur un
+                    # article web, Zammad n'a aucune enveloppe de courriel et le
+                    # champ destinataire reste vide quand un agent répond.
+                    # sender « Customer » le marque comme entrant : Zammad n'envoie
+                    # rien, il se contente de l'enregistrer.
+                    'type': 'email',
+                    'sender': 'Customer',
                     'from': f"{nom} <{email}>",
+                    'reply_to': email,
                     'body': corps,
-                    'type': 'web',
                     'internal': False,
                     'content_type': 'text/plain',
                 },
