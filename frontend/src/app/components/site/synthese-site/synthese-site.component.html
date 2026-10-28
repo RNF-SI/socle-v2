@@ -100,10 +100,12 @@
       <!-- TODO: tableu de corespendance  -->
       <p class="subsection-title">Ensemble géologique</p>
       <div class="subsection-response">
-        <div *ngIf="filteredGeologicalUnits && filteredGeologicalUnits.length > 0; else noGeologicalUnits">
+        <div
+          *ngIf="(filteredGeologicalUnits && filteredGeologicalUnits.length > 0) || ensembleGeologiqueAutre; else noGeologicalUnits">
           <ng-container *ngFor="let geol of filteredGeologicalUnits">
             <span>{{ geol.label}}</span><br>
           </ng-container>
+          <span *ngIf="ensembleGeologiqueAutre">{{ ensembleGeologiqueAutre }}</span>
         </div>
         <ng-template #noGeologicalUnits>
           <p>Aucun ensemble géologique sélectionné.</p>

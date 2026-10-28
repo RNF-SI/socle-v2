@@ -60,6 +60,8 @@ export interface Infos_base {
   contains_paleontological_heritage_trace_fossils: boolean;
   contains_paleontological_heritage_other_details: string;
   geological_units: number[];
+  /** Ensemble géologique saisi librement via « Autre ». */
+  geological_units_other: string | null;
   // Les questions du questionnaire valent null tant qu'elles n'ont pas été
   // renseignées : le type doit le refléter, sinon « non renseigné » et « non »
   // deviennent indiscernables à la lecture.

@@ -81,6 +81,17 @@ export class SyntheseSiteComponent implements OnInit {
    * renseignée (null). Les afficher en deux états faisait passer une question
    * sans réponse pour une réponse négative.
    */
+  /**
+   * Ensemble géologique saisi à la main via « Autre ».
+   *
+   * Il n'est pas dans la nomenclature : sans ce rendu, une réserve n'ayant
+   * qu'un ensemble saisi librement s'affichait « Aucun ensemble géologique
+   * sélectionné ».
+   */
+  get ensembleGeologiqueAutre(): string {
+    return (this.site?.infos_base?.geological_units_other ?? '').trim();
+  }
+
   estRenseigne(valeur: boolean | null | undefined): boolean {
     return valeur === true || valeur === false;
   }

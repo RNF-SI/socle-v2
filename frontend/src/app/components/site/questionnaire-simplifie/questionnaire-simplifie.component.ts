@@ -242,6 +242,31 @@ export class QuestionnaireSimplifieComponent implements OnInit {
       event.preventDefault();
     }
   }
+  /**
+   * « Autre » sans précision ne veut rien dire dans la synthèse : la saisie
+   * libre devient obligatoire dès que la case est cochée, et cesse de l'être
+   * si on la décoche.
+   */
+  private exigerPrecisionAutreEnsemble(): void {
+    const autre = this.tInfosBaseSiteForm.get('geologicalUnitsOther');
+    const precision = this.tInfosBaseSiteForm.get('geologicalUnitsOtherText');
+    if (!autre || !precision) {
+      return;
+    }
+
+    const appliquer = (coche: unknown) => {
+      if (coche) {
+        precision.setValidators([Validators.required]);
+      } else {
+        precision.clearValidators();
+      }
+      precision.updateValueAndValidity({ emitEvent: false });
+    };
+
+    appliquer(autre.value);
+    autre.valueChanges.subscribe(appliquer);
+  }
+
   ngOnInit(): void {
     this.siteIdLocal = this.route.snapshot.paramMap.get('id_rn')!;
     this.fetchSiteDetails(this.siteIdLocal);
@@ -268,6 +293,7 @@ export class QuestionnaireSimplifieComponent implements OnInit {
     this.resetFieldOnParentChange('contains_paleontological_heritage.answer', 'contains_paleontological_heritage.otherDetails');
     this.resetFieldOnParentChange('contains_paleontological_heritage.other', 'contains_paleontological_heritage.otherDetails');
     this.resetFieldOnParentChange('geologicalUnitsOther', 'geologicalUnitsOtherText');
+    this.exigerPrecisionAutreEnsemble();
     this.resetFieldOnParentChange('stratotype_limit', 'stratotypesLimite', true);
     this.resetFieldOnParentChange('stratotype_stage', 'stratotypesEtage', true);
     this.resetFieldOnParentChange('reserve_contains_stratotype', 'stratotypesLimite', true);
