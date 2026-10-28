@@ -91,11 +91,16 @@ export class SyntheseSiteComponent implements OnInit {
   /**
    * Sites INPG encore retenus par le gestionnaire.
    *
-   * Un site décoché reste rattaché à la réserve — pour garder la trace et la
-   * raison — mais ne compte plus comme patrimoine.
+   * Un site écarté reste rattaché à la réserve en base, avec la raison, mais
+   * n'a pas à figurer sur la fiche publique : il n'y est ni compté ni affiché.
    */
   get inpgActifs(): any[] {
     return (this.site?.sites_inpg ?? []).filter((inpg: any) => inpg.active !== false);
+  }
+
+  /** Idem pour le périmètre de protection. */
+  get inpgActifsPerimetre(): any[] {
+    return (this.site?.perimetre_protection?.sites_inpg ?? []).filter((inpg: any) => inpg.active !== false);
   }
 
   /**
@@ -148,7 +153,7 @@ export class SyntheseSiteComponent implements OnInit {
         );
         this.nbInpgConfidentielsReserve = this.inpgActifs.filter((inpg: { inpg: { niveau_de_diffusion: string; }; }) => inpg.inpg.niveau_de_diffusion === 'Confidentiel').length;
         if (this.site.perimetre_protection) {
-          this.nbInpgConfidentielsPP = this.site.perimetre_protection.sites_inpg.filter((inpg: { inpg: { niveau_de_diffusion: string; }; }) => inpg.inpg.niveau_de_diffusion === 'Confidentiel').length;
+          this.nbInpgConfidentielsPP = this.inpgActifsPerimetre.filter((inpg: { inpg: { niveau_de_diffusion: string; }; }) => inpg.inpg.niveau_de_diffusion === 'Confidentiel').length;
         }
         this.stratotypesLimite = this.site.stratotypes.filter((stratotype) => stratotype.type === 'limite');
         this.stratotypesEtage = this.site.stratotypes.filter((stratotype) => stratotype.type === 'etage');

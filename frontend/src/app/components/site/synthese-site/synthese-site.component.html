@@ -203,9 +203,9 @@
         Sites INPG sur la réserve
       </div>
       <div class="subsection-response">
-        <div *ngIf="site.sites_inpg && site.sites_inpg.length > 0; else noInpgData">
-          <div *ngFor="let inpg of site.sites_inpg">
-            <div *ngIf="inpg.inpg.niveau_de_diffusion === 'Public'" [class.strikethrough]="inpg.active == false">
+        <div *ngIf="inpgActifs.length > 0; else noInpgData">
+          <div *ngFor="let inpg of inpgActifs">
+            <div *ngIf="inpg.inpg.niveau_de_diffusion === 'Public'">
               <fa-icon [icon]="['fas', 'star']" size="2xs"></fa-icon>
               <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 1; else etoileVide2" [icon]="['fas', 'star']" size="2xs">
               </fa-icon>
@@ -236,9 +236,9 @@
           Sites INPG confidentiels sur la réserve
         </div>
         <div class="subsection-response">
-          <div *ngIf="site.sites_inpg && site.sites_inpg.length > 0; else noInpgData">
-            <div *ngFor="let inpg of site.sites_inpg">
-              <div *ngIf="inpg.inpg.niveau_de_diffusion === 'Confidentiel'" [class.strikethrough]="inpg.active == false">
+          <div *ngIf="inpgActifs.length > 0; else noInpgData">
+            <div *ngFor="let inpg of inpgActifs">
+              <div *ngIf="inpg.inpg.niveau_de_diffusion === 'Confidentiel'">
                 <fa-icon [icon]="['fas', 'star']" size="2xs"></fa-icon>
                 <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 1; else etoileVide2" [icon]="['fas', 'star']" size="2xs">
                 </fa-icon>
@@ -264,9 +264,9 @@
         </div>
         <div class="subsection-response">
           <div
-            *ngIf="site.perimetre_protection.sites_inpg && site.perimetre_protection.sites_inpg.length > 0; else noInpgData">
-            <div *ngFor="let inpg of site.perimetre_protection.sites_inpg">
-              <div *ngIf="inpg.inpg.niveau_de_diffusion === 'Public'" [class.strikethrough]="inpg.active == false">
+            *ngIf="inpgActifsPerimetre.length > 0; else noInpgData">
+            <div *ngFor="let inpg of inpgActifsPerimetre">
+              <div *ngIf="inpg.inpg.niveau_de_diffusion === 'Public'">
                 <fa-icon [icon]="['fas', 'star']" size="2xs"></fa-icon>
                 <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 1; else etoileVide2" [icon]="['fas', 'star']" size="2xs">
                 </fa-icon>
@@ -299,9 +299,9 @@
         </div>
         <div class="subsection-response">
           <div
-            *ngIf="site.perimetre_protection.sites_inpg && site.perimetre_protection.sites_inpg.length > 0; else noInpgData">
-            <div *ngFor="let inpg of site.perimetre_protection.sites_inpg">
-              <div *ngIf="inpg.inpg.niveau_de_diffusion === 'Confidentiel'" [class.strikethrough]="inpg.active == false">
+            *ngIf="inpgActifsPerimetre.length > 0; else noInpgData">
+            <div *ngFor="let inpg of inpgActifsPerimetre">
+              <div *ngIf="inpg.inpg.niveau_de_diffusion === 'Confidentiel'">
                 <fa-icon [icon]="['fas', 'star']" size="2xs"></fa-icon>
                 <fa-icon *ngIf="inpg.inpg.nombre_etoiles > 1; else etoileVide2" [icon]="['fas', 'star']" size="2xs">
                 </fa-icon>
