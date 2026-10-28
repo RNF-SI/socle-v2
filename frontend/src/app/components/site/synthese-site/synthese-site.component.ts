@@ -534,7 +534,12 @@ export class SyntheseSiteComponent implements OnInit {
    * plutôt que de ne rien produire.
    */
   async exportData(): Promise<void> {
+    // Les chiffres clés et la légende sont repris tels qu'ils s'affichent :
+    // leurs pictogrammes sont des icônes vectorielles et leurs pastilles de
+    // couleur des éléments stylés, que seule une capture rend fidèlement.
+    const chiffres = await this.capturerElement('.stats-container');
     const carte = await this.capturerCarte();
+    const legende = await this.capturerElement('.legend-container');
 
     this.exportFiche.genererPdf({
       site: this.site,
@@ -546,8 +551,24 @@ export class SyntheseSiteComponent implements OnInit {
       stratotypesEtage: this.stratotypesEtage ?? [],
       inpgActifsPerimetre: this.inpgActifsPerimetre,
       formationsGeologiques: this.sfgeol ?? [],
+      chiffres,
       carte,
+      legende,
     });
+  }
+
+  /** Capture un bloc de la fiche en PNG, ou null si la capture échoue. */
+  private async capturerElement(selecteur: string): Promise<string | null> {
+    const element = document.querySelector<HTMLElement>(selecteur);
+    if (!element) {
+      return null;
+    }
+    try {
+      return await toPng(element, { cacheBust: true, backgroundColor: '#ffffff' });
+    } catch (erreur) {
+      console.error(`Bloc ${selecteur} non exporté :`, erreur);
+      return null;
+    }
   }
 
   /** Capture la carte seule, recentrée sur la réserve et sans ses contrôles. */

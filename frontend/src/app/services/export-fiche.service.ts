@@ -13,8 +13,12 @@ export interface ContenuFiche {
   formationsGeologiques: string[];
   /** Sites INPG du périmètre de protection, hors sites écartés. */
   inpgActifsPerimetre: any[];
+  /** Image PNG du bandeau de chiffres clés, si la capture a réussi. */
+  chiffres?: string | null;
   /** Image PNG de la carte, si la capture a réussi. */
   carte?: string | null;
+  /** Image PNG de la légende de la carte, si la capture a réussi. */
+  legende?: string | null;
 }
 
 const MARGE = 15;
@@ -48,6 +52,9 @@ export class ExportFicheService {
     this.chiffresCles(contenu);
     if (contenu.carte) {
       this.carte(contenu.carte);
+      if (contenu.legende) {
+        this.legende(contenu.legende);
+      }
     }
     this.patrimoine(contenu);
     this.sitesInpg(contenu.inpgActifs);
@@ -80,6 +87,17 @@ export class ExportFicheService {
   }
 
   private chiffresCles(contenu: ContenuFiche): void {
+    this.titreSection('Chiffres clés');
+    if (contenu.chiffres) {
+      this.image(contenu.chiffres, 55);
+      return;
+    }
+    // Sans capture, les mêmes valeurs en texte : mieux vaut une liste sobre
+    // qu'une section absente.
+    this.chiffresClesTexte(contenu);
+  }
+
+  private chiffresClesTexte(contenu: ContenuFiche): void {
     const s = contenu.site;
     const chiffres = [
       ['Superficie', s?.surf_off ? `${s.surf_off} ha` : 'non renseignée'],
@@ -87,33 +105,41 @@ export class ExportFicheService {
       ['Autres sites de géopatrimoine', `${(s?.patrimoines_geologiques ?? []).length}`],
       ['Stratotypes', `${(s?.stratotypes ?? []).length}`],
     ];
-    this.titreSection('Chiffres clés');
     chiffres.forEach(([libelle, valeur]) => this.ligneLibelleValeur(libelle, valeur));
   }
 
   private carte(image: string): void {
-    // Les proportions de la capture sont conservées : imposer une hauteur fixe
-    // sur toute la largeur utile étirait la carte.
+    this.titreSection('Carte');
+    this.image(image, 120);
+  }
+
+  /** La légende suit la carte sans titre : elle en fait partie. */
+  private legende(image: string): void {
+    this.image(image, 25, 2);
+  }
+
+  /**
+   * Place une image en conservant ses proportions.
+   *
+   * La hauteur se déduit des dimensions réelles de la capture ; imposer une
+   * hauteur fixe sur toute la largeur utile déformait l'image. Au-delà de
+   * `hauteurMax`, c'est la largeur qui est réduite, pas le ratio.
+   */
+  private image(image: string, hauteurMax: number, espaceApres = 6): void {
     const props = this.doc.getImageProperties(image);
     const ratio = props.height / props.width;
 
     let largeur = LARGEUR_UTILE;
     let hauteur = largeur * ratio;
-
-    // Une carte très haute mangerait la page entière : on la borne, en
-    // réduisant la largeur d'autant pour ne pas la déformer.
-    const HAUTEUR_MAX = 120;
-    if (hauteur > HAUTEUR_MAX) {
-      hauteur = HAUTEUR_MAX;
+    if (hauteur > hauteurMax) {
+      hauteur = hauteurMax;
       largeur = hauteur / ratio;
     }
 
     const x = MARGE + (LARGEUR_UTILE - largeur) / 2;
-
-    this.sautSiBesoin(hauteur + 12);
-    this.titreSection('Carte');
+    this.sautSiBesoin(hauteur + 4);
     this.doc.addImage(image, 'PNG', x, this.y, largeur, hauteur);
-    this.y += hauteur + 6;
+    this.y += hauteur + espaceApres;
   }
 
   private patrimoine(contenu: ContenuFiche): void {
