@@ -1,9 +1,9 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NotificationService } from '../../core/services/notification.service';
 import { ContactFormData, ContactResponse, ContactService } from 'src/app/services/contact.service';
-import { environment } from 'src/environments/environment';
+import { CaptchaComponent } from '../../core/components/captcha/captcha.component';
 
 @Component({
   standalone: false,
@@ -24,7 +24,7 @@ export class ContactsComponent implements OnInit {
     private router: Router
   ) { }
 
-  captcha_key = environment.captcha_key;
+  @ViewChild(CaptchaComponent) private captcha?: CaptchaComponent;
 
   ngOnInit(): void {
     this.contactForm = this.fb.group({
@@ -32,14 +32,13 @@ export class ContactsComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       sujet: ['', Validators.required],
       message: ['', Validators.required],
-      recaptcha: ['', Validators.required]
+      captchaToken: ['', Validators.required]
     });
   }
 
-  // ng-recaptcha-2 émet null quand le jeton expire ou que le widget est réinitialisé
+  // Turnstile émet null quand le jeton expire ou que le widget est réinitialisé
   onCaptchaResolved(captchaResponse: string | null): void {
-    // On peut mettre à jour le champ recaptcha si besoin
-    this.contactForm.patchValue({ recaptcha: captchaResponse });
+    this.contactForm.patchValue({ captchaToken: captchaResponse ?? '' });
   }
 
   onSubmit(): void {
@@ -56,6 +55,9 @@ export class ContactsComponent implements OnInit {
         },
         error: (err) => {
           this._toasterService.error(err?.error?.msg || 'Erreur lors de l\'envoi du message', '');
+          // Le jeton est consommé par la tentative : en redemander un.
+          this.captcha?.reset();
+          this.contactForm.patchValue({ captchaToken: '' });
         }
       });
     }

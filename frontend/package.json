@@ -32,7 +32,6 @@
     "jspdf": "^4.2.1",
     "leaflet": "^1.9.4",
     "Leaflet.Deflate": "^2.1.0",
-    "ng-recaptcha-2": "^22.0.1",
     "ngx-quill": "^31.0.1",
     "proj4": "^2.12.1",
     "proj4leaflet": "^1.0.2",

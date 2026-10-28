@@ -97,11 +97,17 @@ L'authentification est isolée dans `core/auth/` : c'est la seule partie qu'il f
 
 ### Formulaire de contact — ticket Zammad
 
-`POST /contact` vérifie le reCAPTCHA auprès de Google puis ouvre un ticket dans le groupe **Support SOCLE** de `https://support.rnfrance.org`, sur le modèle de `cicada_vitrine`. Le jeton d'API Zammad et la clé secrète du captcha ne quittent jamais le serveur : le frontend ne connaît que cette route.
+`POST /contact` vérifie le jeton Cloudflare Turnstile puis ouvre un ticket Zammad, sur le modèle de `cicada_vitrine`. Le jeton d'API Zammad et le secret Turnstile ne quittent jamais le serveur : le frontend ne connaît que cette route.
 
-Quatre clés dans `config.py` (documentées dans `config_sample.py`) : `ZAMMAD_URL`, `ZAMMAD_TOKEN`, `ZAMMAD_GROUP`, `RECAPTCHA_SECRET_KEY`. Si l'une manque, la route répond 500 plutôt que d'envoyer en clair — elle **échoue volontairement fermée**.
+Quatre clés dans `config.py` (documentées dans `config_sample.py`) : `ZAMMAD_URL`, `ZAMMAD_TOKEN`, `ZAMMAD_GROUP`, `TURNSTILE_SECRET`. Si l'une manque, la route répond 500 plutôt que d'envoyer sans vérification — elle **échoue volontairement fermée**.
 
-Le ticket est créé avec `customer_id: guess:<email>`, qui laisse Zammad créer le demandeur à la volée et rattacher l'échange à la bonne personne. Les `MAIL_DEST_TECHNIQUE` / `MAIL_DEST_GEOL` ne servent plus : le routage par sujet se fait désormais dans Zammad, pas dans le code.
+**Le nom du groupe est un chemin complet.** Zammad imbrique les groupes avec `::` et l'API attend le nom exact : c'est `Support SI RNF::Support SOCLE`, pas `Support SOCLE`. Un nom partiel fait refuser la création du ticket.
+
+Le ticket est créé avec `customer_id: guess:<email>`, qui laisse Zammad créer le demandeur à la volée. Les `MAIL_DEST_TECHNIQUE` / `MAIL_DEST_GEOL` ne servent plus : le routage par sujet se fait dans Zammad, pas dans le code.
+
+**Turnstile plutôt que reCAPTCHA** : pas de cookie de pistage, pas de puzzle dans la plupart des cas, conforme au RGPD sans bandeau de consentement. Le widget vit dans `core/components/captcha/`, adapté de celui de `cicada_vitrine`.
+
+**Les clés Turnstile sont liées à des noms d'hôte.** Une clé d'un autre site renvoie l'erreur `110200` (domaine non autorisé) et le widget ne s'affiche pas. En développement, `environment.ts` utilise la paire de test Cloudflare (`1x00000000000000000000AA` côté client, `1x0000000000000000000000000000000AA` côté serveur), qui accepte tout. La production exige un widget Turnstile déclaré pour le domaine de SOCLE.
 
 ### Authentification et droits (entièrement côté client)
 

@@ -31,7 +31,6 @@ import { RouterModule } from '@angular/router';
 import { QuillModule } from 'ngx-quill';
 import { BrowserModule } from '@angular/platform-browser';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { RecaptchaModule } from 'ng-recaptcha-2';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AccueilComponent } from './components/accueil/accueil.component';
@@ -53,6 +52,7 @@ import { LoginComponent } from './core/components/login/login.component';
 import { LogoutComponent } from './core/components/logout/logout.component';
 import { NavHomeComponent } from './core/components/nav-home/nav-home.component';
 import { NotFoundComponent } from './core/components/not-found/not-found.component';
+import { CaptchaComponent } from './core/components/captcha/captcha.component';
 import { getFrenchPaginatorIntl } from './core/shared/french-paginator-intl';
 import { CapitalizePipe } from './pipes/capitalize.pipe';
 
@@ -72,7 +72,8 @@ registerLocaleData(localeFr, 'fr');
     QuestionnaireSimplifieComponent,
     CapitalizePipe,
     MessitesComponent,
-    ContactsComponent
+    ContactsComponent,
+    CaptchaComponent
   ],
   imports: [
     BrowserModule,
@@ -85,7 +86,6 @@ registerLocaleData(localeFr, 'fr');
     NotFoundComponent,
     AccessDeniedComponent,
     FontAwesomeModule,
-    RecaptchaModule,
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,

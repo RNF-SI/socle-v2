@@ -15,7 +15,8 @@ export interface ContactFormData {
   email: string;
   sujet: string;
   message: string;
-  recaptcha?: string;
+  /** Jeton Cloudflare Turnstile, revérifié côté serveur. */
+  captchaToken?: string;
 }
 
 @Injectable({

@@ -438,12 +438,20 @@ LIBELLES_SUJET = {
 }
 
 
-def _captcha_valide(jeton, secret):
-    """Vérifie le jeton reCAPTCHA auprès de Google."""
+def _captcha_valide(jeton, secret, ip=None):
+    """Vérifie le jeton auprès de Cloudflare Turnstile.
+
+    Turnstile plutôt que reCAPTCHA : pas de cookie de pistage, pas de puzzle
+    dans la grande majorité des cas, et conforme au RGPD sans bandeau de
+    consentement.
+    """
+    donnees = {'secret': secret, 'response': jeton}
+    if ip:
+        donnees['remoteip'] = ip
     try:
         reponse = requests.post(
-            'https://www.google.com/recaptcha/api/siteverify',
-            data={'secret': secret, 'response': jeton},
+            'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+            data=donnees,
             timeout=10,
         )
         return bool(reponse.json().get('success'))
@@ -464,11 +472,11 @@ def send_contact_mail():
     config = current_app.config
     zammad_url = (config.get('ZAMMAD_URL') or '').rstrip('/')
     zammad_token = config.get('ZAMMAD_TOKEN')
-    captcha_secret = config.get('RECAPTCHA_SECRET_KEY')
+    captcha_secret = config.get('TURNSTILE_SECRET')
 
     if not zammad_url or not zammad_token or not captcha_secret:
         current_app.logger.error(
-            "Configuration incomplète : ZAMMAD_URL, ZAMMAD_TOKEN ou RECAPTCHA_SECRET_KEY absent."
+            "Configuration incomplète : ZAMMAD_URL, ZAMMAD_TOKEN ou TURNSTILE_SECRET absent."
         )
         return jsonify({"msg": "Le service de contact n'est pas configuré"}), 500
 
@@ -480,7 +488,7 @@ def send_contact_mail():
     email = (data.get('email') or '').strip().lower()[:254]
     sujet = (data.get('sujet') or '').strip()[:32]
     message_content = (data.get('message') or '').strip()[:4000]
-    captcha = (data.get('recaptcha') or '').strip()[:2048]
+    captcha = (data.get('captchaToken') or '').strip()[:2048]
 
     # Validation volontairement souple : écarter les saisies qui n'ont aucune
     # chance d'être valides, sans réimplémenter la RFC 5322.
@@ -488,7 +496,9 @@ def send_contact_mail():
             or not message_content or not captcha:
         return jsonify({"msg": "Formulaire incomplet ou invalide"}), 400
 
-    if not _captcha_valide(captcha, captcha_secret):
+    # Cloudflare recommande de transmettre l'IP d'origine quand on la connaît.
+    ip = request.headers.get('CF-Connecting-IP') or request.headers.get('X-Forwarded-For')
+    if not _captcha_valide(captcha, captcha_secret, ip):
         return jsonify({"msg": "La vérification anti-robot a échoué"}), 400
 
     libelle = LIBELLES_SUJET.get(sujet, LIBELLES_SUJET['autre'])
