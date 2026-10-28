@@ -24,7 +24,19 @@ Trois éléments ne sont pas versionnés et doivent exister :
 
    Un fichier d'environnement incomplet casse l'authentification sans erreur de compilation : vérifier ces cinq clés avant de diagnostiquer un bug de connexion.
 
-La base PostGIS n'est pas décrite dans le dépôt : pas de SQL de création, et `backend/migrations` est gitignoré, donc aucune migration Alembic n'est versionnée. Ne pas supposer qu'un `flask db upgrade` suffit à créer le schéma — il faut une base existante ou un dump.
+Le schéma métier est décrit par les migrations Alembic de `backend/migrations`, désormais versionnées. Une installation neuve se monte ainsi :
+
+```bash
+createdb socle -T template0 && psql socle -c 'create extension postgis' -c 'create schema infoterre'
+cd backend && FLASK_APP=wsgi.py venv/bin/python -m flask db upgrade
+```
+
+Deux points à connaître avant de toucher aux migrations :
+
+- `env.py` filtre les tables via `include_object` : Alembic ne gère que celles déclarées dans `models.py`. Sans ce filtre, un autogenerate propose de supprimer les tables de pypnusershub, celles de PostGIS et le schéma `infoterre`, qu'aucun modèle ne décrit.
+- l'autogénération **n'importe pas `geoalchemy2`** alors qu'elle émet `geoalchemy2.types.Geometry`, et **redéclare les index spatiaux** `idx_<table>_<colonne>` que geoalchemy2 crée lui-même avec la table. Les deux font échouer la migration ; les corriger à la main après chaque `flask db migrate`.
+
+Les données, elles, ne sont pas dans le dépôt : les migrations créent les tables, pas leur contenu (nomenclatures, INPG, carte BRGM).
 
 Elle contient deux schémas : `public` (données métier) et `infoterre` (carte géologique BRGM — `s_fgeol` fait ~1 M de polygones, `echelle` l'échelle stratigraphique). Attention au nom : `config_sample.py` propose `socle2`, alors que la base de travail s'appelle `socle` — vérifier `SQLALCHEMY_DATABASE_URI` avant de conclure à un problème de droits.
 
