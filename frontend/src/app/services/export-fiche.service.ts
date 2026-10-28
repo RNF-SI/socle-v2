@@ -92,11 +92,27 @@ export class ExportFicheService {
   }
 
   private carte(image: string): void {
-    // La carte garde son ratio et ne commence jamais en bas de page.
-    const hauteur = 85;
+    // Les proportions de la capture sont conservées : imposer une hauteur fixe
+    // sur toute la largeur utile étirait la carte.
+    const props = this.doc.getImageProperties(image);
+    const ratio = props.height / props.width;
+
+    let largeur = LARGEUR_UTILE;
+    let hauteur = largeur * ratio;
+
+    // Une carte très haute mangerait la page entière : on la borne, en
+    // réduisant la largeur d'autant pour ne pas la déformer.
+    const HAUTEUR_MAX = 120;
+    if (hauteur > HAUTEUR_MAX) {
+      hauteur = HAUTEUR_MAX;
+      largeur = hauteur / ratio;
+    }
+
+    const x = MARGE + (LARGEUR_UTILE - largeur) / 2;
+
     this.sautSiBesoin(hauteur + 12);
     this.titreSection('Carte');
-    this.doc.addImage(image, 'PNG', MARGE, this.y, LARGEUR_UTILE, hauteur);
+    this.doc.addImage(image, 'PNG', x, this.y, largeur, hauteur);
     this.y += hauteur + 6;
   }
 
