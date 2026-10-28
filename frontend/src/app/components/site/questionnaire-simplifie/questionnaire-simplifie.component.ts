@@ -272,7 +272,6 @@ export class QuestionnaireSimplifieComponent implements OnInit {
     this.fetchSiteDetails(this.siteIdLocal);
     this.loadNomenclature();
     this.loadStratotypes();
-    this.initGeologicalUnitsCheckboxes();
     // this.ajouterPatrimoineGeolPP();
     // this.ajouterPatrimoineGeol();
     // Surveiller les changements du champ de recherche pour filtrer les substances
@@ -330,19 +329,62 @@ export class QuestionnaireSimplifieComponent implements OnInit {
   }
 
 
+  /**
+   * Construit une case à cocher par ensemble géologique.
+   *
+   * À appeler chaque fois que la nomenclature ou la fiche change : le
+   * FormArray est indexé sur geologicalUnitsOptions, et un tableau construit
+   * avant l'arrivée de la nomenclature reste vide, si bien que les cases
+   * cochées ne sont rattachées à aucun contrôle et que l'enregistrement
+   * repart sans elles.
+   */
+  /**
+   * Construit une case à cocher par ensemble géologique, puis y reporte la
+   * sélection enregistrée.
+   *
+   * La fiche et la nomenclature sont chargées en parallèle : cette méthode est
+   * appelée par les deux réponses, et doit donner le même résultat quel que
+   * soit leur ordre d'arrivée. La structure dépend de la nomenclature, les
+   * valeurs dépendent de la fiche ; les deux sont donc traitées séparément.
+   *
+   * Auparavant, le tableau était construit une fois, avant toute réponse :
+   * il restait vide, les cases cochées n'étaient rattachées à aucun contrôle
+   * et le premier enregistrement repartait sans elles.
+   */
   initGeologicalUnitsCheckboxes(): void {
-    const geologicalUnitsArray = this.geologicalUnitsOptions.map(unit =>
-      new FormControl(this.isUnitSelected(unit.id_nomenclature))
-    );
-    geologicalUnitsArray.push(new FormControl(false)); // Case "Autre"
+    const tailleAttendue = this.geologicalUnitsOptions.length + 1; // + la case « Autre »
+    const existant = this.tInfosBaseSiteForm.get('geologicalUnits') as FormArray | null;
 
-    this.tInfosBaseSiteForm.setControl('geologicalUnits', this.fb.array(geologicalUnitsArray));
+    if (!existant || existant.length !== tailleAttendue) {
+      const controles = this.geologicalUnitsOptions.map(() => new FormControl(false));
+      controles.push(new FormControl(false)); // Case « Autre »
+      this.tInfosBaseSiteForm.setControl('geologicalUnits', this.fb.array(controles));
+    }
+
+    this.appliquerSelectionEnsembles();
+
     if (!this.tInfosBaseSiteForm.get('geologicalUnitsOther')) {
       this.tInfosBaseSiteForm.addControl('geologicalUnitsOther', new FormControl(false));
     }
     if (!this.tInfosBaseSiteForm.get('geologicalUnitsOtherText')) {
       this.tInfosBaseSiteForm.addControl('geologicalUnitsOtherText', new FormControl(''));
     }
+  }
+
+  /** Reporte dans les cases la sélection enregistrée pour la fiche. */
+  private appliquerSelectionEnsembles(): void {
+    if (!this.site?.infos_base) {
+      return;
+    }
+
+    const cases = this.tInfosBaseSiteForm.get('geologicalUnits') as FormArray | null;
+    if (!cases) {
+      return;
+    }
+
+    this.geologicalUnitsOptions.forEach((unit, i) => {
+      cases.at(i)?.setValue(this.isUnitSelected(unit.id_nomenclature), { emitEvent: false });
+    });
   }
 
 
@@ -358,8 +400,11 @@ export class QuestionnaireSimplifieComponent implements OnInit {
 
 
   getSelectedGeologicalUnits(): number[] {
-    return this.tInfosBaseSiteForm.value.geologicalUnits
-      .map((checked: boolean, i: number) => checked ? this.geologicalUnitsOptions[i].id_nomenclature : null)
+    // Le tableau porte une case de plus que la nomenclature, pour « Autre » :
+    // lire geologicalUnitsOptions[i] sans garde lèverait sur ce dernier index.
+    return (this.tInfosBaseSiteForm.value.geologicalUnits ?? [])
+      .map((checked: boolean, i: number) =>
+        checked && this.geologicalUnitsOptions[i] ? this.geologicalUnitsOptions[i].id_nomenclature : null)
       .filter((id: number | null) => id !== null);
   }
 
@@ -370,6 +415,10 @@ export class QuestionnaireSimplifieComponent implements OnInit {
       (response: any) => {
         if (response && Array.isArray(response.nomenclatures)) {
           this.geologicalUnitsOptions = response.nomenclatures;
+          // La fiche et la nomenclature sont chargées en parallèle : on
+          // reconstruit ici aussi, sans quoi l'ordre d'arrivée des deux
+          // réponses décide si les cases sont alignées sur les options.
+          this.initGeologicalUnitsCheckboxes();
         } else {
           console.error('Expected nomenclatures to be an array, but got:', response);
         }

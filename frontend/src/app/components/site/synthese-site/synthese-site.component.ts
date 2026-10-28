@@ -310,6 +310,7 @@ export class SyntheseSiteComponent implements OnInit {
 
     if (inpgPublicLayers.length > 0) {
       const publicGroup = L.layerGroup(inpgPublicLayers).addTo(this.map!);
+      this.hachurer(publicGroup, 'hachures-inpg-public', siteLayerStyle.color);
       this.layerControl.addOverlay(publicGroup, "Sites INPG publics");
       inpgPublicLayers.forEach((layer: { getBounds: () => L.LatLngExpression | L.LatLngBoundsExpression; }) => this.bounds.extend(layer.getBounds()));
       this.addLegendItem(legendContainer!, siteLayerStyle.fillColor, siteLayerStyle.fillOpacity, siteLayerStyle.color, "Sites INPG publics")
@@ -346,6 +347,7 @@ export class SyntheseSiteComponent implements OnInit {
 
     if (inpgConfidentialLayers.length > 0 && this.estConnecte()) {
       const confidentialGroup = L.layerGroup(inpgConfidentialLayers).addTo(this.map!);
+      this.hachurer(confidentialGroup, 'hachures-inpg-confidentiel', siteLayerStyle.color);
       this.layerControl.addOverlay(confidentialGroup, "Sites INPG confidentiels");
       inpgConfidentialLayers.forEach((layer: { getBounds: () => L.LatLngExpression | L.LatLngBoundsExpression; }) => this.bounds.extend(layer.getBounds()));
       this.addLegendItem(legendContainer!, siteLayerStyle.fillColor, siteLayerStyle.fillOpacity, siteLayerStyle.color, "Sites INPG confidentiels")
@@ -598,6 +600,68 @@ export class SyntheseSiteComponent implements OnInit {
     const g = (bigint >> 8) & 255;
     const b = bigint & 255;
     return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  }
+
+  /**
+   * Motif de hachures pour les emprises INPG.
+   *
+   * Les sites INPG se superposent souvent presque exactement à l'emprise de la
+   * réserve : deux aplats de couleur deviennent alors indistinguables. Les
+   * hachures laissent voir ce qu'il y a dessous.
+   *
+   * Leaflet n'expose pas les motifs SVG : on injecte le `<pattern>` dans le
+   * `<svg>` que son moteur de rendu crée, puis on pointe le `fill` des tracés
+   * dessus.
+   */
+  private assurerMotifHachures(id: string, couleur: string): void {
+    const svg = this.map?.getPane('overlayPane')?.querySelector('svg');
+    if (!svg || svg.querySelector(`#${id}`)) {
+      return;
+    }
+
+    const ns = 'http://www.w3.org/2000/svg';
+    let defs = svg.querySelector('defs');
+    if (!defs) {
+      defs = document.createElementNS(ns, 'defs');
+      svg.insertBefore(defs, svg.firstChild);
+    }
+
+    const motif = document.createElementNS(ns, 'pattern');
+    motif.setAttribute('id', id);
+    motif.setAttribute('patternUnits', 'userSpaceOnUse');
+    motif.setAttribute('width', '8');
+    motif.setAttribute('height', '8');
+    motif.setAttribute('patternTransform', 'rotate(45)');
+
+    const trait = document.createElementNS(ns, 'line');
+    trait.setAttribute('x1', '0');
+    trait.setAttribute('y1', '0');
+    trait.setAttribute('x2', '0');
+    trait.setAttribute('y2', '8');
+    trait.setAttribute('stroke', couleur);
+    trait.setAttribute('stroke-width', '3');
+
+    motif.appendChild(trait);
+    defs.appendChild(motif);
+  }
+
+  /** Applique le motif de hachures aux tracés d'un groupe de couches. */
+  private hachurer(groupe: L.LayerGroup, id: string, couleur: string): void {
+    this.assurerMotifHachures(id, couleur);
+    groupe.eachLayer((couche: any) => {
+      const appliquer = (c: any) => {
+        const element = typeof c.getElement === 'function' ? c.getElement() : null;
+        if (element) {
+          element.setAttribute('fill', `url(#${id})`);
+          element.setAttribute('fill-opacity', '1');
+        }
+      };
+      if (typeof couche.eachLayer === 'function') {
+        couche.eachLayer(appliquer);
+      } else {
+        appliquer(couche);
+      }
+    });
   }
 
   private addLegendItem(legendContainer: HTMLElement, fillColor: string, fillOpacity: number, borderColor: string, label: string): void {
