@@ -309,3 +309,10 @@ mat-toolbar a {
 .partenaires img{
   display: inline-block;
 }
+
+// Connexion ou menu du compte : c'est le seul accès à la connexion, il ne doit
+// jamais être comprimé ni repoussé hors de la barre par la zone de recherche.
+.zone-compte {
+  flex-shrink: 0;
+  white-space: nowrap;
+}

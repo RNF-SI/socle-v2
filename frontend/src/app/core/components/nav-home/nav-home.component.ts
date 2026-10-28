@@ -127,9 +127,11 @@ export class NavHomeComponent implements OnInit,AfterViewInit,OnDestroy {
     const largeurPage:number = window.innerWidth;
     const menu = document.querySelector<HTMLElement>(".menu");
     const searchBar = document.querySelector<HTMLElement>(".search-bar");
-    // .menuCompte n'est rendu que pour un utilisateur connecté : pour un
-    // visiteur anonyme il est absent, et la largeur à réserver est nulle.
-    const menuLogin = document.querySelector<HTMLElement>(".menuCompte");
+    // Le coin droit porte le menu du compte quand on est connecté, et le
+    // bouton de connexion sinon. Ne mesurer que .menuCompte revenait à ne rien
+    // réserver au bouton de connexion — celui-là même dont a besoin le
+    // visiteur anonyme, qui se retrouvait tassé hors de la barre.
+    const menuLogin = document.querySelector<HTMLElement>(".zone-compte");
 
     if (!menu || !searchBar) { return; }
 
