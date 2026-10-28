@@ -19,7 +19,10 @@ class Config :
     # Le jeton et la clé secrète du captcha restent côté serveur : le frontend
     # ne connaît que la route /contact.
     ZAMMAD_URL = "https://zammad.reserves-naturelles.org"  # sans slash final
-    ZAMMAD_TOKEN = ""       # jeton d'API d'un agent, permission ticket.agent sur le groupe
+    # Jeton d'API d'un agent ayant le droit « create » SUR LE GROUPE CI-DESSOUS.
+    # Un jeton d'une autre application ne suffit pas : les droits sont par
+    # groupe, et Zammad répond 403 « Not authorized » à la création.
+    ZAMMAD_TOKEN = ""
     ZAMMAD_GROUP = "Support SI RNF::Support SOCLE"  # nom exact, groupes imbriqués avec ::
     TURNSTILE_SECRET = ""  # clé secrète Cloudflare Turnstile, pendant de turnstileSiteKey côté front
     URL_USERSHUB = 'https://usershub.reserves-naturelles.org' # sans slash final

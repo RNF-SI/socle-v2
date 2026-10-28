@@ -101,6 +101,8 @@ L'authentification est isolée dans `core/auth/` : c'est la seule partie qu'il f
 
 Quatre clés dans `config.py` (documentées dans `config_sample.py`) : `ZAMMAD_URL`, `ZAMMAD_TOKEN`, `ZAMMAD_GROUP`, `TURNSTILE_SECRET`. Si l'une manque, la route répond 500 plutôt que d'envoyer sans vérification — elle **échoue volontairement fermée**.
 
+**Les droits Zammad sont par groupe.** Le jeton doit appartenir à un agent ayant `create` sur le groupe visé ; un jeton d'une autre application RNF liste bien les groupes mais reçoit un 403 « Not authorized » à la création. Le détail du refus est journalisé côté serveur, le client ne voit qu'un message générique : en cas de 502, lire les logs du backend.
+
 **Le nom du groupe est un chemin complet.** Zammad imbrique les groupes avec `::` et l'API attend le nom exact : c'est `Support SI RNF::Support SOCLE`, pas `Support SOCLE`. Un nom partiel fait refuser la création du ticket.
 
 Le ticket est créé avec `customer_id: guess:<email>`, qui laisse Zammad créer le demandeur à la volée. Les `MAIL_DEST_TECHNIQUE` / `MAIL_DEST_GEOL` ne servent plus : le routage par sujet se fait dans Zammad, pas dans le code.
