@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NotificationService } from '../../core/services/notification.service';
-import { ContactFormData, ContactService } from 'src/app/services/contact.service';
+import { ContactFormData, ContactResponse, ContactService } from 'src/app/services/contact.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -29,7 +29,7 @@ export class ContactsComponent implements OnInit {
   ngOnInit(): void {
     this.contactForm = this.fb.group({
       nom: ['', Validators.required],
-      email: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
       sujet: ['', Validators.required],
       message: ['', Validators.required],
       recaptcha: ['', Validators.required]
@@ -47,12 +47,15 @@ export class ContactsComponent implements OnInit {
     if (this.contactForm.valid) {
       const formData: ContactFormData = this.contactForm.value;
       this.contactService.sendContactForm(formData).subscribe({
-        next: (res) => {
-          this._toasterService.info('Votre message a été envoyé avec succès.', 'Message envoyé!');
+        next: (res: ContactResponse) => {
+          const suite = res.ticketNumber
+            ? `Votre demande porte le numéro ${res.ticketNumber}.`
+            : 'Votre message a été transmis au support.';
+          this._toasterService.info(suite, 'Message envoyé !');
           this.router.navigate(['/']);
         },
         error: (err) => {
-          this._toasterService.error(err.error.msg || 'Erreur lors de l\'envoi du message', '');
+          this._toasterService.error(err?.error?.msg || 'Erreur lors de l\'envoi du message', '');
         }
       });
     }
