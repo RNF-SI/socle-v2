@@ -107,7 +107,9 @@ Quatre clés dans `config.py` (documentées dans `config_sample.py`) : `ZAMMAD_U
 
 Le ticket est créé avec `customer_id: guess:<email>`, qui laisse Zammad créer le demandeur à la volée.
 
-**Le premier article est un courriel entrant** (`type: email`, `sender: Customer`, avec `from` et `reply_to`), et non un article `web`. Un article `web` ne porte aucune enveloppe de courriel : le demandeur est bien créé, mais quand un agent clique sur « Répondre », le champ destinataire reste vide. `sender: Customer` marque l'article comme entrant, donc Zammad l'enregistre sans rien envoyer. Les `MAIL_DEST_TECHNIQUE` / `MAIL_DEST_GEOL` ne servent plus : le routage par sujet se fait dans Zammad, pas dans le code.
+L'article porte `sender: Customer`, qui l'attribue au demandeur et non à l'agent du jeton.
+
+**Ne pas basculer l'article en `type: email` pour préremplir le destinataire d'une réponse.** Essayé : Zammad refuse en 422 `email_recipient — Sending an email without a valid recipient is not possible`, car il valide un destinataire dès que le type est `email`, y compris avec `sender: Customer`. Le faire passer demanderait de renseigner aussi `to` avec l'adresse du support, au risque d'un envoi sortant réel. Les `MAIL_DEST_TECHNIQUE` / `MAIL_DEST_GEOL` ne servent plus : le routage par sujet se fait dans Zammad, pas dans le code.
 
 **Turnstile plutôt que reCAPTCHA** : pas de cookie de pistage, pas de puzzle dans la plupart des cas, conforme au RGPD sans bandeau de consentement. Le widget vit dans `core/components/captcha/`, adapté de celui de `cicada_vitrine`.
 
