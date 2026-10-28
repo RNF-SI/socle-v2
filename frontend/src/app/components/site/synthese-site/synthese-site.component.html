@@ -360,8 +360,11 @@
     </div>
     <div class="heritage-content">
 
+      <div *ngIf="!estRenseigne(site.infos_base.associated_with_mineral_resources)">
+        <p class="non-renseigne">Information non renseignée</p>
+      </div>
       <div
-        *ngIf="!site.infos_base.mineral_resources_old_quarry && !site.infos_base.mineral_resources_active_quarry && !site.infos_base.mineral_resources_old_mine && !site.infos_base.mineral_resources_active_mine">
+        *ngIf="site.infos_base.associated_with_mineral_resources === false">
         <p>Pas d’exploitation de ressource minérale connue</p>
       </div>
       <div>
@@ -398,11 +401,14 @@
       <h2 class="heritage-title">Collections</h2>
     </div>
     <div class="heritage-content">
-      <div *ngIf="site.infos_base.reserve_has_geological_collections">
+      <div *ngIf="site.infos_base.reserve_has_geological_collections === true">
         <p>La réserve dispose de collections géologiques propres</p>
       </div>
-      <div *ngIf="!site.infos_base.reserve_has_geological_collections">
+      <div *ngIf="site.infos_base.reserve_has_geological_collections === false">
         <p>La réserve ne dispose pas de collections géologiques propres</p>
+      </div>
+      <div *ngIf="!estRenseigne(site.infos_base.reserve_has_geological_collections)">
+        <p class="non-renseigne">Information non renseignée</p>
       </div>
     </div>
   </div>
@@ -413,19 +419,25 @@
     </div>
     <div class="heritage-content">
       <!-- Première partie : Site géologique aménagé pour les visiteurs -->
-      <div *ngIf="site.infos_base.reserve_has_geological_site_for_visitors; else noSiteForVisitors">
+      <div *ngIf="site.infos_base.reserve_has_geological_site_for_visitors === true">
         <p>La réserve dispose d’un site géologique aménagé pour les visiteurs</p>
       </div>
-      <ng-template #noSiteForVisitors>
+      <div *ngIf="site.infos_base.reserve_has_geological_site_for_visitors === false">
         <p>La réserve ne dispose pas de site géologique aménagé pour les visiteurs</p>
-      </ng-template>
+      </div>
+      <div *ngIf="!estRenseigne(site.infos_base.reserve_has_geological_site_for_visitors)">
+        <p class="non-renseigne">Information non renseignée</p>
+      </div>
       <!-- Deuxième partie : Animations sur la thématique géodiversité / patrimoine géologique   -->
-      <div *ngIf="site.infos_base.offers_geodiversity_activities; else noGeodiversityActivities">
+      <div *ngIf="site.infos_base.offers_geodiversity_activities === true">
         <p>La réserve propose des animations sur la thématique géodiversité / patrimoine géologique</p>
       </div>
-      <ng-template #noGeodiversityActivities>
+      <div *ngIf="site.infos_base.offers_geodiversity_activities === false">
         <p>La réserve ne propose pas d’animation sur la thématique géodiversité / patrimoine géologique</p>
-      </ng-template>
+      </div>
+      <div *ngIf="!estRenseigne(site.infos_base.offers_geodiversity_activities)">
+        <p class="non-renseigne">Information non renseignée</p>
+      </div>
     </div>
   </div>
 
