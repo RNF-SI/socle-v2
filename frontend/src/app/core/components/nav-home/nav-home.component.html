@@ -49,10 +49,10 @@
   <span class="example-spacer"></span>
 
   <!-- Liens connexion / utilisateur -->
-  <a [routerLink]="'login'" *ngIf="!signedIn">
+  <a [routerLink]="'login'" *ngIf="!signedIn" class="zone-compte">
     <fa-icon [icon]="['fas', 'right-to-bracket']" size="2x"></fa-icon>
   </a>
-  <a [matMenuTriggerFor]="menuSettings" *ngIf="signedIn" class="user menuCompte">
+  <a [matMenuTriggerFor]="menuSettings" *ngIf="signedIn" class="user menuCompte zone-compte">
     {{ user!.prenom_role | titlecase }} {{ user!.nom_role | titlecase }}
     <fa-icon [icon]="['fas', 'user']"></fa-icon>
   </a>

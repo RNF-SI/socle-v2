@@ -50,7 +50,6 @@ testem.log
 Thumbs.db
 
 /backend/venv
-/backend/migrations
 /frontend/node_modules
 /frontend/.angular
 

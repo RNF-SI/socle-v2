@@ -24,7 +24,19 @@ Trois éléments ne sont pas versionnés et doivent exister :
 
    Un fichier d'environnement incomplet casse l'authentification sans erreur de compilation : vérifier ces cinq clés avant de diagnostiquer un bug de connexion.
 
-La base PostGIS n'est pas décrite dans le dépôt : pas de SQL de création, et `backend/migrations` est gitignoré, donc aucune migration Alembic n'est versionnée. Ne pas supposer qu'un `flask db upgrade` suffit à créer le schéma — il faut une base existante ou un dump.
+Le schéma métier est décrit par les migrations Alembic de `backend/migrations`, désormais versionnées. Une installation neuve se monte ainsi :
+
+```bash
+createdb socle -T template0 && psql socle -c 'create extension postgis' -c 'create schema infoterre'
+cd backend && FLASK_APP=wsgi.py venv/bin/python -m flask db upgrade
+```
+
+Deux points à connaître avant de toucher aux migrations :
+
+- `env.py` filtre les tables via `include_object` : Alembic ne gère que celles déclarées dans `models.py`. Sans ce filtre, un autogenerate propose de supprimer les tables de pypnusershub, celles de PostGIS et le schéma `infoterre`, qu'aucun modèle ne décrit.
+- l'autogénération **n'importe pas `geoalchemy2`** alors qu'elle émet `geoalchemy2.types.Geometry`, et **redéclare les index spatiaux** `idx_<table>_<colonne>` que geoalchemy2 crée lui-même avec la table. Les deux font échouer la migration ; les corriger à la main après chaque `flask db migrate`.
+
+Les données, elles, ne sont pas dans le dépôt : les migrations créent les tables, pas leur contenu (nomenclatures, INPG, carte BRGM).
 
 Elle contient deux schémas : `public` (données métier) et `infoterre` (carte géologique BRGM — `s_fgeol` fait ~1 M de polygones, `echelle` l'échelle stratigraphique). Attention au nom : `config_sample.py` propose `socle2`, alors que la base de travail s'appelle `socle` — vérifier `SQLALCHEMY_DATABASE_URI` avant de conclure à un problème de droits.
 
@@ -71,7 +83,7 @@ Sérialisation : Marshmallow (`schemas.py`) avec `SQLAlchemyAutoSchema`. Les gé
 - **`slug`** est la clé d'accès publique : l'API et le routing Angular adressent les sites par slug (`/site/<slug>`, `/t_infos_base_site/<slug>`), pas par `id_site`.
 - **Périmètres de protection** : auto-référence `id_perimetre_protection` + drapeau `perimetre_protection`. Les listes filtrent systématiquement `Site.perimetre_protection != True` pour ne pas afficher un périmètre comme une réserve.
 - **`TInfosBaseSite`** (`t_infos_base_site`, PK = FK vers `site.id_site`) porte toutes les réponses du questionnaire géologique. `completion` (float 0–1) y est stocké mais n'est jamais écrit par le code applicatif — il est calculé en base. Idem pour `suivi_infos_base_site` (`SuivisModifs`, colonnes JSONB `ancien`/`nouveau`) : l'historique est alimenté côté base, l'application ne fait que le relire et le mettre en forme (`transform_modifications` dans `routes.py`, avec son dictionnaire de libellés français par champ).
-- **INPG** (inventaire national du patrimoine géologique, source externe) : table `inpg` en lecture, liée par `cor_site_inpg` qui porte `active` / `raison_desactive` — un gestionnaire peut invalider un rattachement INPG sans supprimer la donnée (`/invalid-inpg-from-site`, `/revalid-inpg-from-site`).
+- **INPG** (inventaire national du patrimoine géologique, source externe) : table `inpg` en lecture, liée par `cor_site_inpg` qui porte `active` / `raison_desactive` — un gestionnaire peut invalider un rattachement INPG sans supprimer la donnée (`/invalid-inpg-from-site`, `/revalid-inpg-from-site`). **`cor_site_inpg` est entretenue par un trigger** (`trg_maj_cor_site_inpg` sur `site`) : toute modification du périmètre recalcule les recoupements `ST_Intersects`. Il n'écrase jamais un lien existant, ce qui préserve les décisions des gestionnaires ; il ne supprime que les liens dont l'emprise ne recoupe plus la réserve. Ne pas écrire dans cette table depuis l'application sans tenir compte du trigger.
 - **Nomenclatures** : `t_nomenclatures` / `bib_nomenclatures_types` à la mode GeoNature. Les `id_type` sont codés en dur dans les composants Angular (6 = âges, 7 = substances), pas résolus par mnémonique.
 - Tables d'association déclaratives (`cor_site_ages`, `cor_site_stratotype`, `cor_site_sfgeol`) avec `ondelete="CASCADE"` et `passive_deletes=True`.
 

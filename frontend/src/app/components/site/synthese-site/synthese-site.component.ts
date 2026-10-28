@@ -36,7 +36,7 @@ export class SyntheseSiteComponent implements OnInit {
   faArrowUpRightFromSquare = faArrowUpRightFromSquare;
   selectedSite: any = {};
   substancesOptions: Nomenclature[] = [];
-  uniqueInteretGeolPrincipal = [];
+  uniqueInteretGeolPrincipal: string[] = [];
   rnId: string | null = null;
   sfgeol: string[] = [];
 
@@ -81,6 +81,43 @@ export class SyntheseSiteComponent implements OnInit {
    * renseignée (null). Les afficher en deux états faisait passer une question
    * sans réponse pour une réponse négative.
    */
+  /**
+   * Ensemble géologique saisi à la main via « Autre ».
+   *
+   * Il n'est pas dans la nomenclature : sans ce rendu, une réserve n'ayant
+   * qu'un ensemble saisi librement s'affichait « Aucun ensemble géologique
+   * sélectionné ».
+   */
+  /**
+   * Sites INPG encore retenus par le gestionnaire.
+   *
+   * Un site écarté reste rattaché à la réserve en base, avec la raison, mais
+   * n'a pas à figurer sur la fiche publique : il n'y est ni compté ni affiché.
+   */
+  get inpgActifs(): any[] {
+    return (this.site?.sites_inpg ?? []).filter((inpg: any) => inpg.active !== false);
+  }
+
+  /** Idem pour le périmètre de protection. */
+  get inpgActifsPerimetre(): any[] {
+    return (this.site?.perimetre_protection?.sites_inpg ?? []).filter((inpg: any) => inpg.active !== false);
+  }
+
+  /**
+   * La réserve abrite-t-elle du patrimoine géologique connu ?
+   *
+   * Les sites ajoutés à la main par le gestionnaire comptent autant que les
+   * sites INPG : ne regarder que l'INPG faisait passer pour dépourvues des
+   * réserves dont tout le patrimoine avait été saisi manuellement.
+   */
+  get aDuPatrimoineGeologique(): boolean {
+    return this.inpgActifs.length > 0 || (this.site?.patrimoines_geologiques?.length ?? 0) > 0;
+  }
+
+  get ensembleGeologiqueAutre(): string {
+    return (this.site?.infos_base?.geological_units_other ?? '').trim();
+  }
+
   estRenseigne(valeur: boolean | null | undefined): boolean {
     return valeur === true || valeur === false;
   }
@@ -106,12 +143,17 @@ export class SyntheseSiteComponent implements OnInit {
           error => this.hasAccessToRn = false // En cas d'erreur, refuse l'accès      
         );
         setTimeout(() => (this.initMap(), this.addLayers(), this.zoomToExtent()), 1);
+        // Les intérêts se lisent sur les sites INPG encore retenus et sur le
+        // patrimoine ajouté à la main, jusqu'ici ignoré.
         this.uniqueInteretGeolPrincipal = Array.from(
-          new Set(this.site.sites_inpg.map((inpg: any) => inpg.inpg.interet_geol_principal))
+          new Set([
+            ...this.inpgActifs.map((inpg: any) => inpg.inpg.interet_geol_principal),
+            ...(this.site.patrimoines_geologiques ?? []).map((p: any) => p.interet_geol_principal),
+          ].filter((interet: any) => !!interet))
         );
-        this.nbInpgConfidentielsReserve = this.site.sites_inpg.filter((inpg: { inpg: { niveau_de_diffusion: string; }; }) => inpg.inpg.niveau_de_diffusion === 'Confidentiel').length;
+        this.nbInpgConfidentielsReserve = this.inpgActifs.filter((inpg: { inpg: { niveau_de_diffusion: string; }; }) => inpg.inpg.niveau_de_diffusion === 'Confidentiel').length;
         if (this.site.perimetre_protection) {
-          this.nbInpgConfidentielsPP = this.site.perimetre_protection.sites_inpg.filter((inpg: { inpg: { niveau_de_diffusion: string; }; }) => inpg.inpg.niveau_de_diffusion === 'Confidentiel').length;
+          this.nbInpgConfidentielsPP = this.inpgActifsPerimetre.filter((inpg: { inpg: { niveau_de_diffusion: string; }; }) => inpg.inpg.niveau_de_diffusion === 'Confidentiel').length;
         }
         this.stratotypesLimite = this.site.stratotypes.filter((stratotype) => stratotype.type === 'limite');
         this.stratotypesEtage = this.site.stratotypes.filter((stratotype) => stratotype.type === 'etage');
@@ -268,6 +310,7 @@ export class SyntheseSiteComponent implements OnInit {
 
     if (inpgPublicLayers.length > 0) {
       const publicGroup = L.layerGroup(inpgPublicLayers).addTo(this.map!);
+      this.hachurer(publicGroup, 'hachures-inpg-public', siteLayerStyle.color);
       this.layerControl.addOverlay(publicGroup, "Sites INPG publics");
       inpgPublicLayers.forEach((layer: { getBounds: () => L.LatLngExpression | L.LatLngBoundsExpression; }) => this.bounds.extend(layer.getBounds()));
       this.addLegendItem(legendContainer!, siteLayerStyle.fillColor, siteLayerStyle.fillOpacity, siteLayerStyle.color, "Sites INPG publics")
@@ -304,6 +347,7 @@ export class SyntheseSiteComponent implements OnInit {
 
     if (inpgConfidentialLayers.length > 0 && this.estConnecte()) {
       const confidentialGroup = L.layerGroup(inpgConfidentialLayers).addTo(this.map!);
+      this.hachurer(confidentialGroup, 'hachures-inpg-confidentiel', siteLayerStyle.color);
       this.layerControl.addOverlay(confidentialGroup, "Sites INPG confidentiels");
       inpgConfidentialLayers.forEach((layer: { getBounds: () => L.LatLngExpression | L.LatLngBoundsExpression; }) => this.bounds.extend(layer.getBounds()));
       this.addLegendItem(legendContainer!, siteLayerStyle.fillColor, siteLayerStyle.fillOpacity, siteLayerStyle.color, "Sites INPG confidentiels")
@@ -556,6 +600,68 @@ export class SyntheseSiteComponent implements OnInit {
     const g = (bigint >> 8) & 255;
     const b = bigint & 255;
     return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  }
+
+  /**
+   * Motif de hachures pour les emprises INPG.
+   *
+   * Les sites INPG se superposent souvent presque exactement à l'emprise de la
+   * réserve : deux aplats de couleur deviennent alors indistinguables. Les
+   * hachures laissent voir ce qu'il y a dessous.
+   *
+   * Leaflet n'expose pas les motifs SVG : on injecte le `<pattern>` dans le
+   * `<svg>` que son moteur de rendu crée, puis on pointe le `fill` des tracés
+   * dessus.
+   */
+  private assurerMotifHachures(id: string, couleur: string): void {
+    const svg = this.map?.getPane('overlayPane')?.querySelector('svg');
+    if (!svg || svg.querySelector(`#${id}`)) {
+      return;
+    }
+
+    const ns = 'http://www.w3.org/2000/svg';
+    let defs = svg.querySelector('defs');
+    if (!defs) {
+      defs = document.createElementNS(ns, 'defs');
+      svg.insertBefore(defs, svg.firstChild);
+    }
+
+    const motif = document.createElementNS(ns, 'pattern');
+    motif.setAttribute('id', id);
+    motif.setAttribute('patternUnits', 'userSpaceOnUse');
+    motif.setAttribute('width', '8');
+    motif.setAttribute('height', '8');
+    motif.setAttribute('patternTransform', 'rotate(45)');
+
+    const trait = document.createElementNS(ns, 'line');
+    trait.setAttribute('x1', '0');
+    trait.setAttribute('y1', '0');
+    trait.setAttribute('x2', '0');
+    trait.setAttribute('y2', '8');
+    trait.setAttribute('stroke', couleur);
+    trait.setAttribute('stroke-width', '3');
+
+    motif.appendChild(trait);
+    defs.appendChild(motif);
+  }
+
+  /** Applique le motif de hachures aux tracés d'un groupe de couches. */
+  private hachurer(groupe: L.LayerGroup, id: string, couleur: string): void {
+    this.assurerMotifHachures(id, couleur);
+    groupe.eachLayer((couche: any) => {
+      const appliquer = (c: any) => {
+        const element = typeof c.getElement === 'function' ? c.getElement() : null;
+        if (element) {
+          element.setAttribute('fill', `url(#${id})`);
+          element.setAttribute('fill-opacity', '1');
+        }
+      };
+      if (typeof couche.eachLayer === 'function') {
+        couche.eachLayer(appliquer);
+      } else {
+        appliquer(couche);
+      }
+    });
   }
 
   private addLegendItem(legendContainer: HTMLElement, fillColor: string, fillOpacity: number, borderColor: string, label: string): void {

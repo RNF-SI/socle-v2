@@ -292,7 +292,10 @@
     <div *ngIf="tInfosBaseSiteForm.get('geologicalUnitsOther')?.value" class="input-field">
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Précisez</mat-label>
-        <input matInput formControlName="geologicalUnitsOtherText">
+        <input matInput formControlName="geologicalUnitsOtherText" required>
+        <mat-error *ngIf="tInfosBaseSiteForm.get('geologicalUnitsOtherText')?.hasError('required')">
+          Précisez l'ensemble géologique, sinon décochez « Autre ».
+        </mat-error>
       </mat-form-field>
     </div>
 
