@@ -2,6 +2,7 @@ import { AfterViewChecked, Component, OnInit, ViewChild, ChangeDetectionStrategy
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
+import { normaliserTexte, regionsDuSite } from '../../core/shared/normaliser';
 import * as L from 'leaflet';
 import { AuthService } from 'src/app/core/auth/auth-service.service';
 import { ExcelService } from 'src/app/core/services/excel.service';
@@ -43,12 +44,12 @@ interface Location {
 export class AccueilComponent implements OnInit, AfterViewChecked {
   espaces: Site[] = [];
   filteredEspaces: Site[] = [];
-  selectedTypeRn: string = '';
+  selectedTypeRn: string[] = [];
   searchQuery: string = '';
   selectedCode: string = '';
   selectedPatrimoine: string = '';
   regions: string[] = ['Normandie', 'Pays de la Loire', 'Corse', 'Provence-Alpes-Côte d\'Azur', 'Grand Est', 'Auvergne-Rhône-Alpes', 'Bretagne', 'Hauts-de-France', 'Occitanie', 'Nouvelle-Aquitaine', 'Bourgogne-Franche-Comté', 'Île-de-France', 'Guyane', 'La Réunion', 'Centre-Val de Loire', 'Guadeloupe', 'Martinique', 'Mayotte'];
-  selectedRegion: string = '';
+  selectedRegion: string[] = [];
   stats: Stat[] = [];
   date_maj_inpg: Date | null = null;
 
@@ -440,16 +441,11 @@ export class AccueilComponent implements OnInit, AfterViewChecked {
   }
 
   handleSearch(event: Event): void {
-    const query = this.removeAccents((event.target as HTMLInputElement).value.toLowerCase());
-    this.searchQuery = query;
+    this.searchQuery = normaliserTexte((event.target as HTMLInputElement).value);
     this.applyFilters();
   }
 
-  private removeAccents(text: string): string {
-    return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  }
-
-  onTypeRnChange(typeRn: string): void {
+  onTypeRnChange(typeRn: string[]): void {
     this.selectedTypeRn = typeRn;
     this.applyFilters();
   }
@@ -464,7 +460,7 @@ export class AccueilComponent implements OnInit, AfterViewChecked {
     this.applyFilters();
   }
 
-  onRegionChange(region: string): void {
+  onRegionChange(region: string[]): void {
     this.selectedRegion = region;
     this.applyFilters();
   }
@@ -472,9 +468,16 @@ export class AccueilComponent implements OnInit, AfterViewChecked {
   applyFilters(): void {
     this.filteredEspaces = this.espaces.filter(site => {
       const matchesTypeRn = this.selectedTypeRn.length > 0 ? this.selectedTypeRn.includes(site.type_rn) : true;
-      const matchesRegion = this.selectedRegion.length > 0 ? this.selectedRegion.includes(site.region) : true;
+      // Comparaison normalisée : la base écrit « Ile-de-France » sans accent
+      // là où la liste affiche « Île-de-France », et une réserve à cheval sur
+      // deux régions tient dans une seule chaîne séparée par une virgule.
+      const regionsSite = regionsDuSite(site.region);
+      const matchesRegion = this.selectedRegion.length > 0
+        ? this.selectedRegion.some(choix => regionsSite.includes(normaliserTexte(choix)))
+        : true;
       const matchesSearch = this.searchQuery
-        ? this.removeAccents(site.nom.toLowerCase()).includes(this.searchQuery) || site.code.toLowerCase().includes(this.searchQuery)
+        ? normaliserTexte(site.nom).includes(this.searchQuery)
+          || normaliserTexte(site.code).includes(this.searchQuery)
         : true;
       const matchesPatrimoine = this.selectedPatrimoine === 'oui'
         ? (site.sites_inpg && site.sites_inpg.length > 0) || (site.patrimoines_geologiques && site.patrimoines_geologiques.length > 0)

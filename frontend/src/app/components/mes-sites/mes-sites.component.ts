@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
@@ -6,6 +6,8 @@ import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/auth/auth-service.service';
 import { SitesService } from 'src/app/services/sites.service';
 import { environment } from 'src/environments/environment';
+import { Subject, Subscription, debounceTime, distinctUntilChanged } from 'rxjs';
+import { normaliserTexte } from '../../core/shared/normaliser';
 import { Site } from '../../models/site.model';
 
 @Component({
@@ -15,11 +17,14 @@ import { Site } from '../../models/site.model';
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./mes-sites.component.scss']
 })
-export class MessitesComponent implements OnInit {
+export class MessitesComponent implements OnInit, OnDestroy {
   espaces: Site[] = [];
   filteredEspaces: Site[] = [];
   selectedDate: Date | null = null;
   searchQuery: string = "";
+  /** Saisies du champ de recherche, filtrées après une pause de frappe. */
+  private saisies = new Subject<string>();
+  private saisiesSub?: Subscription;
   selectedStartDate: Date | null = null;
   selectedEndDate: Date | null = null;
   // Valeurs en pourcentage
@@ -39,6 +44,15 @@ export class MessitesComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    // 600 ms après la dernière frappe : assez pour ne pas filtrer à chaque
+    // caractère, assez court pour que le résultat paraisse immédiat.
+    this.saisiesSub = this.saisies
+      .pipe(debounceTime(600), distinctUntilChanged())
+      .subscribe(valeur => {
+        this.searchQuery = normaliserTexte(valeur);
+        this.applyFilters();
+      });
+
     const currentUser = this.authService.getCurrentUser();
 
     if (!currentUser) {
@@ -88,11 +102,15 @@ export class MessitesComponent implements OnInit {
     this.router.navigate(['/t_infos_base_site', slug])
   }
 
-  // Méthode appelée lors de la saisie du nom
-  // Méthode appelée lors de la saisie du nom
+  // Méthode appelée lors de la saisie du nom.
+  // Le filtrage n'est lancé qu'après une pause : filtrer à chaque frappe
+  // provoquait une latence qui faisait perdre des caractères à la saisie.
   handleSearch(event: Event): void {
-    this.searchQuery = (event.target as HTMLInputElement).value.toLowerCase();
-    this.applyFilters();
+    this.saisies.next((event.target as HTMLInputElement).value);
+  }
+
+  ngOnDestroy(): void {
+    this.saisiesSub?.unsubscribe();
   }
 
   // Méthode appelée lors de la sélection de la date de début
@@ -111,7 +129,7 @@ export class MessitesComponent implements OnInit {
   applyFilters(): void {
     this.filteredEspaces = this.espaces.filter(ep => {
       // Filtrage par nom
-      const matchesQuery = ep.nom.toLowerCase().includes(this.searchQuery);
+      const matchesQuery = normaliserTexte(ep.nom).includes(this.searchQuery);
 
       // Filtrage par intervalle de dates pour la dernière modification
       let matchesDate = true;
