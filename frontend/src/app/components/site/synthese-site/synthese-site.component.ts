@@ -76,6 +76,15 @@ export class SyntheseSiteComponent implements OnInit {
     else return false
   }
 
+  /**
+   * Une question du questionnaire a trois états : oui, non, et pas encore
+   * renseignée (null). Les afficher en deux états faisait passer une question
+   * sans réponse pour une réponse négative.
+   */
+  estRenseigne(valeur: boolean | null | undefined): boolean {
+    return valeur === true || valeur === false;
+  }
+
   ngOnInit(): void {
 
     const slug = this.route.snapshot.paramMap.get('slug');

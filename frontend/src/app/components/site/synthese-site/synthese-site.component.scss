@@ -329,3 +329,8 @@ span.legend-item {
   font-size: smaller;
   font-style: italic;
 }
+// Question du questionnaire restée sans réponse : à distinguer d'un « non ».
+.non-renseigne {
+  font-style: italic;
+  opacity: 0.7;
+}

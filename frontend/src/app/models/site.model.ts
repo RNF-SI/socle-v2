@@ -60,14 +60,18 @@ export interface Infos_base {
   contains_paleontological_heritage_trace_fossils: boolean;
   contains_paleontological_heritage_other_details: string;
   geological_units: number[];
+  // Les questions du questionnaire valent null tant qu'elles n'ont pas été
+  // renseignées : le type doit le refléter, sinon « non renseigné » et « non »
+  // deviennent indiscernables à la lecture.
+  associated_with_mineral_resources: boolean | null;
   mineral_resources_old_quarry: boolean;
   mineral_resources_active_quarry: boolean;
   mineral_resources_old_mine: boolean;
   mineral_resources_active_mine: boolean;
-  reserve_has_geological_collections: boolean;
-  reserve_has_geological_site_for_visitors: boolean;
+  reserve_has_geological_collections: boolean | null;
+  reserve_has_geological_site_for_visitors: boolean | null;
   nb_sites_for_visitors: number;
-  offers_geodiversity_activities: boolean;
+  offers_geodiversity_activities: boolean | null;
   user_update: string;
   date_update: Date;
   biblio: Text;
