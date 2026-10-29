@@ -8,14 +8,11 @@ from app import app, db
 from models import PatrimoineGeologiqueGestionnaire, Site, TInfosBaseSite, Nomenclature, BibNomenclatureType,Inpg, Site, CorSiteInpg, CorSiteSubstance, Stratotype, Parametres, Echelle, SFGeol, SuivisModifs
 from schemas import PatrimoineGeologiqueGestionnaireSchema, PerimetreProtectionSchema, TInfosBaseSiteSchema, SiteSchema, NomenclatureSchema, NomenclatureTypeSchema, SiteSchemaSimple, StratotypeSchema, ParametresSchema, SuivisModifsSchema
 from pypnusershub import routes as fnauth
-import logging
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload, load_only
 import datetime
 
 bp = Blueprint('routes', __name__)
-
-logging.basicConfig(level=logging.DEBUG)
 
 @bp.route('/site/<slug>', methods=['GET'])
 def getSiteBySlug(slug):

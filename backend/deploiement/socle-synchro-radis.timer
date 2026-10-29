@@ -1,0 +1,19 @@
+# Déclenche la synchronisation chaque nuit.
+#
+# La commande est idempotente — un second passage immédiat ne modifie rien —
+# donc un rattrapage après une coupure est sans risque, d'où Persistent=true.
+
+[Unit]
+Description=Synchronisation nocturne des réserves depuis RADIS
+
+[Timer]
+OnCalendar=*-*-* 03:30:00
+# Évite que toutes les applications RNF n'interrogent leurs API à la seconde
+# près : RADIS sert aussi d'autres consommateurs.
+RandomizedDelaySec=15m
+# Rejoue le passage manqué si la machine était éteinte à l'heure dite.
+Persistent=true
+Unit=socle-synchro-radis.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,33 @@
+# Synchronisation des réserves de SOCLE depuis l'API de RADIS.
+#
+# Installation : voir DEPLOIEMENT.md, « Programmer la synchronisation ».
+# Les chemins supposent le déploiement de production (/home/socle/socle-v2) ;
+# les adapter sinon.
+
+[Unit]
+Description=Synchronise les réserves de SOCLE depuis l'API de RADIS
+Documentation=https://github.com/RNF-SI/socle-v2/blob/main/DEPLOIEMENT.md
+# La commande ne fait que des requêtes HTTPS et du SQL : sans réseau elle
+# échoue immédiatement, autant attendre qu'il soit là.
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=socle
+Group=socle
+WorkingDirectory=/home/socle/socle-v2/backend
+Environment=FLASK_APP=wsgi.py
+ExecStart=/home/socle/socle-v2/backend/venv/bin/python -m flask synchro-radis
+
+# Un passage complet fait une vingtaine de requêtes et rapatrie les périmètres
+# des 385 réserves : quelques minutes suffisent, mais la marge évite qu'une
+# lenteur de RADIS ne fasse tuer le travail au milieu d'une page.
+TimeoutStartSec=1800
+
+# La commande n'a besoin que de son dossier, de la base et du réseau.
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=full
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
