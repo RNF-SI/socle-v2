@@ -72,6 +72,10 @@ python3.14 -m venv venv          # ou uv venv --python 3.14 venv
 venv/bin/python -m pip install -r requirements.txt
 ```
 
+`gunicorn` est bien dans `requirements.txt`, mais il ne l'était pas avant la
+1.3.0 : une reconstruction de venv sur une version antérieure le perd, et
+`socle.service` échoue alors au démarrage sans que la cause saute aux yeux.
+
 Puis compléter `backend/config.py`, qui n'est pas versionné. Six clés sont
 apparues depuis la 1.1.0 ; les comparer à `config_sample.py` :
 
