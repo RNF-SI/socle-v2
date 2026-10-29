@@ -25,6 +25,13 @@ class Config :
     ZAMMAD_TOKEN = ""
     ZAMMAD_GROUP = "Support SI RNF::Support SOCLE"  # nom exact, groupes imbriqués avec ::
     TURNSTILE_SECRET = ""  # clé secrète Cloudflare Turnstile, pendant de turnstileSiteKey côté front
+    # --- Synchronisation des réserves depuis RADIS ---
+    # SOCLE tire les périmètres et les métadonnées des réserves par l'API
+    # publique de RADIS (`flask synchro-radis`), au lieu d'être écrit
+    # directement par elle. La clé s'obtient auprès du Pôle SI.
+    RADIS_API_URL = "https://radis.reserves-naturelles.org"  # sans slash final
+    RADIS_API_KEY = ""
+
     URL_USERSHUB = 'https://usershub.reserves-naturelles.org' # sans slash final
     ID_APP = 11
     CODE_APPLICATION = "SOCLE"

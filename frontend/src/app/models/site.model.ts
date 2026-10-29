@@ -27,6 +27,12 @@ export interface Site {
   perimetre_protection: any;
   interet_geol_principal: any;
   nom: string;
+  // Réserve sortie du réseau. RADIS déclasse au lieu de supprimer : le site
+  // disparaît des listes mais sa fiche géologique reste consultable, d'où le
+  // bandeau d'avertissement de la synthèse.
+  ancienne_reserve?: boolean;
+  date_declassement?: string;
+  raison_declassement?: string;
   superficie: number;
   sitesInpg: number;
   geopatrimoineSites: number;

@@ -92,6 +92,14 @@ class Site(db.Model):
     region = db.Column(db.String(100), nullable=True)  # Nouveau champ pour la région
     creation_geol = db.Column(db.Boolean) # Ajout d'un champ pour définir si la réserve a été créée pour son patrimoine géologique
 
+    # Déclassement. RADIS ne supprime pas une réserve sortie du réseau, il la
+    # déclasse : SOCLE répercute ce statut plutôt que de supprimer le site, ce
+    # qui emporterait sa fiche géologique et ses rattachements INPG. Les listes
+    # excluent les réserves déclassées, leur fiche reste consultable.
+    ancienne_reserve = db.Column(db.Boolean, default=False, nullable=False, server_default=db.false())
+    date_declassement = db.Column(db.Date, nullable=True)
+    raison_declassement = db.Column(db.String(255), nullable=True)
+
 
     perimetre_protection_site = db.relationship("Site", remote_side=[id_site])
 
