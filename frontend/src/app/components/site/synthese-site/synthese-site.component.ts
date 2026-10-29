@@ -2,7 +2,7 @@ import { Component, ElementRef, OnInit, QueryList, Renderer2, ViewChildren, Chan
 import { ActivatedRoute } from '@angular/router';
 import { faArrowUpRightFromSquare, faKey, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { toPng } from 'html-to-image';
-import jsPDF from 'jspdf';
+import { ExportFicheService } from 'src/app/services/export-fiche.service';
 import * as L from 'leaflet';
 import { AuthService } from 'src/app/core/auth/auth-service.service';
 import { Nomenclature } from 'src/app/models/nomenclature.model';
@@ -65,7 +65,8 @@ export class SyntheseSiteComponent implements OnInit {
     private route: ActivatedRoute,
     private siteService: SitesService,
     public authService: AuthService,
-    private nomenclaturesService: NomenclaturesService
+    private nomenclaturesService: NomenclaturesService,
+    private exportFiche: ExportFicheService
   ) { }
 
   estConnecte() {
@@ -524,67 +525,171 @@ export class SyntheseSiteComponent implements OnInit {
   //   return this.substancesOptions.filter(substance => selectedMnemonics.includes(substance.mnemonique));
   // }
 
-  exportData() {
-    const data = document.getElementById('export-content');
-    const map = this.map;
+  /**
+   * Exporte la fiche en PDF.
+   *
+   * Le PDF est composé à partir des données par ExportFicheService ; seule la
+   * carte est capturée en image. Si la capture échoue — une feuille de style
+   * distante qui refuse d'être lue suffit — l'export se poursuit sans elle
+   * plutôt que de ne rien produire.
+   */
+  async exportData(): Promise<void> {
+    // Seuls les pictogrammes sont capturés : ce sont des icônes vectorielles,
+    // que jsPDF ne sait pas dessiner sans embarquer leur police. Les valeurs
+    // et les libellés restent du texte.
+    const pictos = await this.capturerPictos();
+    const carte = await this.capturerCarte();
+    const legende = await this.capturerElement('.legend-container');
 
-    if (data && map) {
-      // Cacher les contrôles de zoom et de couches en appliquant `display: none` directement
-      const layerControl = document.querySelector('.leaflet-control-layers');
-      const zoomControl = document.querySelector('.leaflet-control-zoom');
-      if (layerControl) (layerControl as HTMLElement).style.display = 'none';
-      if (zoomControl) (zoomControl as HTMLElement).style.display = 'none';
+    this.exportFiche.genererPdf({
+      site: this.site,
+      inpgActifs: this.inpgActifs,
+      ensemblesGeologiques: this.filteredGeologicalUnits ?? [],
+      ensembleGeologiqueAutre: this.ensembleGeologiqueAutre,
+      interetsGeologiques: this.uniqueInteretGeolPrincipal ?? [],
+      stratotypesLimite: this.stratotypesLimite ?? [],
+      stratotypesEtage: this.stratotypesEtage ?? [],
+      inpgActifsPerimetre: this.inpgActifsPerimetre,
+      formationsGeologiques: this.sfgeol ?? [],
+      pictos,
+      carte,
+      legende,
+    });
+  }
 
-      this.zoomToExtent();
+  /**
+   * Convertit en PNG les pictogrammes du bandeau de chiffres clés.
+   *
+   * FontAwesome rend des SVG en ligne, qu'on sérialise et rasterise
+   * directement. Passer par html-to-image, comme pour la carte, rejouait
+   * l'inlining de toutes les feuilles de style à chaque icône : cinq appels
+   * concurrents ne rendaient plus la main, la récupération des polices
+   * distantes n'ayant pas de délai de garde.
+   */
+  private async capturerPictos(): Promise<(string | null)[]> {
+    const svgs = Array.from(
+      document.querySelectorAll<SVGElement>('.stats-container .stat-item fa-icon svg'));
+    return Promise.all(svgs.map(svg => this.svgVersPng(svg)));
+  }
 
-      // Sauvegarder la couche de fond actuelle (osm ou geologie)
-      let currentBaseLayer: L.Layer | null | undefined = null;
-      map.eachLayer(layer => {
-        if (layer === this.osm || layer === this.geologie) {
-          currentBaseLayer = layer;
+  private svgVersPng(svg: SVGElement): Promise<string | null> {
+    const COTE = 64;
+    const couleur = getComputedStyle(svg).color || '#fabb64';
+    const copie = svg.cloneNode(true) as SVGElement;
+    copie.setAttribute('width', `${COTE}`);
+    copie.setAttribute('height', `${COTE}`);
+
+    // FontAwesome peint ses tracés en `currentColor`, qui retombe au noir dans
+    // un SVG détaché du document. Poser le fill sur la racine ne suffit pas :
+    // l'attribut du tracé l'emporte. On fixe donc les deux.
+    copie.setAttribute('style', `color: ${couleur}`);
+    copie.setAttribute('fill', couleur);
+    copie.querySelectorAll<SVGElement>('[fill]').forEach(tracé => {
+      if ((tracé.getAttribute('fill') || '').toLowerCase() === 'currentcolor') {
+        tracé.setAttribute('fill', couleur);
+      }
+    });
+    copie.querySelectorAll('path').forEach(tracé => {
+      if (!tracé.getAttribute('fill')) {
+        tracé.setAttribute('fill', couleur);
+      }
+    });
+
+    const source = new XMLSerializer().serializeToString(copie);
+    const url = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(source)));
+
+    return new Promise(resolve => {
+      const image = new Image();
+      image.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = COTE;
+        canvas.height = COTE;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          resolve(null);
+          return;
         }
-      });
+        ctx.drawImage(image, 0, 0, COTE, COTE);
+        resolve(canvas.toDataURL('image/png'));
+      };
+      image.onerror = () => resolve(null);
+      image.src = url;
+    });
+  }
 
-      // Activer temporairement la couche OpenStreetMap pour l'export
-      if (currentBaseLayer !== this.osm) {
-        map.removeLayer(currentBaseLayer!);
+  /** Capture un bloc de la fiche en PNG, ou null si la capture échoue. */
+  private async capturerElement(selecteur: string): Promise<string | null> {
+    const element = document.querySelector<HTMLElement>(selecteur);
+    if (!element) {
+      return null;
+    }
+    return this.capturer(element, `Bloc ${selecteur}`);
+  }
+
+  /**
+   * Capture un élément en PNG, sans jamais bloquer l'export.
+   *
+   * `skipFonts` évite d'aller chercher les feuilles de style distantes : leur
+   * récupération n'a pas de délai de garde dans html-to-image, et une seule
+   * qui traîne suffit à ce que l'export ne rende jamais la main. Le délai
+   * ci-dessous couvre les autres causes d'attente.
+   */
+  private async capturer(element: HTMLElement, quoi: string, delaiMax = 10000): Promise<string | null> {
+    try {
+      return await Promise.race([
+        // cacheBust contourne les images déjà en cache sans en-tête CORS —
+        // les tuiles du BRGM n'en renvoient aucun. skipFonts évite d'aller
+        // chercher les feuilles de style distantes, dont la récupération n'a
+        // pas de délai de garde dans html-to-image.
+        toPng(element, { cacheBust: true, backgroundColor: '#ffffff', skipFonts: true }),
+        new Promise<null>(resolve => setTimeout(() => resolve(null), delaiMax)),
+      ]);
+    } catch (erreur) {
+      console.error(`${quoi} non exporté :`, erreur);
+      return null;
+    }
+  }
+
+  /** Capture la carte seule, recentrée sur la réserve et sans ses contrôles. */
+  private async capturerCarte(): Promise<string | null> {
+    const map = this.map;
+    if (!map) {
+      return null;
+    }
+
+    const controles = Array.from(
+      document.querySelectorAll<HTMLElement>('.leaflet-control-layers, .leaflet-control-zoom'));
+    controles.forEach(c => (c.style.visibility = 'hidden'));
+
+    let fondInitial: L.Layer | null = null;
+    map.eachLayer(couche => {
+      if (couche === this.osm || couche === this.geologie) {
+        fondInitial = couche;
+      }
+    });
+
+    try {
+      this.zoomToExtent();
+      // Le fond OpenStreetMap s'exporte mieux que les tuiles du BRGM, qui
+      // n'autorisent pas toujours la lecture depuis un canvas.
+      if (fondInitial && fondInitial !== this.osm) {
+        map.removeLayer(fondInitial);
         this.osm?.addTo(map);
       }
-
-      // Forcer le rechargement des tuiles pour garantir que la couche OSM est bien chargée
       map.invalidateSize();
-
-      // Attendre un moment pour s'assurer que tout est bien chargé avant l'exportation
-      setTimeout(() => {
-        toPng(data).then((dataUrl) => {
-          const imgWidth = 208;
-          const marginTop = 10;  // Marge en haut de la page
-          const marginBottom = 10;  // Marge en bas de la page
-          const img = new Image();
-          img.src = dataUrl;
-          img.onload = () => {
-            const imgHeight = (img.height * imgWidth) / img.width;
-
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            let position = marginTop;
-
-            pdf.addImage(dataUrl, 'PNG', 0, position, imgWidth, imgHeight);
-            pdf.save('site-details.pdf');
-          };
-        }).catch((error) => {
-          console.error("Erreur lors de l'exportation :", error);
-        }).finally(() => {
-          // Rétablir la couche de fond initiale
-          if (currentBaseLayer && currentBaseLayer !== this.osm) {
-            map.removeLayer(this.osm!);
-            currentBaseLayer.addTo(map);
-          }
-
-          // Réafficher les contrôles de zoom et de sélection de couche
-          if (layerControl) (layerControl as HTMLElement).style.display = '';
-          if (zoomControl) (zoomControl as HTMLElement).style.display = '';
-        });
-      }, 2000);
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      // La carte embarque ses tuiles : elle demande bien plus de temps qu'un
+      // bloc de texte, sans pour autant pouvoir attendre indéfiniment.
+      return await this.capturer(map.getContainer(), 'Carte', 20000);
+    } catch (erreur) {
+      console.error("Carte non exportée :", erreur);
+      return null;
+    } finally {
+      if (fondInitial && fondInitial !== this.osm) {
+        map.removeLayer(this.osm!);
+        (fondInitial as L.Layer).addTo(map);
+      }
+      controles.forEach(c => (c.style.visibility = ''));
     }
   }
 
