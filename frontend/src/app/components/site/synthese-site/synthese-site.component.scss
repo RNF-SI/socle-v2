@@ -329,6 +329,16 @@ span.legend-item {
   font-size: smaller;
   font-style: italic;
 }
+// Réserve déclassée : la fiche reste atteignable par une URL enregistrée alors
+// que le site a disparu des listes et de la carte. Sans ce bandeau, rien ne
+// distinguerait la fiche d'une réserve en activité.
+.bandeau-declassement {
+  margin: 0.5rem 0 1rem;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid palettes.couleur(palettes.$custom-accent, 500);
+  background-color: rgba(0, 0, 0, 0.04);
+  font-size: smaller;
+}
 // Question du questionnaire restée sans réponse : à distinguer d'un « non ».
 .non-renseigne {
   font-style: italic;

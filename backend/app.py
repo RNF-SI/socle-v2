@@ -42,3 +42,8 @@ app.register_blueprint(routes, url_prefix='/auth')
 
 import routes
 app.register_blueprint(routes.bp)
+
+# Commande `flask synchro-radis` : SOCLE tire les réserves depuis l'API de
+# RADIS au lieu d'être écrit directement par elle.
+import synchro_radis
+synchro_radis.enregistrer_commandes(app)

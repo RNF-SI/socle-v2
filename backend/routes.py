@@ -48,6 +48,7 @@ def get_sites_simple_centroid():
             joinedload(Site.stratotypes).load_only(Stratotype.libelle),
         )
         .filter(Site.perimetre_protection != True)
+        .filter(Site.ancienne_reserve != True)
         .order_by(Site.nom)
         .all()
     )
@@ -70,7 +71,7 @@ def get_sites_in_bbox():
             Site.geom,
             func.ST_MakeEnvelope(xmin, ymin, xmax, ymax, 4326)  # Remplacez 4326 par votre SRID
         )
-    ).all()
+    ).filter(Site.ancienne_reserve != True).all()
     schema = SiteSchemaSimple(only=('id_site','geom', 'nom','slug', 'sites_inpg','patrimoines_geologiques','creation_geol'),many=True)
     return schema.jsonify(sites)
 
@@ -81,6 +82,7 @@ def get_sites_pour_admin():
         Site.query
         .options(load_only(Site.id_site, Site.nom, Site.slug, Site.code))
         .filter(Site.perimetre_protection != True)
+        .filter(Site.ancienne_reserve != True)
         .order_by(Site.nom)
         .all()
     )

@@ -19,6 +19,14 @@
     {{site.jonction_nom}}{{site.nom}}
   </h2>
 
+  <div class="bandeau-declassement" *ngIf="site.ancienne_reserve">
+    <fa-icon [icon]="['fas', 'triangle-exclamation']"></fa-icon>
+    Cette réserve ne fait plus partie du réseau<span *ngIf="site.date_declassement">
+      depuis le {{ site.date_declassement | date:'d MMMM y':'+0200':'fr' }}</span>.
+    <span *ngIf="site.raison_declassement">{{ site.raison_declassement }}.</span>
+    Sa fiche géologique reste consultable mais n'est plus mise à jour.
+  </div>
+
   <div class="infos-maj" *ngIf="hasAccessToRn && site.infos_base.date_update">
     Dernière mise à jour effectuée le {{site.infos_base.date_update | date:'d MMMM y':'+0200':'fr' }} par
     {{site.infos_base.user_update}}

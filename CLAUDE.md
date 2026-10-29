@@ -82,7 +82,8 @@ Sérialisation : Marshmallow (`schemas.py`) avec `SQLAlchemyAutoSchema`. Les gé
 
 - **`slug`** est la clé d'accès publique : l'API et le routing Angular adressent les sites par slug (`/site/<slug>`, `/t_infos_base_site/<slug>`), pas par `id_site`.
 - **Périmètres de protection** : auto-référence `id_perimetre_protection` + drapeau `perimetre_protection`. Les listes filtrent systématiquement `Site.perimetre_protection != True` pour ne pas afficher un périmètre comme une réserve.
-- **`TInfosBaseSite`** (`t_infos_base_site`, PK = FK vers `site.id_site`) porte toutes les réponses du questionnaire géologique. `completion` (float 0–1) y est stocké mais n'est jamais écrit par le code applicatif — il est calculé en base. Idem pour `suivi_infos_base_site` (`SuivisModifs`, colonnes JSONB `ancien`/`nouveau`) : l'historique est alimenté côté base, l'application ne fait que le relire et le mettre en forme (`transform_modifications` dans `routes.py`, avec son dictionnaire de libellés français par champ).
+- **Déclassement** : `ancienne_reserve`, `date_declassement`, `raison_declassement`. RADIS ne supprime jamais une réserve sortie du réseau, il la déclasse — SOCLE fait de même. Supprimer le site emporterait sa fiche géologique et ses rattachements INPG, décisions de gestionnaire comprises. Les listes (`/sites-simple-centroides`, `/sites-dans-bbox`, `/sites-pour-admin`) excluent les réserves déclassées comme elles excluent les périmètres de protection ; `/site/<slug>` continue de les servir, et la synthèse affiche un bandeau.
+- **`TInfosBaseSite`** (`t_infos_base_site`, PK = FK vers `site.id_site`) porte toutes les réponses du questionnaire géologique. Une entrée vide est créée à l'insertion d'un site par le trigger `trg_cree_infos_base_site`, **sauf pour les périmètres de protection**, qui n'ont pas de questionnaire propre. Sans ce trigger, un site créé par la synchronisation n'avait pas de fiche du tout : 13 réserves étaient dans ce cas. `completion` (float 0–1) y est stocké mais n'est jamais écrit par le code applicatif — il est calculé en base. Idem pour `suivi_infos_base_site` (`SuivisModifs`, colonnes JSONB `ancien`/`nouveau`) : l'historique est alimenté côté base, l'application ne fait que le relire et le mettre en forme (`transform_modifications` dans `routes.py`, avec son dictionnaire de libellés français par champ).
 - **INPG** (inventaire national du patrimoine géologique, source externe) : table `inpg` en lecture, liée par `cor_site_inpg` qui porte `active` / `raison_desactive` — un gestionnaire peut invalider un rattachement INPG sans supprimer la donnée (`/invalid-inpg-from-site`, `/revalid-inpg-from-site`). **`cor_site_inpg` est entretenue par un trigger** (`trg_maj_cor_site_inpg` sur `site`) : toute modification du périmètre recalcule les recoupements `ST_Intersects`. Il n'écrase jamais un lien existant, ce qui préserve les décisions des gestionnaires ; il ne supprime que les liens dont l'emprise ne recoupe plus la réserve. Ne pas écrire dans cette table depuis l'application sans tenir compte du trigger.
 - **Nomenclatures** : `t_nomenclatures` / `bib_nomenclatures_types` à la mode GeoNature. Les `id_type` sont codés en dur dans les composants Angular (6 = âges, 7 = substances), pas résolus par mnémonique.
 - Tables d'association déclaratives (`cor_site_ages`, `cor_site_stratotype`, `cor_site_sfgeol`) avec `ondelete="CASCADE"` et `passive_deletes=True`.
@@ -106,6 +107,29 @@ Deux sources de configuration coexistent :
 L'authentification est isolée dans `core/auth/` : c'est la seule partie qu'il faudra re-synchroniser si RNF bascule sur Keycloak, travail qui existe en amont sur la branche `keycloak`, bâtie sur la ligne Angular 15.
 
 `src/conf/app.config.ts` reste le paramétrage de cette coquille : titres, menu, recherche, `displayFooter`, `displayPartners`.
+
+### Synchronisation des réserves depuis RADIS
+
+Les périmètres et les métadonnées des réserves viennent de **RADIS** (equipe-app, `RNF-SI/equipe-app`), l'outil de gestion des données réserves. SOCLE les **tire** par l'API publique de RADIS :
+
+```bash
+cd backend && FLASK_APP=wsgi.py venv/bin/python -m flask synchro-radis --a-blanc
+```
+
+Deux clés dans `config.py` : `RADIS_API_URL` et `RADIS_API_KEY` (header `X-API-Key`, clé à demander au Pôle SI). Sans elles la commande échoue tout de suite.
+
+**Le flux était inversé.** RADIS écrivait directement dans `public.site` par un bind cross-base (`_sync_reserve_to_socle`, dans `backend/routes/reserve.py` de equipe-app) : un UPDATE puis, à zéro ligne touchée, un INSERT en SQL brut, déclenché par quatre évènements et dont les exceptions étaient avalées. Ce flux poussait mais ne réconciliait jamais, d'où les deux symptômes : aucune entrée dans `t_infos_base_site`, et une réserve déclassée dans RADIS qui restait affichée dans SOCLE. **Le push de RADIS reste en place jusqu'à ce que cette commande tourne en production** ; le retirer avant figerait SOCLE.
+
+La commande lit `/reserves/inventaire` (l'état d'ensemble, déclassées incluses) puis `/reserves?ancienne_reserve=all&geometry=full` page par page. Ce que `synchro_radis.py` ne fait **jamais** — chaque point correspond à un dégât constaté ou évité :
+
+- **supprimer un site** : un déclassement se répercute dans `ancienne_reserve` ;
+- **écraser un `slug`** : c'est la clé d'accès publique, le recalculer au renommage casserait toutes les URL. Il n'est posé qu'à la création, par `python-slugify` — la même bibliothèque que RADIS, pour produire les mêmes slugs ;
+- **effacer une géométrie** : une réserve dont RADIS ignore le périmètre garde celui de SOCLE. Écrire NULL ferait en plus supprimer tous ses liens INPG par `trg_maj_cor_site_inpg` ;
+- **toucher un périmètre de protection**, `creation_geol`, ou quoi que ce soit d'inchangé.
+
+**Les périmètres se comparent à neuf décimales**, pas au bit près. `ST_AsGeoJSON` arrondit à neuf décimales : un aller-retour par l'API n'est jamais identique au `double precision` stocké, si bien que `ST_OrderingEquals` — et même `ST_Equals` — répondaient « différent » pour les 390 réserves à chaque passage, réécrivant tous les périmètres et relançant le croisement INPG pour rien. Neuf décimales de degré valent un dixième de millimètre : c'est la finesse que l'API transmet, donc celle à laquelle la question a un sens. Avec cette comparaison la commande est idempotente : le second passage ne modifie rien.
+
+Un site de SOCLE dont le `code` est inconnu de RADIS est **signalé, jamais touché** : l'absence peut venir d'un code saisi de travers autant que d'une réserve disparue.
 
 ### Formulaire de contact — ticket Zammad
 
