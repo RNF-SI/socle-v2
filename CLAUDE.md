@@ -141,6 +141,8 @@ Quatre clés dans `config.py` (documentées dans `config_sample.py`) : `ZAMMAD_U
 
 **Le nom du groupe est un chemin complet.** Zammad imbrique les groupes avec `::` et l'API attend le nom exact : c'est `Support SI RNF::Support SOCLE`, pas `Support SOCLE`. Un nom partiel fait refuser la création du ticket.
 
+**Zammad n'est pas joignable par son nom public depuis le serveur SOCLE.** Les deux sont des conteneurs derrière pfSense : le nom public résout vers l'extérieur, sans réflexion NAT, et la connexion est refusée. Le TLS est terminé par un conteneur proxy distinct, sur un autre sous-réseau que Zammad. La résolution est corrigée par un *Host Override* sur le DNS Resolver de pfSense, ce qui laisse le nom et le certificat valides et n'impose rien à `config.py`. Pour diagnostiquer : Zammad répond **403** à un appel d'API sans jeton, pas 401 — un 403 n'est donc pas en soi un problème de droits.
+
 Le ticket est créé avec `customer_id: guess:<email>`, qui laisse Zammad créer le demandeur à la volée.
 
 L'article porte `sender: Customer`, qui l'attribue au demandeur et non à l'agent du jeton.
@@ -174,6 +176,13 @@ Thème Material : les palettes SOCLE vivent dans `src/styles/_palettes.scss` (pa
 **La coquille ne se colore pas toute seule.** `core/` style sa navbar, son footer et ses pages d'erreur avec `var(--custom-primary-500)`, une variable CSS que l'application hôte doit déclarer — le thème Sass ne la produit pas. C'est le rôle du mixin `palettes.variables-css`, inclus par `custom-theme.scss`, qui émet `--custom-primary-*` et `--custom-accent-*` sur `:root` à partir des mêmes maps que les palettes. Sans lui la navbar et le pied de page s'affichent sans les couleurs de la plateforme, sans la moindre erreur de compilation.
 
 Cartographie : Leaflet + `Leaflet.Deflate` + proj4/proj4leaflet. Les polygones sont chargés à la demande par emprise (`/sites-dans-bbox?bbox=xmin,ymin,xmax,ymax`, SRID 4326) tandis que les centroïdes de tous les sites sont chargés en une fois (`/sites-simple-centroides`). Exports : `xlsx`, `jspdf`, `html2canvas`/`html-to-image`, `file-saver`.
+
+## Déploiement
+
+La procédure complète est dans [`DEPLOIEMENT.md`](./DEPLOIEMENT.md). Deux points y sont structurants et ne se devinent pas :
+
+- **le rôle applicatif doit posséder les tables.** `ALTER TABLE` exige la propriété, qui ne se délègue pas — contrairement à `TRIGGER` ou `INSERT`. Des tables appartenant à `postgres` et une application connectée comme `socle` font échouer toute migration qui ajoute une colonne ;
+- **Alembic joue tout l'`upgrade` dans une seule transaction.** Un échec sur la dernière migration annule les précédentes et `alembic_version` revient à sa valeur de départ : après un échec, relire `flask db current` avant toute réparation manuelle.
 
 ## Conventions
 
