@@ -129,6 +129,8 @@ La commande lit `/reserves/inventaire` (l'état d'ensemble, déclassées incluse
 
 **Les périmètres se comparent à neuf décimales**, pas au bit près. `ST_AsGeoJSON` arrondit à neuf décimales : un aller-retour par l'API n'est jamais identique au `double precision` stocké, si bien que `ST_OrderingEquals` — et même `ST_Equals` — répondaient « différent » pour les 390 réserves à chaque passage, réécrivant tous les périmètres et relançant le croisement INPG pour rien. Neuf décimales de degré valent un dixième de millimètre : c'est la finesse que l'API transmet, donc celle à laquelle la question a un sens. Avec cette comparaison la commande est idempotente : le second passage ne modifie rien.
 
+La commande tourne chaque nuit par un minuteur systemd (`backend/deploiement/socle-synchro-radis.{service,timer}`), rejoué après une coupure : elle est idempotente, un second passage ne modifie rien.
+
 Un site de SOCLE dont le `code` est inconnu de RADIS est **signalé, jamais touché** : l'absence peut venir d'un code saisi de travers autant que d'une réserve disparue.
 
 ### Formulaire de contact — ticket Zammad

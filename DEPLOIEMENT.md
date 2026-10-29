@@ -302,12 +302,56 @@ Le rapport liste les créations, les modifications et les codes présents dans
 SOCLE mais inconnus de RADIS. Si tout est cohérent, relancer sans `--a-blanc`.
 Un second passage immédiat ne doit rien modifier : la commande est idempotente.
 
-## 10. Après coup
+## 10. Programmer la synchronisation
+
+Une fois le premier passage manuel concluant, la synchronisation tourne chaque
+nuit. Deux unités systemd sont versionnées dans `backend/deploiement/` ; leurs
+chemins supposent `/home/socle/socle-v2`, à adapter sinon.
+
+```bash
+sudo cp backend/deploiement/socle-synchro-radis.service \
+        backend/deploiement/socle-synchro-radis.timer /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now socle-synchro-radis.timer
+systemctl list-timers socle-synchro-radis.timer
+```
+
+Vérifier par un déclenchement immédiat, sans attendre la nuit :
+
+```bash
+sudo systemctl start socle-synchro-radis.service
+journalctl -u socle-synchro-radis -n 40 --no-pager
+```
+
+Le journal doit se terminer par le rapport de la commande. Un passage qui ne
+change rien affiche « 0 créée, 0 modifiée » : c'est le cas normal.
+
+Trois choix inscrits dans ces fichiers, et pourquoi :
+
+- **`Persistent=true`** rejoue le passage manqué si la machine était éteinte à
+  l'heure dite. C'est sans risque parce que la commande est idempotente.
+- **`RandomizedDelaySec=15m`** évite que toutes les applications RNF
+  n'interrogent leurs API à la même seconde ; RADIS sert d'autres
+  consommateurs.
+- **`TimeoutStartSec=1800`** laisse de la marge : un passage complet rapatrie
+  les périmètres des 385 réserves en une vingtaine de requêtes, et une lenteur
+  de RADIS ne doit pas faire tuer le travail au milieu d'une page.
+
+Pour une entrée cron plutôt qu'un minuteur, l'équivalent tient en une ligne
+dans la crontab de l'utilisateur `socle` — mais on perd le rattrapage et le
+journal unifié :
+
+```
+30 3 * * * cd /home/socle/socle-v2/backend && FLASK_APP=wsgi.py venv/bin/python -m flask synchro-radis
+```
+
+## 11. Après coup
 
 - **Publier la release** sur GitHub : c'est elle qui déclenche
   `.github/workflows/sbom.yml` et l'envoi des SBOM vers Dependency-Track.
-- **Retirer `_sync_reserve_to_socle` de equipe-app**, dans une PR séparée — pas
-  avant que la synchronisation tourne en production, puisque c'est ce push qui
-  tient SOCLE à jour entre les deux.
+- `_sync_reserve_to_socle` a été retirée de equipe-app une fois cette
+  synchronisation en production (RNF-SI/equipe-app#106). SOCLE n'est plus écrit
+  que par lui-même ; RADIS reste lu en sens inverse pour le patrimoine
+  géologique, ce qui est voulu.
 - Supprimer `backend/venv.precedent` et `/var/www/socle-frontend.precedent` une
   fois la version éprouvée.
