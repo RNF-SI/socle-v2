@@ -51,6 +51,13 @@ Deux notions de version cohabitent, qu'on confond vite :
 créerait deux projets neufs à chaque publication, à re-tagger et re-rattacher à
 la main. Le numéro de release est tracé par le composant racine du SBOM.
 
+## Déploiement
+
+La procédure de mise en production est décrite dans
+[`DEPLOIEMENT.md`](./DEPLOIEMENT.md) : prérequis du serveur, reconstruction du
+venv, clés de configuration, et surtout le traitement des migrations Alembic sur
+une base déjà peuplée — la baseline doit être *stampée*, pas jouée.
+
 ## Licence
 
 Ce projet est sous licence **GNU Affero General Public License v3 (AGPL-3.0)**. Cela signifie que :
