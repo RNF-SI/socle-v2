@@ -1,13 +1,11 @@
 <div *ngIf="site" class="bouttons">
-  <mat-button-toggle-group>
-    <mat-button-toggle *ngIf="hasAccessToRn" [routerLink]="['/questionnaire-simplifie', site.code]"
-      class="filled-toggle">
-      <fa-icon [icon]="['fas', 'edit']"></fa-icon> Editer les informations
-    </mat-button-toggle>
-    <mat-button-toggle (click)="exportData()" class="filled-toggle">
-      <fa-icon [icon]="['fas', 'download']"></fa-icon> Exporter la fiche
-    </mat-button-toggle>
-  </mat-button-toggle-group>
+  <a mat-flat-button color="primary" *ngIf="hasAccessToRn" [routerLink]="['/questionnaire-simplifie', site.code]"
+    class="bouton-fiche">
+    <fa-icon [icon]="['fas', 'edit']"></fa-icon> Editer les informations
+  </a>
+  <button mat-flat-button color="primary" type="button" (click)="exportData()" class="bouton-fiche">
+    <fa-icon [icon]="['fas', 'download']"></fa-icon> Exporter la fiche
+  </button>
 </div>
 
 <div *ngIf="site" id="export-content" class="contenu">
@@ -485,13 +483,11 @@
   <br>
 </div>
 <div *ngIf="site" class="bouttons">
-  <mat-button-toggle-group>
-    <mat-button-toggle *ngIf="hasAccessToRn" [routerLink]="['/questionnaire-simplifie', site.code]"
-      class="filled-toggle">
-      <fa-icon [icon]="['fas', 'edit']"></fa-icon> Editer les informations
-    </mat-button-toggle>
-    <mat-button-toggle (click)="exportData()" class="filled-toggle">
-      <fa-icon [icon]="['fas', 'download']"></fa-icon> Exporter la fiche
-    </mat-button-toggle>
-  </mat-button-toggle-group>
+  <a mat-flat-button color="primary" *ngIf="hasAccessToRn" [routerLink]="['/questionnaire-simplifie', site.code]"
+    class="bouton-fiche">
+    <fa-icon [icon]="['fas', 'edit']"></fa-icon> Editer les informations
+  </a>
+  <button mat-flat-button color="primary" type="button" (click)="exportData()" class="bouton-fiche">
+    <fa-icon [icon]="['fas', 'download']"></fa-icon> Exporter la fiche
+  </button>
 </div>

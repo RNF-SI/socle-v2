@@ -291,9 +291,13 @@ span.legend-item {
   text-align: center;
 }
 
-.filled-toggle {
-  background-color: palettes.couleur(palettes.$custom-primary, 500);
-  color: white;
+// Boutons d'action de la fiche. Ils étaient des mat-button-toggle, qui gardent
+// l'aspect « coché » du dernier cliqué : ce sont des actions, pas un choix.
+// La couleur vient de color="primary" : le thème Material est construit sur les
+// mêmes palettes, et un background-color posé ici serait écrasé par
+// .mat-mdc-unelevated-button, sans erreur ni avertissement.
+.bouton-fiche {
+  margin: 0 4px;
 }
 
 .sites-inpg fa-icon {
@@ -308,11 +312,6 @@ span.legend-item {
 
 .hidden {
   display: none !important;
-}
-
-.mat-button-toggle-checked {
-  color: white !important;
-  /* Remplacez #ff5722 par la couleur souhaitée */
 }
 
 .geopatrimoine-lb {
