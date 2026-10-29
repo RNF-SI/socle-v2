@@ -574,11 +574,26 @@ export class SyntheseSiteComponent implements OnInit {
 
   private svgVersPng(svg: SVGElement): Promise<string | null> {
     const COTE = 64;
+    const couleur = getComputedStyle(svg).color || '#fabb64';
     const copie = svg.cloneNode(true) as SVGElement;
     copie.setAttribute('width', `${COTE}`);
     copie.setAttribute('height', `${COTE}`);
-    // currentColor n'a plus de contexte une fois le SVG détaché.
-    copie.setAttribute('fill', getComputedStyle(svg).color || '#518196');
+
+    // FontAwesome peint ses tracés en `currentColor`, qui retombe au noir dans
+    // un SVG détaché du document. Poser le fill sur la racine ne suffit pas :
+    // l'attribut du tracé l'emporte. On fixe donc les deux.
+    copie.setAttribute('style', `color: ${couleur}`);
+    copie.setAttribute('fill', couleur);
+    copie.querySelectorAll<SVGElement>('[fill]').forEach(tracé => {
+      if ((tracé.getAttribute('fill') || '').toLowerCase() === 'currentcolor') {
+        tracé.setAttribute('fill', couleur);
+      }
+    });
+    copie.querySelectorAll('path').forEach(tracé => {
+      if (!tracé.getAttribute('fill')) {
+        tracé.setAttribute('fill', couleur);
+      }
+    });
 
     const source = new XMLSerializer().serializeToString(copie);
     const url = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(source)));
@@ -608,10 +623,29 @@ export class SyntheseSiteComponent implements OnInit {
     if (!element) {
       return null;
     }
+    return this.capturer(element, `Bloc ${selecteur}`);
+  }
+
+  /**
+   * Capture un élément en PNG, sans jamais bloquer l'export.
+   *
+   * `skipFonts` évite d'aller chercher les feuilles de style distantes : leur
+   * récupération n'a pas de délai de garde dans html-to-image, et une seule
+   * qui traîne suffit à ce que l'export ne rende jamais la main. Le délai
+   * ci-dessous couvre les autres causes d'attente.
+   */
+  private async capturer(element: HTMLElement, quoi: string, delaiMax = 10000): Promise<string | null> {
     try {
-      return await toPng(element, { cacheBust: true, backgroundColor: '#ffffff' });
+      return await Promise.race([
+        // cacheBust contourne les images déjà en cache sans en-tête CORS —
+        // les tuiles du BRGM n'en renvoient aucun. skipFonts évite d'aller
+        // chercher les feuilles de style distantes, dont la récupération n'a
+        // pas de délai de garde dans html-to-image.
+        toPng(element, { cacheBust: true, backgroundColor: '#ffffff', skipFonts: true }),
+        new Promise<null>(resolve => setTimeout(() => resolve(null), delaiMax)),
+      ]);
     } catch (erreur) {
-      console.error(`Bloc ${selecteur} non exporté :`, erreur);
+      console.error(`${quoi} non exporté :`, erreur);
       return null;
     }
   }
@@ -644,7 +678,9 @@ export class SyntheseSiteComponent implements OnInit {
       }
       map.invalidateSize();
       await new Promise(resolve => setTimeout(resolve, 1500));
-      return await toPng(map.getContainer(), { cacheBust: true });
+      // La carte embarque ses tuiles : elle demande bien plus de temps qu'un
+      // bloc de texte, sans pour autant pouvoir attendre indéfiniment.
+      return await this.capturer(map.getContainer(), 'Carte', 20000);
     } catch (erreur) {
       console.error("Carte non exportée :", erreur);
       return null;
