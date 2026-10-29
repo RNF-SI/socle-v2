@@ -534,10 +534,10 @@ export class SyntheseSiteComponent implements OnInit {
    * plutôt que de ne rien produire.
    */
   async exportData(): Promise<void> {
-    // Les chiffres clés et la légende sont repris tels qu'ils s'affichent :
-    // leurs pictogrammes sont des icônes vectorielles et leurs pastilles de
-    // couleur des éléments stylés, que seule une capture rend fidèlement.
-    const chiffres = await this.capturerElement('.stats-container');
+    // Seuls les pictogrammes sont capturés : ce sont des icônes vectorielles,
+    // que jsPDF ne sait pas dessiner sans embarquer leur police. Les valeurs
+    // et les libellés restent du texte.
+    const pictos = await this.capturerPictos();
     const carte = await this.capturerCarte();
     const legende = await this.capturerElement('.legend-container');
 
@@ -551,9 +551,54 @@ export class SyntheseSiteComponent implements OnInit {
       stratotypesEtage: this.stratotypesEtage ?? [],
       inpgActifsPerimetre: this.inpgActifsPerimetre,
       formationsGeologiques: this.sfgeol ?? [],
-      chiffres,
+      pictos,
       carte,
       legende,
+    });
+  }
+
+  /**
+   * Convertit en PNG les pictogrammes du bandeau de chiffres clés.
+   *
+   * FontAwesome rend des SVG en ligne, qu'on sérialise et rasterise
+   * directement. Passer par html-to-image, comme pour la carte, rejouait
+   * l'inlining de toutes les feuilles de style à chaque icône : cinq appels
+   * concurrents ne rendaient plus la main, la récupération des polices
+   * distantes n'ayant pas de délai de garde.
+   */
+  private async capturerPictos(): Promise<(string | null)[]> {
+    const svgs = Array.from(
+      document.querySelectorAll<SVGElement>('.stats-container .stat-item fa-icon svg'));
+    return Promise.all(svgs.map(svg => this.svgVersPng(svg)));
+  }
+
+  private svgVersPng(svg: SVGElement): Promise<string | null> {
+    const COTE = 64;
+    const copie = svg.cloneNode(true) as SVGElement;
+    copie.setAttribute('width', `${COTE}`);
+    copie.setAttribute('height', `${COTE}`);
+    // currentColor n'a plus de contexte une fois le SVG détaché.
+    copie.setAttribute('fill', getComputedStyle(svg).color || '#518196');
+
+    const source = new XMLSerializer().serializeToString(copie);
+    const url = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(source)));
+
+    return new Promise(resolve => {
+      const image = new Image();
+      image.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = COTE;
+        canvas.height = COTE;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          resolve(null);
+          return;
+        }
+        ctx.drawImage(image, 0, 0, COTE, COTE);
+        resolve(canvas.toDataURL('image/png'));
+      };
+      image.onerror = () => resolve(null);
+      image.src = url;
     });
   }
 

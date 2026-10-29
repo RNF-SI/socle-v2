@@ -13,8 +13,8 @@ export interface ContenuFiche {
   formationsGeologiques: string[];
   /** Sites INPG du périmètre de protection, hors sites écartés. */
   inpgActifsPerimetre: any[];
-  /** Image PNG du bandeau de chiffres clés, si la capture a réussi. */
-  chiffres?: string | null;
+  /** Pictogrammes des chiffres clés, dans l'ordre d'affichage. */
+  pictos?: (string | null)[];
   /** Image PNG de la carte, si la capture a réussi. */
   carte?: string | null;
   /** Image PNG de la légende de la carte, si la capture a réussi. */
@@ -86,26 +86,83 @@ export class ExportFicheService {
     this.separateur();
   }
 
+  /**
+   * Bandeau de chiffres clés, à l'image de la fiche.
+   *
+   * Les valeurs et les libellés sont du texte — donc sélectionnables et
+   * copiables — et seuls les pictogrammes sont des images, FontAwesome étant
+   * une police que jsPDF ne sait pas composer sans l'embarquer.
+   */
   private chiffresCles(contenu: ContenuFiche): void {
-    this.titreSection('Chiffres clés');
-    if (contenu.chiffres) {
-      this.image(contenu.chiffres, 55);
-      return;
+    const s = contenu.site;
+    const b = s?.infos_base;
+
+    const colonnes: { valeur: string; libelle: string }[] = [
+      { valeur: s?.surf_off ? `${Math.round(s.surf_off)} ha` : '—', libelle: 'Superficie' },
+      { valeur: `${contenu.inpgActifs.length}`, libelle: this.pluriel(contenu.inpgActifs.length, 'Site INPG', 'Sites INPG') },
+      {
+        valeur: `${(s?.patrimoines_geologiques ?? []).length}`,
+        libelle: this.pluriel((s?.patrimoines_geologiques ?? []).length,
+          'Autre site de géopatrimoine', 'Autres sites de géopatrimoine'),
+      },
+      {
+        valeur: `${(s?.stratotypes ?? []).length}`,
+        libelle: this.pluriel((s?.stratotypes ?? []).length, 'Stratotype', 'Stratotypes'),
+      },
+    ];
+
+    if (b?.reserve_has_geological_site_for_visitors) {
+      colonnes.push({
+        valeur: `${b.nb_sites_for_visitors ?? ''}`.trim() || '—',
+        libelle: 'Sites géologiques aménagés pour les visiteurs',
+      });
     }
-    // Sans capture, les mêmes valeurs en texte : mieux vaut une liste sobre
-    // qu'une section absente.
-    this.chiffresClesTexte(contenu);
+
+    this.titreSection('Chiffres clés');
+
+    const pictos = contenu.pictos ?? [];
+    const largeurColonne = LARGEUR_UTILE / colonnes.length;
+    const hautBloc = this.y;
+    let basMax = this.y;
+
+    colonnes.forEach((colonne, i) => {
+      const centre = MARGE + largeurColonne * i + largeurColonne / 2;
+      let y = hautBloc;
+
+      const picto = pictos[i];
+      if (picto) {
+        const props = this.doc.getImageProperties(picto);
+        const hauteur = 7;
+        const largeur = hauteur * (props.width / props.height);
+        this.doc.addImage(picto, 'PNG', centre - largeur / 2, y, largeur, hauteur);
+      }
+      y += 11;
+
+      this.doc.setFont('helvetica', 'bold');
+      this.doc.setFontSize(13);
+      this.doc.setTextColor(...BLEU);
+      this.doc.text(colonne.valeur, centre, y, { align: 'center' });
+      y += 5;
+
+      this.doc.setFont('helvetica', 'normal');
+      this.doc.setFontSize(8);
+      this.doc.setTextColor(...GRIS);
+      const lignes = this.doc.splitTextToSize(colonne.libelle, largeurColonne - 4);
+      lignes.forEach((ligne: string) => {
+        this.doc.text(ligne, centre, y, { align: 'center' });
+        y += 3.6;
+      });
+
+      basMax = Math.max(basMax, y);
+    });
+
+    this.doc.setTextColor(0, 0, 0);
+    this.doc.setFontSize(10);
+    this.y = basMax + 4;
   }
 
-  private chiffresClesTexte(contenu: ContenuFiche): void {
-    const s = contenu.site;
-    const chiffres = [
-      ['Superficie', s?.surf_off ? `${s.surf_off} ha` : 'non renseignée'],
-      ['Sites INPG', `${contenu.inpgActifs.length}`],
-      ['Autres sites de géopatrimoine', `${(s?.patrimoines_geologiques ?? []).length}`],
-      ['Stratotypes', `${(s?.stratotypes ?? []).length}`],
-    ];
-    chiffres.forEach(([libelle, valeur]) => this.ligneLibelleValeur(libelle, valeur));
+  private pluriel(nb: number, singulier: string, pluriel: string): string {
+    return nb > 1 ? pluriel : singulier;
   }
 
   private carte(image: string): void {
